@@ -6,18 +6,56 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.ArrayList;
+import ml.options.*;
+import br.ufrgs.inf.tlbellini.plugins.*;
 
 public class PajeGrammar{
 
   public static ArrayList<PajeEventDefinition> eventDefinitions = new ArrayList<PajeEventDefinition>(); 
   static PajeSimulator simulator = new PajeSimulator();
+  public static String filename;
+  public static String comment = " ";
+  public static PajePlugin plugin;
+  
 
 
   public static void main(String args []) throws ParseException, FileNotFoundException  {
 	FileInputStream input;
 	Scanner sc = new Scanner(System.in);
     if(args.length > 0)    {
-      input = new FileInputStream(args[0]);    }else
+
+      // get user input
+      Options opt = new Options(args, 1);
+      opt.getSet().addOption("f", Options.Separator.BLANK, Options.Multiplicity.ONCE);
+      opt.getSet().addOption("m", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
+      opt.getSet().addOption("p", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
+
+	  if(!opt.check())
+      {
+		System.out.println("Use -f<filename > -m <comment > -p < plugin >");
+   	  }
+   	  
+      input = new FileInputStream(opt.getSet().getOption("f").getResultValue(0));
+   	  
+   	  if(opt.getSet().isSet("f"))
+   	  {
+   	    String[] entry = opt.getSet().getOption("f").getResultValue(0).split("/");
+        filename = entry[entry.length-1];
+   	    System.out.println(filename);
+   	  }
+   	  if(opt.getSet().isSet("m"))   	  {
+   	    comment = opt.getSet().getOption("m").getResultValue(0);
+   	    System.out.println(comment);
+   	  }
+   	  if(opt.getSet().isSet("p"))   	  {
+   	    switch(opt.getSet().getOption("p").getResultValue(0))   	    {
+   	      case "pd": plugin = new PajeDumpPlugin();
+   	      break;
+   	      default: break;
+   	      	   	    }   	  }else   	  {		plugin = new PajeNullPlugin();
+   	  }
+      
+          }else
     {
       System.out.println("Input the file path: ");
       input = new FileInputStream(sc.nextLine());    }
