@@ -1,0 +1,186 @@
+#+TITLE: Bellini's LabBook
+#+AUTHOR: Lucas e Tais
+#+LATEX_HEADER: \usepackage[margin=2cm,a4paper]{geometry}
+#+STARTUP: overview indent
+#+TAGS: Lucas(L) Tais(T) noexport(n) deprecated(d)
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+SEQ_TODO: TODO(t!) STARTED(s!) WAITING(w!) | DONE(d!) CANCELLED(c!) DEFERRED(f!)
+
+* 2015-09-15 Planning                                            :Lucas:Tais:
+
+|---------+--------------------------------------------------|
+| Sep/Oct | Complete Java Simulator for the Paje file format |
+| Nov/Dec | Database modeling for Paje traces                |
+| Jan/Feb | Experimentation and Performance Evaluation       |
+| Mar/Jun | Write the thesis                                 |
+|---------+--------------------------------------------------|
+
+* 2015-09-15 Structure / Draft of TCC                            :Lucas:Tais:
+
+1. Introduction (3 pages max)
+   + Context (current scenario with pajeng c++)
+   + Motivation
+2. Basic Concepts? (5 pages max)
+   + JavaCC?
+   + Ferramentas de análise de desempenho
+3. PajeNG
+   + How it is used by others (pjdump, etc)
+   + Description of how it works internally
+   + The problems with the current approach
+     + Focus on your contribution
+4. Java Simulator
+   + JavaCC / Perf. Eval. against others / Why JavaCC?
+5. Database modeling
+6. Perf. Eval. / Experimentation / Results
+7. Conclusion
+* 2016-02-15 Performance issues                                  :Lucas:Tais:
+
+Tais report that her solution to DB insertion has severe performance
+issues. The initial solution was that every *pop* event become a
+insert. That didn't work, so Tais optimize with an alternative
+implementation which uses StringBuffer and create many insert commands
+on that object. They only get executed at the end of the parsing. Tais
+was never capable to evaluate if this solution is faster because
+execution runs out of memory.
+
+So, by looking into this SO entry:
+
++ http://stackoverflow.com/questions/11389449/performance-of-mysql-insert-statements-in-java-batch-mode-prepared-statements-v
+
+We propose a new attempt to solve the performance problem. The SO
+entry proposes four solutions, we will take the last one, which seems
+the best. To correctly adapt this fourth solution to Tais's case, we
+should limit the batch size to something acceptable. If not, we will
+run out of memory again because the (usual) trace file size is just
+too big.
+
+So, next plans are like this:
+- Tais will limit the size of the batch considering the number of
+  operations on it.
+- Each batch will contain five StringBuffers, one for each paje type
+  (Container, State, Link, Variable, and Event).
+- Every time something gets added to one of these string buffers, the
+  operation count of the batch gets increased.
+- When the batch size reaches a (configurable) value X, the code
+  executes the batch, zero it, and we start again filling.
+- Tais will do a quick performance analysis by changing the
+  (configurable) value X to see the impact in execution time.
+
+How to know the baseline:
+- Find out how long it take to only parse with the Java version. You
+  can do that by checking out the *no-db* branch.
+
+
+* 2016-02-15 How to install and configure 
+
+Ola, 
+
+Estou finalizando a implementação do simulador com a inserção no banco. 
+
+Tem alguns arquivos de teste na pasta trace, aqueles bem pequenos para
+cada tipo de entidade. Eu acabei de commitar a inserção do arquivo
+states.trace.
+
+Queria te pedir algumas coisas:
+
+1) se possível testar essa inserção, e ver se o que está gerando no
+   banco é o que se espera. É bem pouco, 3 estados só pode
+   incrementá-lo se quiser ; 
+
+2) criar mais alguns arquivos desses se julgar necessário para cobrir
+   todos os casos possíveis de forma que eu possa debugar mais
+   facilmente; 
+
+3) fornecer um arquivo maior e mais completo para iniciar os testes
+   para fazer as consultas.
+
+
+Se não tiveres tempo agora podemos marcar uma reunião quando tu voltar
+pra fazermos esses testes e correções.
+
+
+Como executar:
+
+- instalar MySQL  e MySQL Workbench 
+
+- criar uma instancia local chamada "root" com senha também "root" e
+  porta 3306 (é o padrão do Mysql) 
+
+
+- abrir no Workbench o ER-model.mdb e na opção "Database" selecionar
+  "Forward Engineer" e apenas seguir os passos, garantindo que a opção
+  "Generate INSERT statements for tables" esteja marcada na segunda
+  janela que aparece 
+
+OU
+
+- executar o script pajeDB.sql na instancia criada.
+
+Acho que é isso que precisa pra executar. Se tiver algum problema pode
+me avisar.
+* 2016-02-26 Meeting with Tais                                   :Lucas:Tais:
+
+How to get it working.
+
+Install mysql, root password should be root:
+
+#+begin_src sh :results output :session :exports both
+sudo apt-get install mysql-server
+#+end_src
+
+Run the =pajeDB.sql= to create the tables.
+
+Fix =compile.sh= to have the correct CLASSPATH.
+
+Problems found:
+- Program does not terminate
+- 
+
+
+_Plugin_:
+
+- Today, SQL commands are created in the middle of the PajeSimulator
+  source code. Moreover, the different strategies (searching for
+  performance) are commented in the same source code. This leads to
+  design that is difficult to manage, and also hard to evaluate the
+  different performance options.
+
+- So my suggestion is to create a plugin for each type of output from
+  the simulator. You will go back in time so the Paje Simulator source
+  code is as clean as possible, and instrument this code to contain
+  specific calls when something should be registered (such as the pop,
+  the end links, and so on).
+
+- The plugin will be called in this different instrumentation points
+  and do what it was design to do. A first plugin to be implemented is
+  the one with the SQL insert commands.
+
+- Alternative versions to look for better performance should be
+  implemented as other plugins, that could be subclasses (derived)
+  from the initial one, if there is some functionality sharing between
+  them.
+
+- Plugins already proposed by Tais:
+  - Multiple batches, but are handle sequentially
+  - Multiple batches, but with threads
+  - Print the SQL commands to output
+
+- Class model for this plugin story
+  - PajePlugin
+    - PajePluginMultipleBatchesSequential
+      - PajePluginMultipleBatchesThreads
+    - PajePluginPrintSQLCommandsToOutput
+    - PajePluginNull
+    - PajePluginOutputPJDUMP
+
+- Clean PajeSimulator
+  - Create PajePlugin
+
+- Exhaustive list of instrumentations points for the plugins
+  - All types and values definitions
+  - All create containers
+  - Pops
+  - Events
+  - Add, Sub, Set variables
+  - Start and end of links
