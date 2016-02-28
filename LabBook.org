@@ -74,32 +74,6 @@ How to know the baseline:
 
 * 2016-02-15 How to install and configure 
 
-Ola, 
-
-Estou finalizando a implementação do simulador com a inserção no banco. 
-
-Tem alguns arquivos de teste na pasta trace, aqueles bem pequenos para
-cada tipo de entidade. Eu acabei de commitar a inserção do arquivo
-states.trace.
-
-Queria te pedir algumas coisas:
-
-1) se possível testar essa inserção, e ver se o que está gerando no
-   banco é o que se espera. É bem pouco, 3 estados só pode
-   incrementá-lo se quiser ; 
-
-2) criar mais alguns arquivos desses se julgar necessário para cobrir
-   todos os casos possíveis de forma que eu possa debugar mais
-   facilmente; 
-
-3) fornecer um arquivo maior e mais completo para iniciar os testes
-   para fazer as consultas.
-
-
-Se não tiveres tempo agora podemos marcar uma reunião quando tu voltar
-pra fazermos esses testes e correções.
-
-
 Como executar:
 
 - instalar MySQL  e MySQL Workbench 
@@ -112,7 +86,7 @@ Como executar:
   "Forward Engineer" e apenas seguir os passos, garantindo que a opção
   "Generate INSERT statements for tables" esteja marcada na segunda
   janela que aparece 
-
+ 
 OU
 
 - executar o script pajeDB.sql na instancia criada.
@@ -184,3 +158,24 @@ _Plugin_:
   - Events
   - Add, Sub, Set variables
   - Start and end of links
+
+* 2016-02-28 Starting Aiyra                                            :Tais:
+The new implementation with plugins will be called Aiyra.
+The code is [[https://github.com/taisbellini/aiyra][here]].
+There are only two classes with a print informing which plugin was chosen.
+
+To use: 
+java br.ufrgs.inf.tlbellini.PajeGrammar -f <path-to-trace-file> -.m <comment (optional)> -p <plugin (default: null)>
+
+plugin options (just one for now): 
+pd - pajedump  
+** References
+Command line reader:
+http://www.javaworld.com/article/2074849/core-java/processing-command-line-arguments-in-java--case-closed.html
+** Performance
+commit: "create poc of integration of plugins and the Options package"
+- scorep-cg.A.64.paje - 2.1GB - 367918ms
+- scorep-lu.B.64.paje - 776.7MB - 77917ms
+- traces-16Mega.paje - 16MB - 1500ms
+
+
