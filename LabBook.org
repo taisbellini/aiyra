@@ -164,13 +164,19 @@ The new implementation with plugins will be called Aiyra.
 The code is [[https://github.com/taisbellini/aiyra][here]].
 There are only two classes with a print informing which plugin was chosen.
 
-To use: 
-java br.ufrgs.inf.tlbellini.PajeGrammar -f <path-to-trace-file> -.m
-<comment (optional)> -p <plugin (default: null)> -l <lines-per-dump
-(default: 100000)
+** How to use
 
-plugin options (just one for now): 
-pd - pajedump  
+#+begin_src sh :results output :session :exports both
+java br.ufrgs.inf.tlbellini.PajeGrammar -f <path-to-trace-file> \
+                                        -m <comment (optional)> \
+                                        -p <plugin (default: null)> \
+                                        -l <lines-per-dump (default: 100000)>
+#+end_src
+
+** Plugins available
+
+- "pd": it outputs a CSV based on the =pj_dump= format
+
 ** References
 Command line reader:
 http://www.javaworld.com/article/2074849/core-java/processing-command-line-arguments-in-java--case-closed.html
