@@ -1,10 +1,10 @@
 package br.ufrgs.inf.tlbellini.lib;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
+
+import br.ufrgs.inf.tlbellini.PajeGrammar;
 
 public class PajeSimulator extends PajeComponent {
 
@@ -76,113 +76,9 @@ public class PajeSimulator extends PajeComponent {
 	
 	public void finish() throws Exception{
 		this.root.recursiveDestroy(this.lastKnownTime);
+		PajeGrammar.plugin.finish();
 	}
 
-	public void report() {
-
-		for (PajeContainer container : this.contMap.values()) {
-
-			String parentName;
-			if (container.getContainer() == null)
-				parentName = "0";
-			else
-				parentName = container.getContainer().getName();
-
-			System.out.println("Container, " + parentName + ", "
-					+ container.getType().getName() + ", "
-					+ container.getStartTime() + ", " + container.getEndTime()
-					+ ", "
-					+ (container.getEndTime() - container.getStartTime())
-					+ ", " + container.getName());
-			
-			for (ArrayList<PajeEntity> entities : container.getEntities()
-					.values()) {
-				for (PajeEntity ent : entities) {
-
-					switch (ent.getType().getNature()) {
-					case VariableType:
-						System.out
-								.println("Variable, "
-										+ ent.getContainer().getName()
-										+ ", "
-										+ ent.getType().getName()
-										+ ", "
-										+ ((PajeSingleTimedEntity) ent)
-												.getStartTime()
-										+ ", "
-										+ ((PajeSingleTimedEntity) ent)
-												.getEndTime()
-										+ ", "
-										+ (((PajeDoubleTimedEntity) ent)
-												.getEndTime() - ((PajeSingleTimedEntity) ent)
-												.getStartTime()) + ", "
-										+ ((PajeUserVariable) ent).getValue() );
-						break;
-					case StateType:
-						System.out
-								.println("State, "
-										+ ent.getContainer().getName()
-										+ ", "
-										+ ent.getType().getName()
-										+ ", "
-										+ ((PajeSingleTimedEntity) ent)
-												.getStartTime()
-										+ ", "
-										+ ((PajeSingleTimedEntity) ent)
-												.getEndTime()
-										+ ", "
-										+ (((PajeDoubleTimedEntity) ent)
-												.getEndTime() - ((PajeSingleTimedEntity) ent)
-												.getStartTime())
-										+ ", "
-										+ ((PajeUserState) ent)
-												.getImbrication() + ", "
-										+ ((PajeValueEntity) ent).getValue().getName()
-												);
-						break;
-					case EventType:
-						System.out.println("Event, "
-								+ ent.getContainer().getName() + ", "
-								+ ent.getType().getName() + ", "
-								+ ((PajeSingleTimedEntity) ent).getStartTime()
-								+ ", " + ((PajeUserEvent) ent).getValue().getName());
-						break;
-					case LinkType:
-						System.out
-								.println("Link, "
-										+ ent.getContainer().getName()
-										+ ", "
-										+ ent.getType().getName()
-										+ ", "
-										+ ((PajeSingleTimedEntity) ent)
-												.getStartTime()
-										+ ", "
-										+ ((PajeSingleTimedEntity) ent)
-												.getEndTime()
-										+ ", "
-										+ (((PajeDoubleTimedEntity) ent)
-												.getEndTime() - ((PajeSingleTimedEntity) ent)
-												.getStartTime())
-										+ ", "
-										+ ((PajeValueEntity) ent).getValue().getName()
-										+ ", "
-										+ ((PajeUserLink) ent)
-												.getStartContainer().getName()
-										+ ", "
-										+ ((PajeUserLink) ent)
-												.getEndContainer().getName());
-						break;
-					default:
-						break;
-
-					}
-				}
-
-			} 
-
-		}
-
-	}
 
 	public void simulate(PajeObject data) throws Exception {
 		PajeTraceEvent event = (PajeTraceEvent) data;
@@ -290,6 +186,9 @@ public class PajeSimulator extends PajeComponent {
 
 		// add children to the parent container type
 		containerType.addChildrenType(name, alias, newType);
+		
+		//send to Plugin
+		PajeGrammar.plugin.addType(newType);
 	}
 
 	private void pajeDefineStateType(PajeTraceEvent event) throws Exception {
@@ -324,6 +223,9 @@ public class PajeSimulator extends PajeComponent {
 
 		// add children to the parent container type
 		containerType.addChildrenType(name, alias, newType);
+		
+		//send to Plugin
+		PajeGrammar.plugin.addType(newType);
 	}
 
 	private void pajeDefineEventType(PajeTraceEvent event) throws Exception {
@@ -358,6 +260,9 @@ public class PajeSimulator extends PajeComponent {
 
 		// add children to the parent container type
 		containerType.addChildrenType(name, alias, newType);
+		
+		//send to Plugin
+		PajeGrammar.plugin.addType(newType);
 	}
 
 	private void pajeDefineVariableType(PajeTraceEvent event) throws Exception {
@@ -402,6 +307,9 @@ public class PajeSimulator extends PajeComponent {
 
 		// add children to the parent container type
 		containerType.addChildrenType(name, alias, newType);
+		
+		//send to Plugin
+		PajeGrammar.plugin.addType(newType);
 	}
 
 	private void pajeDefineLinkType(PajeTraceEvent event) throws Exception {
@@ -471,6 +379,9 @@ public class PajeSimulator extends PajeComponent {
 
 		// add children to the parent container type
 		containerType.addChildrenType(name, alias, newType);
+		
+		//send to Plugin
+		PajeGrammar.plugin.addType(newType);
 	}
 
 	private void pajeDefineEntityValue(PajeTraceEvent event) throws Exception {
@@ -525,6 +436,9 @@ public class PajeSimulator extends PajeComponent {
 		} else {
 			targetType.addValue(name, alias, pajeColor);
 		}
+		
+		//send to Plugin
+		PajeGrammar.plugin.addValue(targetType.getValues().get(alias));
 
 	}
 
@@ -584,6 +498,8 @@ public class PajeSimulator extends PajeComponent {
 		contNamesMap.put(name, newContainer);
 
 		parentContainer.addChildren(identifier, newContainer);
+		
+		PajeGrammar.plugin.addNewContainer(newContainer);
 
 	}
 

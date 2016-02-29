@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import br.ufrgs.inf.tlbellini.PajeGrammar;
+
 public class PajeContainer extends PajeNamedEntity {
 	
 	private double stopSimulationAt;
@@ -136,7 +138,7 @@ public class PajeContainer extends PajeNamedEntity {
 		for(Map.Entry<PajeType, ArrayList<PajeEntity>> entry : this.getEntities().entrySet()){
 			ArrayList<PajeEntity> list = entry.getValue();
 			//if event, no need to set end time
-			if((list.get(list.size()-1).getType().getNature() != PajeTypeNature.EventType) && ((PajeDoubleTimedEntity) list.get(list.size()-1)).getEndTime() == -1)
+			if(!list.isEmpty() && (list.get(list.size()-1).getType().getNature() != PajeTypeNature.EventType) && ((PajeDoubleTimedEntity) list.get(list.size()-1)).getEndTime() == -1)
 				((PajeDoubleTimedEntity) list.get(list.size()-1)).setEndTime(time);
 		}
 		
@@ -150,11 +152,13 @@ public class PajeContainer extends PajeNamedEntity {
 		//end stack 
 		for(Map.Entry<PajeType, ArrayList<PajeUserState>> entry : this.stackStates.entrySet()){
 			for(PajeEntity ent : entry.getValue()){
-				//TODO salvar no bd e remover
 				if(((PajeDoubleTimedEntity) ent).getEndTime() == -1) 
 					((PajeDoubleTimedEntity) ent).setEndTime(time);
 			}
 		}
+		
+		//Send destroyed container to plugin
+		PajeGrammar.plugin.addDestroyedContainer(this);
 		
 		this.recursiveDestroy(time);
 		
@@ -180,6 +184,8 @@ public class PajeContainer extends PajeNamedEntity {
 		this.getEntities().get(type).add(newState);
 		this.stackStates.get(type).add(newState);
 		
+		PajeGrammar.plugin.addState(newState);
+		
 	}
 	
 private void pajePushState(PajeStateEvent event) throws Exception{
@@ -192,6 +198,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		checkTimeOrder(event);
 		
 		//does not create if doesn't exist
+		//commented: exception following paje documentation
 		if(this.getEntities().isEmpty() || !this.getEntities().containsKey(type)){
 //			throw new Exception("A Push State for type " + type.getAlias() + " was done in line " + traceEvent.getLine() + " before a Set State for the type");
 		  this.getEntities().put(type, new ArrayList<PajeEntity>());
@@ -202,11 +209,12 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		}
 		
 		PajeUserState newState = new PajeUserState(this, type, time, value, traceEvent);
-		//check if correct: assuming 0, 1 , 2 ...
 		newState.setImbrication(this.stackStates.size());
 		
 		this.getEntities().get(type).add(newState);
 		this.stackStates.get(type).add(newState);
+		
+		PajeGrammar.plugin.pushState(newState);
 		
 	}
 
@@ -218,20 +226,25 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		
 		checkTimeOrder(event);
 		
+		PajeUserState state = (PajeUserState) this.getEntities().get(type).get(this.getEntities().get(type).size()-1);
+		
 		//get last push from that type
 		if(!this.getEntities().isEmpty() && this.getEntities().containsKey(type)){
-				((PajeDoubleTimedEntity) this.getEntities().get(type).get(this.getEntities().get(type).size()-1)).setEndTime(time);
-				//TODO actually remove
+				state.setEndTime(time);
 		}else{
 			throw new Exception("Trying to Pop a State of type "+ type.getAlias() + " that was not previously Pushed in line " + traceEvent.getLine());
 		}
 		
 		if(!this.stackStates.isEmpty() && this.stackStates.containsKey(type)){
 			this.stackStates.get(type).get(this.stackStates.get(type).size() -1).setEndTime(time);
-			//TODO actually remove
 		}else{
 			throw new Exception("Trying to Pop a State of type "+ type.getAlias() + " that was not previously Pushed in line " + traceEvent.getLine());
 		}
+		
+		PajeGrammar.plugin.popState(state);
+		
+		this.getEntities().get(type).remove(state);
+		this.stackStates.get(type).remove(state);
 	}
 	
 	private void pajeNewEvent(PajeEventEvent event) throws Exception{
@@ -246,7 +259,8 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		//check if the type for the event exists in container
 		if(this.getEntities().isEmpty() || !this.getEntities().containsKey(type))
 			this.getEntities().put(type, new ArrayList<PajeEntity>());
-		this.getEntities().get(type).add(newEvent);
+		
+		PajeGrammar.plugin.addEvent(newEvent);
 		
 	}
 	
@@ -274,7 +288,10 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		}
 		
 		PajeUserVariable newValue = new PajeUserVariable(this, type, time, value, traceEvent);		
-		this.getEntities().get(type).add(newValue);	
+		this.getEntities().get(type).add(newValue);
+		
+		
+		PajeGrammar.plugin.addVar(newValue, newValue);
 	}
 	
 	private void pajeAddVariable(PajeVariableEvent event) throws Exception{
@@ -290,18 +307,22 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		checkTimeOrder(event);
 		
 		PajeEntity last = this.getEntities().get(type).get(this.getEntities().get(type).size() -1);
+		// get the first var to get the time it was set
+		PajeEntity first = this.getEntities().get(type).get(0);
+		
 		if(((PajeUserVariable) last).getStartTime() == time){
 			((PajeUserVariable) last).addValue(value);
 			return;				
 		}else{
 			((PajeDoubleTimedEntity) last).setEndTime(time);
-			//TODO put in bd
 		}
 		lastVal = ((PajeUserVariable) last).getValue();
 		
 		//add variable with new value
 		PajeUserVariable newValue = new PajeUserVariable(this, type, time, lastVal + value, traceEvent);		
 		this.getEntities().get(type).add(newValue);
+		
+		PajeGrammar.plugin.addVar(first, newValue);
 	}
 	
 	private void pajeSubVariable(PajeVariableEvent event) throws Exception {
@@ -317,18 +338,22 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		checkTimeOrder(event);
 		
 		PajeEntity last = this.getEntities().get(type).get(this.getEntities().get(type).size() -1);
+		// get the first var to get the time it was set
+		PajeEntity first = this.getEntities().get(type).get(0);
+		
 		if(((PajeUserVariable) last).getStartTime() == time){
 			((PajeUserVariable) last).subValue(value);
 			return;				
 		}else{
 			((PajeDoubleTimedEntity) last).setEndTime(time);
-			//TODO put in bd
 		}
 		lastVal = ((PajeUserVariable) last).getValue();
 		
 		//add variable with new value
 		PajeUserVariable newValue = new PajeUserVariable(this, type, time, lastVal - value, traceEvent);		
 		this.getEntities().get(type).add(newValue);
+		
+		PajeGrammar.plugin.addVar(first, newValue);
 	}
 	
 	public void pajeStartLink(PajeLinkEvent event) throws Exception{
@@ -364,7 +389,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			if(!this.getEntities().containsKey(type))
 				this.getEntities().put(type, new ArrayList<PajeEntity>());
 			
-			this.getEntities().get(type).add(link);
+			PajeGrammar.plugin.addLink(link);
 			
 			pendingLinks.get(type).remove(key);
 			if(!linksUsedKeys.containsKey(type))
@@ -408,7 +433,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			if(!this.getEntities().containsKey(type))
 				this.getEntities().put(type, new ArrayList<PajeEntity>());
 			
-			this.getEntities().get(type).add(link);
+			PajeGrammar.plugin.addLink(link);
 			
 			pendingLinks.get(type).remove(key);
 			if(!linksUsedKeys.containsKey(type))
@@ -445,7 +470,8 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			if(stackStates.containsKey(event.getType())){
 				for (PajeUserState state : this.stackStates.get(event.getType())){
 					state.setEndTime(event.getTime());
-					// TODO clear stack and save db
+					PajeGrammar.plugin.popState(state);
+					this.stackStates.get(event.getType()).remove(state);
 				}
 			}
 		}

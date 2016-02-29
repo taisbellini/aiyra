@@ -29,6 +29,7 @@ public class PajeGrammar{
       opt.getSet().addOption("f", Options.Separator.BLANK, Options.Multiplicity.ONCE);
       opt.getSet().addOption("m", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
       opt.getSet().addOption("p", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
+      opt.getSet().addOption("l", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
 
 	  //true=ignoreUnmatched false=requireLast	
 	  if(!opt.check(true, false))
@@ -38,6 +39,7 @@ public class PajeGrammar{
 		System.out.println("-f <path-to-filename>");
 		System.out.println("-m <comment> (optional)");
 		System.out.println("-p <plugin> (optional, default: null) ");
+		System.out.println("-l <number-of-lines> (optional): number of lines per dump if pd chosen, default: 100000");
 		System.out.println("Use the following notation for the plugins: ");
 		System.out.println("pd: PajeDump - dumps the data");
 		System.exit(1);
@@ -56,12 +58,13 @@ public class PajeGrammar{
    	    System.out.println(comment);
    	  }
    	  if(opt.getSet().isSet("p"))   	  {
+		int lines = opt.getSet().isSet("l")? Integer.parseInt(opt.getSet().getOption("l").getResultValue(0)) : 1000000;
    	    switch(opt.getSet().getOption("p").getResultValue(0))   	    {
-   	      case "pd": plugin = new PajeDumpPlugin();
+   	      case "pd": plugin = new PajeDumpPlugin(lines);
    	      break;
-   	      default: break;
-   	      	   	    }   	  }else   	  {		plugin = new PajeNullPlugin();
+   	      default: break;	   	    }   	  }else   	  {		plugin = new PajeNullPlugin();
    	  }
+
       
           }else
     {
@@ -70,8 +73,7 @@ public class PajeGrammar{
     long startTime = System.currentTimeMillis();
     simulator.init();    PajeGrammar parser = new PajeGrammar(input);
                 try      {        switch (parser.paje())        {          case 4 :  
-          simulator.finish();
-          //simulator.report();          long endTime = System.currentTimeMillis();
+          simulator.finish();          long endTime = System.currentTimeMillis();
           System.out.println("OK. Finished in: " + (endTime - startTime) +"ms");
           break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());
       }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());      }    }}PARSER_END(PajeGrammar)SKIP :{  " "| "\r"| "\t"
