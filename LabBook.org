@@ -165,7 +165,9 @@ The code is [[https://github.com/taisbellini/aiyra][here]].
 There are only two classes with a print informing which plugin was chosen.
 
 To use: 
-java br.ufrgs.inf.tlbellini.PajeGrammar -f <path-to-trace-file> -.m <comment (optional)> -p <plugin (default: null)>
+java br.ufrgs.inf.tlbellini.PajeGrammar -f <path-to-trace-file> -.m
+<comment (optional)> -p <plugin (default: null)> -l <lines-per-dump
+(default: 100000)
 
 plugin options (just one for now): 
 pd - pajedump  
@@ -178,4 +180,12 @@ commit: "create poc of integration of plugins and the Options package"
 - scorep-lu.B.64.paje - 776.7MB - 77917ms
 - traces-16Mega.paje - 16MB - 1500ms
 
+
+** Plugins
+PajeDumpPlugin: using System.out.println which is bad in performance,
+but I couldn't find other solution that would not giva e heap space
+problem to big files. The current solution implies the user to decide
+how many lines will be in the dump. The higher the number, better the
+performance but more memory is used. In my computer, I have
+JavaHeapSpace problem. 
 
