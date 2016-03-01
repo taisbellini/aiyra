@@ -13,63 +13,18 @@ public class PajeGrammar{
 
   public static ArrayList<PajeEventDefinition> eventDefinitions = new ArrayList<PajeEventDefinition>(); 
   static PajeSimulator simulator = new PajeSimulator();
-  public static String filename;
-  public static String comment = " ";
   public static PajePlugin plugin;
   
-
 
   public static void main(String args []) throws ParseException, FileNotFoundException  {
 	FileInputStream input;
 	Scanner sc = new Scanner(System.in);
+	OptionsHandler options = new OptionsHandler(args);
+	input = null;
     if(args.length > 0)    {
-
-      // get user input
-      Options opt = new Options(args);
-      opt.getSet().addOption("f", Options.Separator.BLANK, Options.Multiplicity.ONCE);
-      opt.getSet().addOption("m", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
-      opt.getSet().addOption("p", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
-      opt.getSet().addOption("l", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
-
-	  //true=ignoreUnmatched false=requireLast	
-	  if(!opt.check(true, false))
-      {
-		System.out.println("Your input is incorrect");
-		System.out.println("Please use the following notation:");
-		System.out.println("-f <path-to-filename>");
-		System.out.println("-m <comment> (optional)");
-		System.out.println("-p <plugin> (optional, default: null) ");
-		System.out.println("-l <number-of-lines> (optional): number of lines per dump if pd chosen, default: 100000");
-		System.out.println("Use the following notation for the plugins: ");
-		System.out.println("pd: PajeDump - dumps the data");
-		System.exit(1);
-   	  }
-   	  
-      input = new FileInputStream(opt.getSet().getOption("f").getResultValue(0));
-   	  
-   	  if(opt.getSet().isSet("f"))
-   	  {
-   	    String[] entry = opt.getSet().getOption("f").getResultValue(0).split("/");
-        filename = entry[entry.length-1];
-   	    System.out.println(filename);
-   	  }
-   	  if(opt.getSet().isSet("m"))   	  {
-   	    comment = opt.getSet().getOption("m").getResultValue(0);
-   	    System.out.println(comment);
-   	  }
-   	  if(opt.getSet().isSet("p"))   	  {
-		int lines = opt.getSet().isSet("l")? Integer.parseInt(opt.getSet().getOption("l").getResultValue(0)) : 1000000;
-   	    switch(opt.getSet().getOption("p").getResultValue(0))   	    {
-   	      case "pd": plugin = new PajeDumpPlugin(lines);
-   	      break;
-   	      default: break;	   	    }   	  }else   	  {		plugin = new PajeNullPlugin();
-   	  }
-
-      
-          }else
+		input = new FileInputStream(options.opt.getSet().getOption("f").getResultValue(0));    }else
     {
-      System.out.println("Input the file path: ");
-      input = new FileInputStream(sc.nextLine());    }
+      options.printOptionsHelper();    }
     long startTime = System.currentTimeMillis();
     simulator.init();    PajeGrammar parser = new PajeGrammar(input);
                 try      {        switch (parser.paje())        {          case 4 :  
