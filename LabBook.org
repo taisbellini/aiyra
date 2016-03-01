@@ -195,3 +195,10 @@ how many lines will be in the dump. The higher the number, better the
 performance but more memory is used. In my computer, I have
 JavaHeapSpace problem. 
 
+
+* 2016-02-29 Adding PajeInsertDBPlugin                                 :Tais:
+** Notes
+-When destroy container: just need to insert states
+    - Event: inserts when it happens
+    - Var: inserts when it is created or updated
+    - Link: inserts when it is complete
