@@ -3,6 +3,8 @@ package br.ufrgs.inf.tlbellini.lib;
 import java.util.HashMap;
 import java.util.Map;
 
+import br.ufrgs.inf.tlbellini.PajeGrammar;
+
 public class PajeCategorizedType extends PajeType {
 	
 	private Map<String, PajeValue> values = new HashMap<String, PajeValue>();
@@ -28,6 +30,8 @@ public class PajeCategorizedType extends PajeType {
 		PajeValue newValue = new PajeValue(name, alias, this, color); 
 		this.getValues().put(newValue.getId(), newValue);
 		this.getColors().put(newValue.getId(), color);
+		//send to Plugin
+		PajeGrammar.plugin.addValue(newValue);
 	}
 	
 	public void addColor(String newKey, PajeColor newColor){

@@ -10,7 +10,7 @@ public class PajeVariableType extends PajeType {
 		this.setColor(color);
 	}
 
-	protected PajeColor getColor() {
+	public PajeColor getColor() {
 		return color;
 	}
 

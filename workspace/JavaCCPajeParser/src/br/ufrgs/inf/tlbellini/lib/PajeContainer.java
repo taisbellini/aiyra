@@ -150,7 +150,7 @@ public class PajeContainer extends PajeNamedEntity {
 		}
 				
 		//end stack 
-		for(Map.Entry<PajeType, ArrayList<PajeUserState>> entry : this.stackStates.entrySet()){
+		for(Map.Entry<PajeType, ArrayList<PajeUserState>> entry : this.getStackStates().entrySet()){
 			for(PajeEntity ent : entry.getValue()){
 				if(((PajeDoubleTimedEntity) ent).getEndTime() == -1) 
 					((PajeDoubleTimedEntity) ent).setEndTime(time);
@@ -178,11 +178,11 @@ public class PajeContainer extends PajeNamedEntity {
 		//create entry if empty
 		if(this.getEntities().isEmpty() || !this.getEntities().containsKey(type))
 			this.getEntities().put(type, new ArrayList<PajeEntity>());
-		if(this.stackStates.isEmpty() || !this.stackStates.containsKey(type))
-			this.stackStates.put(type, new ArrayList<PajeUserState>());
+		if(this.getStackStates().isEmpty() || !this.getStackStates().containsKey(type))
+			this.getStackStates().put(type, new ArrayList<PajeUserState>());
 		
 		this.getEntities().get(type).add(newState);
-		this.stackStates.get(type).add(newState);
+		this.getStackStates().get(type).add(newState);
 		
 		PajeGrammar.plugin.addState(newState);
 		
@@ -203,16 +203,16 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 //			throw new Exception("A Push State for type " + type.getAlias() + " was done in line " + traceEvent.getLine() + " before a Set State for the type");
 		  this.getEntities().put(type, new ArrayList<PajeEntity>());
 		}
-		if(this.stackStates.isEmpty() || !this.stackStates.containsKey(type)){
+		if(this.getStackStates().isEmpty() || !this.getStackStates().containsKey(type)){
 //			throw new Exception("A Push State for type " + type.getAlias() + " was done in line " + traceEvent.getLine() + " before a Set State for the type");
-		  this.stackStates.put(type, new ArrayList<PajeUserState>());
+		  this.getStackStates().put(type, new ArrayList<PajeUserState>());
 		}
 		
 		PajeUserState newState = new PajeUserState(this, type, time, value, traceEvent);
-		newState.setImbrication(this.stackStates.size());
+		newState.setImbrication(this.getStackStates().size());
 		
 		this.getEntities().get(type).add(newState);
-		this.stackStates.get(type).add(newState);
+		this.getStackStates().get(type).add(newState);
 		
 		PajeGrammar.plugin.pushState(newState);
 		
@@ -235,8 +235,8 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			throw new Exception("Trying to Pop a State of type "+ type.getAlias() + " that was not previously Pushed in line " + traceEvent.getLine());
 		}
 		
-		if(!this.stackStates.isEmpty() && this.stackStates.containsKey(type)){
-			this.stackStates.get(type).get(this.stackStates.get(type).size() -1).setEndTime(time);
+		if(!this.getStackStates().isEmpty() && this.getStackStates().containsKey(type)){
+			this.getStackStates().get(type).get(this.getStackStates().get(type).size() -1).setEndTime(time);
 		}else{
 			throw new Exception("Trying to Pop a State of type "+ type.getAlias() + " that was not previously Pushed in line " + traceEvent.getLine());
 		}
@@ -244,7 +244,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		PajeGrammar.plugin.popState(state);
 		
 		this.getEntities().get(type).remove(state);
-		this.stackStates.get(type).remove(state);
+		this.getStackStates().get(type).remove(state);
 	}
 	
 	private void pajeNewEvent(PajeEventEvent event) throws Exception{
@@ -466,12 +466,12 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 	public void pajeResetState (PajeEvent event) throws Exception{
 		checkTimeOrder (event);
 		
-		if(!this.stackStates.isEmpty()){
-			if(stackStates.containsKey(event.getType())){
-				for (PajeUserState state : this.stackStates.get(event.getType())){
+		if(!this.getStackStates().isEmpty()){
+			if(getStackStates().containsKey(event.getType())){
+				for (PajeUserState state : this.getStackStates().get(event.getType())){
 					state.setEndTime(event.getTime());
 					PajeGrammar.plugin.popState(state);
-					this.stackStates.get(event.getType()).remove(state);
+					this.getStackStates().get(event.getType()).remove(state);
 				}
 			}
 		}
@@ -489,6 +489,11 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 	public Map<PajeType, ArrayList<PajeEntity>> getEntities() {
 		return entities;
 	}
+
+	public Map<PajeType, ArrayList<PajeUserState>> getStackStates() {
+		return stackStates;
+	}
+
 
 
 }

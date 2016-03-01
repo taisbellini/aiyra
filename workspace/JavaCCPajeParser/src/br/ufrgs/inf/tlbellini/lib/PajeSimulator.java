@@ -39,6 +39,11 @@ public class PajeSimulator extends PajeComponent {
 		typeNamesMap.put(rootType.getName(), rootType);
 		contMap.put(root.getId(), root);
 		contNamesMap.put(root.getName(), root);
+		
+		//send to plugin
+		PajeGrammar.plugin.addType(rootType);
+		PajeGrammar.plugin.addNewContainer(root);
+		
 	}
 
 	protected void setLastKnownTime(PajeTraceEvent event) {
@@ -436,9 +441,6 @@ public class PajeSimulator extends PajeComponent {
 		} else {
 			targetType.addValue(name, alias, pajeColor);
 		}
-		
-		//send to Plugin
-		PajeGrammar.plugin.addValue(targetType.getValues().get(alias));
 
 	}
 

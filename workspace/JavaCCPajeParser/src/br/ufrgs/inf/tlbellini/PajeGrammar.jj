@@ -14,15 +14,17 @@ public class PajeGrammar{
   public static ArrayList<PajeEventDefinition> eventDefinitions = new ArrayList<PajeEventDefinition>(); 
   static PajeSimulator simulator = new PajeSimulator();
   public static PajePlugin plugin;
+  public static OptionsHandler options;
   
 
   public static void main(String args []) throws ParseException, FileNotFoundException  {
 	FileInputStream input;
 	Scanner sc = new Scanner(System.in);
-	OptionsHandler options = new OptionsHandler(args);
+	options = new OptionsHandler(args);
 	input = null;
     if(args.length > 0)    {
-		input = new FileInputStream(options.opt.getSet().getOption("f").getResultValue(0));    }else
+		input = new FileInputStream(options.opt.getSet().getOption("f").getResultValue(0));
+		options.checkEntry();    }else
     {
       options.printOptionsHelper();    }
     long startTime = System.currentTimeMillis();

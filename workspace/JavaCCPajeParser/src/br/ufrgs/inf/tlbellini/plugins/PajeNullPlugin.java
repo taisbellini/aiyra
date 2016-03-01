@@ -17,67 +17,56 @@ public class PajeNullPlugin extends PajePlugin {
 
 	@Override
 	public void addType(PajeType newType) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void addValue(PajeValue value) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void addNewContainer(PajeContainer newContainer) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void addDestroyedContainer(PajeContainer pajeContainer) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void addState(PajeUserState newState) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void pushState(PajeUserState newState) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void popState(PajeUserState state) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void addLink(PajeUserLink link) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void addVar(PajeEntity first, PajeUserVariable newValue) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void addEvent(PajeUserEvent event) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void finish() {
-		// TODO Auto-generated method stub
 		
 	}
 

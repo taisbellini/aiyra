@@ -8,7 +8,6 @@ public abstract class PajePlugin {
 	
 
 	public abstract void addType(PajeType newType);
-
 	public abstract void addValue(PajeValue value);
 	public abstract void addNewContainer(PajeContainer newContainer);
 	public abstract void addDestroyedContainer(PajeContainer pajeContainer);
