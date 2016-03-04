@@ -22,4 +22,5 @@ instance, links also have source and destination containers identifiers.
   - CSV-like textual dump (identical to =pj_dump=)
   - Database importer
 
-
+More details on the development of *aiyra* can be found in the
+LabBook.org file.
