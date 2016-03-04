@@ -17,7 +17,7 @@ Each object has parameters such as value, start and end time stamps
 plus additional information depending on the object type. For
 instance, links also have source and destination containers identifiers.
 
-*Ayira* comes with some plugins:
+*Aiyra* comes with some plugins:
 
   - CSV-like textual dump (identical to =pj_dump=)
   - Database importer
