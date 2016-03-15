@@ -38,9 +38,8 @@ public class OptionsHandler {
 			System.out.println("pjdump: PajeDump - dumps the data");
 			System.out.println(
 					"-l <number-of-lines> (optional): number of lines per dump if pjdump chosen, default: 100000");
-			System.out.println("db: Database - sequential batches - insert data into a database using batches");
+			System.out.println("mysql: MYSQL Database - sequential batches - insert data into a database using batches");
 			System.out.println("-s <server-name> (optional): server name for the database. Default: localhost");
-			System.out.println("-d <database-name> (optional): database name. Default: paje");
 			System.out.println("-u <user-name> (optional): username to access database. Default: root");
 			System.out.println("-pwd <password> (optional): password to access database. Default: root");
 
@@ -65,10 +64,10 @@ public class OptionsHandler {
 						: 1000000;
 				PajeGrammar.plugin = new PajeDumpPlugin(lines);
 				break;
-			case "db":
+			case "mysql":
 				String serverName = opt.getSet().isSet("s") ? opt.getSet().getOption("s").getResultValue(0)
 						: "localhost";
-				String database = opt.getSet().isSet("d") ? opt.getSet().getOption("d").getResultValue(0) : "paje";
+				String database = "paje";
 				String username = opt.getSet().isSet("u") ? opt.getSet().getOption("u").getResultValue(0) : "root";
 				String password = opt.getSet().isSet("pwd") ? opt.getSet().getOption("pwd").getResultValue(0) : "root";
 				try {
