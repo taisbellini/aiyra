@@ -58,7 +58,14 @@ public class OptionsHandler {
 			System.out.println(comment);
 		}
 		if (opt.getSet().isSet("p")) {
-			switch (opt.getSet().getOption("p").getResultValue(0)) {
+			pluginHandler();
+		} else {
+			PajeGrammar.plugin = new PajeNullPlugin();
+		}
+	}
+	
+	public void pluginHandler(){
+		switch (opt.getSet().getOption("p").getResultValue(0)) {
 			case "pjdump":
 				int lines = opt.getSet().isSet("l") ? Integer.parseInt(opt.getSet().getOption("l").getResultValue(0))
 						: 1000000;
@@ -79,10 +86,9 @@ public class OptionsHandler {
 			default:
 				System.out.println("Invalid plugin. Null chosen.");
 				PajeGrammar.plugin = new PajeNullPlugin();
-			}
-		} else {
-			PajeGrammar.plugin = new PajeNullPlugin();
 		}
 	}
+	
+	
 
 }
