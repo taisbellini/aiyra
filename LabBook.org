@@ -72,27 +72,6 @@ How to know the baseline:
   can do that by checking out the *no-db* branch.
 
 
-* 2016-02-15 How to install and configure 
-
-Como executar:
-
-- instalar MySQL  e MySQL Workbench 
-
-- criar uma instancia local chamada "root" com senha também "root" e
-  porta 3306 (é o padrão do Mysql) 
-
-
-- abrir no Workbench o ER-model.mdb e na opção "Database" selecionar
-  "Forward Engineer" e apenas seguir os passos, garantindo que a opção
-  "Generate INSERT statements for tables" esteja marcada na segunda
-  janela que aparece 
- 
-OU
-
-- executar o script pajeDB.sql na instancia criada.
-
-Acho que é isso que precisa pra executar. Se tiver algum problema pode
-me avisar.
 * 2016-02-26 Meeting with Tais                                   :Lucas:Tais:
 
 How to get it working.
@@ -170,12 +149,13 @@ There are only two classes with a print informing which plugin was chosen.
 java br.ufrgs.inf.tlbellini.PajeGrammar -f <path-to-trace-file> \
                                         -m <comment (optional)> \
                                         -p <plugin (default: null)> \
-                                        -l <lines-per-dump (default: 100000)>
+                                        - ... <options for the specific plugin>
 #+end_src
 
 ** Plugins available
 
-- "pd": it outputs a CSV based on the =pj_dump= format
+- "pjdump": it outputs a CSV based on the =pj_dump= format
+- "mysql" : saves the data in a MySQL database
 
 ** References
 Command line reader:
@@ -202,3 +182,70 @@ JavaHeapSpace problem.
     - Event: inserts when it happens
     - Var: inserts when it is created or updated
     - Link: inserts when it is complete
+* 2016-03-15 How to Use 
+** DB Plugin 
+
+1) Install MySQL and MySQL Workbench 
+
+2) Create an instance (local or in a server) and choose a name and password to it. Use port 3306. 
+
+3) execute pajeDB.sql script in the created instance.
+
+Now you have a database called "paje". 
+
+Execute the simulator passing the server name (-s) name (-u) and password (-pwd) of the instance you created in step 2. Defaults are "localhost", "root", "root". 
+
+
+#+begin_src sh :results output :session :exports both
+java br.ufrgs.inf.tlbellini.PajeGrammar -f <path-to-trace-file> \
+                                        -m <comment (optional)> \
+                                        -p mysql \
+                                        -s <server-name> \
+                                        -u <username> \
+                                        -pwd <password> \
+#+end_src
+
+** PajeDump Plugin
+
+Execute:
+
+#+begin_src sh :results output :session :exports both
+java br.ufrgs.inf.tlbellini.PajeGrammar -f <path-to-trace-file> \
+                                        -m <comment (optional)> \
+                                        -p pjdump \
+                                        -l <lines-per-dump (default: 100000)>
+#+end_src
+
+"lines-per-dump" is the number of lines that will be printed each time. Higher numbers takes less time but use more memory. 
+
+* 2016-03-15 - How to Create a Plugin
+In order to create a new plugin you'll need to: 
+MODIFY OptionsHandler.java in br.ufrgs.inf.tlbellini;
+CREATE a NEW class in br.ufrgs.inf.tlbellini.plugins that EXTENDS PajePlugin class. It can also extend any other plugin if they have many similarities. 
+
+MODIFY OptionsHandler:
+1) *If your plugin DOES NOT NEED an extra argument, SKIP this instruction*
+
+In the OptionsHandler constructor, add the new argument as follows: 
+  
+   opt.getSet().addOptions("<alias>", Options.Separator.<SEPARATOR>, Options.Multiplicity.<MULTIPLICITY>);
+
+   <alias> = the alias to identify the argument
+   <SEPARATOR> = COLON, EQUALS, BLANK, NONE
+   <MULTIPLICITY> = ONCE, ONCE_OR_MORE, ZERO_OR_ONE, ZERO_OR_MORE
+
+2) Explain your new entry (if any) and plugin in printOptionsHelper() method.
+3) In pluginHandler() method, add a "case" to your plugin. Make all the assignments you need to do and initialize it. 
+   to get the value given for the argument: 
+     opt.getSet().getOption("<alias").getResultValue(0)
+   to check if the value was set: 
+     opt.getSet().isSet("<alias>")
+   to initialize:
+     PajeGrammar.plugin = new YourPluginClass(...);
+
+CREATE NEW CLASS: 
+
+1) Create a class that extends PajePlugin or any Plugin available. 
+   
+Instrumentation Points:
+
