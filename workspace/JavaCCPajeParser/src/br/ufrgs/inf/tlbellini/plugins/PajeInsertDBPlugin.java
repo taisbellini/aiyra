@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import br.ufrgs.inf.tlbellini.PajeGrammar;
 import br.ufrgs.inf.tlbellini.lib.*;
@@ -43,7 +44,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 		stmtEvent = conn.prepareStatement(
 				"INSERT INTO event (time, type_alias, container_alias, value_alias, type_file_id) VALUES (?,?,?,?,?)");
 		stmtVariable = conn.prepareStatement(
-				"INSERT INTO variable (time, type_alias, container_alias, value, update_time, container_file_id) VALUES (?,?,?,?,?,?)");
+				"INSERT INTO variable (time, type_alias, container_alias, value, start_time, container_file_id, end_time) VALUES (?,?,?,?,?,?,?)");
 		stmtState = conn.prepareStatement(
 				"INSERT INTO state (container_alias, type_alias, startTime, endTime, value_alias, imbrication, container_file_id) VALUES (?,?,?,?,?,?,?)");
 		
@@ -266,6 +267,28 @@ public class PajeInsertDBPlugin extends PajePlugin {
 				}
 			}
 		}
+		
+		//insert last variables (the last entity that has left in memory)
+		for(Map.Entry<PajeType, ArrayList<PajeEntity>> entry : pajeContainer.getEntities().entrySet()){
+			PajeEntity last = entry.getValue().get(entry.getValue().size()-1);
+			PajeEntity first = entry.getValue().get(0);
+				try{
+					if(last.getType().getNature() == PajeTypeNature.VariableType){
+						stmtVariable.setDouble(1, ((PajeSingleTimedEntity) first).getStartTime());
+						stmtVariable.setString(2, last.getType().getAlias());
+						stmtVariable.setString(3, pajeContainer.alias);
+						stmtVariable.setDouble(4, ((PajeUserVariable) last).getValue());
+						stmtVariable.setDouble(5, ((PajeSingleTimedEntity) last).getStartTime());
+						stmtVariable.setInt(6, fileId);
+						stmtVariable.setDouble(7, ((PajeDoubleTimedEntity) last).getEndTime());
+						stmtVariable.addBatch();
+					}
+					
+				}catch (SQLException e){
+					e.printStackTrace();
+				}
+			
+		}
 	}
 
 	@Override
@@ -312,17 +335,27 @@ public class PajeInsertDBPlugin extends PajePlugin {
 		
 
 	}
+	
+	@Override
+	public void setVar(PajeUserVariable newVar){
+		//add only when it`s complete (with end time)	
+	}
 
 	@Override
-	public void addVar(PajeEntity first, PajeUserVariable newValue) {
+	public void addVar(PajeEntity first, PajeEntity last, PajeUserVariable newValue) {
+		//adds the last one to db, since it is complete with start and end
 		try{
-			stmtVariable.setDouble(1, ((PajeSingleTimedEntity) first).getStartTime());
-			stmtVariable.setString(2, newValue.getType().getAlias());
-			stmtVariable.setString(3, newValue.getContainer().alias);
-			stmtVariable.setDouble(4, newValue.getValue());
-			stmtVariable.setDouble(5, newValue.getStartTime());
-			stmtVariable.setInt(6, fileId);
-			stmtVariable.addBatch();
+			if( last != null && ((PajeDoubleTimedEntity) last).getEndTime() > 0){
+				stmtVariable.setDouble(1, ((PajeSingleTimedEntity) first).getStartTime());
+				stmtVariable.setString(2, last.getType().getAlias());
+				stmtVariable.setString(3, last.getContainer().alias);
+				stmtVariable.setDouble(4, ((PajeUserVariable) last).getValue());
+				stmtVariable.setDouble(5, ((PajeSingleTimedEntity) last).getStartTime());
+				stmtVariable.setInt(6, fileId);
+				stmtVariable.setDouble(7, ((PajeDoubleTimedEntity) last).getEndTime());
+				stmtVariable.addBatch();
+			}
+			
 		}catch (SQLException e){
 			e.printStackTrace();
 		}

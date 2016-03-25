@@ -156,7 +156,7 @@ public class PajeDumpPlugin extends PajePlugin {
 	}
 	
 	@Override
-	public void addVar(PajeEntity first, PajeUserVariable var) {
+	public void addVar(PajeEntity first, PajeEntity last, PajeUserVariable var) {
 		//can't remove from memory because need the last one to calculate
 		//value is dumped in destroy container
 	}
@@ -206,6 +206,12 @@ public class PajeDumpPlugin extends PajePlugin {
 	public void finish() {
 		if(sb.length()>0)
 			System.out.println(sb);
+		
+	}
+
+	@Override
+	public void setVar(PajeUserVariable var) {
+		// TODO Auto-generated method stub
 		
 	}
 	

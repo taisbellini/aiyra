@@ -56,7 +56,7 @@ public class PajeNullPlugin extends PajePlugin {
 	}
 
 	@Override
-	public void addVar(PajeEntity first, PajeUserVariable newValue) {
+	public void addVar(PajeEntity first, PajeEntity last, PajeUserVariable newValue) {
 		
 	}
 
@@ -67,6 +67,12 @@ public class PajeNullPlugin extends PajePlugin {
 
 	@Override
 	public void finish() {
+		
+	}
+
+	@Override
+	public void setVar(PajeUserVariable var) {
+		// TODO Auto-generated method stub
 		
 	}
 

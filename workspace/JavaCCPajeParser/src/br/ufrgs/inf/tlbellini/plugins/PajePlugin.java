@@ -15,7 +15,8 @@ public abstract class PajePlugin {
 	public abstract void pushState(PajeUserState newState);
 	public abstract void popState(PajeUserState state);
 	public abstract void addLink(PajeUserLink link);
-	public abstract void addVar(PajeEntity first, PajeUserVariable newValue);
+	public abstract void addVar(PajeEntity first, PajeEntity last, PajeUserVariable newValue);
+	public abstract void setVar(PajeUserVariable var);
 	public abstract void addEvent(PajeUserEvent event);
 	public abstract void finish();
 

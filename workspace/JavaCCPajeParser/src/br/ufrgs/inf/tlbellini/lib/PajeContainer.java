@@ -291,7 +291,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		this.getEntities().get(type).add(newValue);
 		
 		
-		PajeGrammar.plugin.addVar(newValue, newValue);
+		PajeGrammar.plugin.setVar(newValue);
 	}
 	
 	private void pajeAddVariable(PajeVariableEvent event) throws Exception{
@@ -322,7 +322,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		PajeUserVariable newValue = new PajeUserVariable(this, type, time, lastVal + value, traceEvent);		
 		this.getEntities().get(type).add(newValue);
 		
-		PajeGrammar.plugin.addVar(first, newValue);
+		PajeGrammar.plugin.addVar(first, last, newValue);
 	}
 	
 	private void pajeSubVariable(PajeVariableEvent event) throws Exception {
@@ -353,7 +353,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		PajeUserVariable newValue = new PajeUserVariable(this, type, time, lastVal - value, traceEvent);		
 		this.getEntities().get(type).add(newValue);
 		
-		PajeGrammar.plugin.addVar(first, newValue);
+		PajeGrammar.plugin.addVar(first,last, newValue);
 	}
 	
 	public void pajeStartLink(PajeLinkEvent event) throws Exception{
