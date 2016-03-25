@@ -270,25 +270,28 @@ public class PajeInsertDBPlugin extends PajePlugin {
 		
 		//insert last variables (the last entity that has left in memory)
 		for(Map.Entry<PajeType, ArrayList<PajeEntity>> entry : pajeContainer.getEntities().entrySet()){
-			PajeEntity last = entry.getValue().get(entry.getValue().size()-1);
-			PajeEntity first = entry.getValue().get(0);
-				try{
-					if(last.getType().getNature() == PajeTypeNature.VariableType){
-						stmtVariable.setDouble(1, ((PajeSingleTimedEntity) first).getStartTime());
-						stmtVariable.setString(2, last.getType().getAlias());
-						stmtVariable.setString(3, pajeContainer.alias);
-						stmtVariable.setDouble(4, ((PajeUserVariable) last).getValue());
-						stmtVariable.setDouble(5, ((PajeSingleTimedEntity) last).getStartTime());
-						stmtVariable.setInt(6, fileId);
-						stmtVariable.setDouble(7, ((PajeDoubleTimedEntity) last).getEndTime());
-						stmtVariable.addBatch();
+			if(entry.getValue().size() > 0){
+				PajeEntity last = entry.getValue().get(entry.getValue().size()-1);
+				PajeEntity first = entry.getValue().get(0);
+					try{
+						if(last.getType().getNature() == PajeTypeNature.VariableType){
+							stmtVariable.setDouble(1, ((PajeSingleTimedEntity) first).getStartTime());
+							stmtVariable.setString(2, last.getType().getAlias());
+							stmtVariable.setString(3, pajeContainer.alias);
+							stmtVariable.setDouble(4, ((PajeUserVariable) last).getValue());
+							stmtVariable.setDouble(5, ((PajeSingleTimedEntity) last).getStartTime());
+							stmtVariable.setInt(6, fileId);
+							stmtVariable.setDouble(7, ((PajeDoubleTimedEntity) last).getEndTime());
+							stmtVariable.addBatch();
+						}
+						
+					}catch (SQLException e){
+						e.printStackTrace();
 					}
-					
-				}catch (SQLException e){
-					e.printStackTrace();
-				}
-			
+				
+			}
 		}
+			
 	}
 
 	@Override
