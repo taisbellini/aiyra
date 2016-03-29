@@ -404,7 +404,6 @@ You'll need the =DoE.base= R package.
                 version=c("ayira","pj","pjflex"),
                 input=c("small", "medium", "big")));
 
-  # there is only one response for Cpp Comparison
   export.design(Cpp_Comparison,
                 path="designs",
                 filename=NULL,
