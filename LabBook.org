@@ -703,3 +703,1137 @@ csv;
 =NA= means not available. Last two columns should have simulation time
 for that factor combination and the platform where experiments took
 place.
+* 2016-03-29 DoE for Batch Size Investigation
+
+The batch size investigation will have two factors: _input_, and
+_batch_. The first one with three levels, the second one with six
+levels. The levels for input are small (128K), medium (131072K, or
+128M), and big (1048576K or 1G). The levels for batch are A, B, C, D,
+E and F. Each letter is a integer number which represents the number
+of SQL operations in each batch. Based on preliminary runs, Tais will
+decide which values to use instead of letters A to F. I'll use them so
+it's easy to map them to values once they are defined. We shall again
+use 30 replications randomizing experiments to reduce external
+interference. Four things are measured: the global simulation time
+(all time except DB insertions), the global insertion time (the sum of
+the time spent executing all DB insertions - the batches), the maximum
+memory occupation during the experiment, and the platform.  Platform
+can be one of _luiza_, _guarani_, _orion_, _hptais_ (TODO: rename this last
+one). The memory occupation should be measure with exception care,
+since the _maximum_ may not appear at the end of the execution,
+specially if batches are small.
+
+#+begin_src R :results output silent :session :exports none
+  require(DoE.base);
+  Batch_Size_Investigation <- fac.design (
+           nfactors=2,
+           replications=30,
+           repeat.only=FALSE,
+           blocks=1,
+           randomize=TRUE,
+           seed=10373,
+           nlevels=c(3,6),
+           factor.names=list(
+                input=c("small", "medium", "big"),
+                batch=c("A", "B", "C", "D", "E", "F")));
+
+  export.design(Batch_Size_Investigation,
+                path="designs",
+                filename=NULL,
+                type="csv",
+                replace=TRUE,
+                response.names=c("sim_time","insert_time","max_mem","platform"));
+#+end_src
+
+
+#+begin_src R :results output :session :exports both
+csv <- read.csv("designs/Batch_Size_Investigation.csv");
+csv;
+#+end_src
+
+#+RESULTS:
+#+begin_example
+    name run.no.in.std.order run.no run.no.std.rp  input batch sim_time
+1      1                   8      1          8.10 medium     C       NA
+2      2                  18      2         18.10    big     F       NA
+3      3                   5      3          5.10 medium     B       NA
+4      4                  12      4         12.10    big     D       NA
+5      5                  16      5         16.10  small     F       NA
+6      6                   6      6          6.10    big     B       NA
+7      7                  15      7         15.10    big     E       NA
+8      8                   3      8          3.10    big     A       NA
+9      9                  13      9         13.10  small     E       NA
+10    10                  10     10         10.10  small     D       NA
+11    11                   7     11          7.10  small     C       NA
+12    12                  17     12         17.10 medium     F       NA
+13    13                   4     13          4.10  small     B       NA
+14    14                  11     14         11.10 medium     D       NA
+15    15                  14     15         14.10 medium     E       NA
+16    16                   2     16          2.10 medium     A       NA
+17    17                   9     17          9.10    big     C       NA
+18    18                   1     18          1.10  small     A       NA
+19    19                   3     19          3.20    big     A       NA
+20    20                   5     20          5.20 medium     B       NA
+21    21                  14     21         14.20 medium     E       NA
+22    22                   1     22          1.20  small     A       NA
+23    23                   6     23          6.20    big     B       NA
+24    24                  10     24         10.20  small     D       NA
+25    25                  13     25         13.20  small     E       NA
+26    26                  17     26         17.20 medium     F       NA
+27    27                  12     27         12.20    big     D       NA
+28    28                  16     28         16.20  small     F       NA
+29    29                   7     29          7.20  small     C       NA
+30    30                  11     30         11.20 medium     D       NA
+31    31                   8     31          8.20 medium     C       NA
+32    32                  15     32         15.20    big     E       NA
+33    33                   4     33          4.20  small     B       NA
+34    34                   9     34          9.20    big     C       NA
+35    35                  18     35         18.20    big     F       NA
+36    36                   2     36          2.20 medium     A       NA
+37    37                   3     37          3.30    big     A       NA
+38    38                  11     38         11.30 medium     D       NA
+39    39                   5     39          5.30 medium     B       NA
+40    40                   6     40          6.30    big     B       NA
+41    41                   7     41          7.30  small     C       NA
+42    42                  17     42         17.30 medium     F       NA
+43    43                  12     43         12.30    big     D       NA
+44    44                  10     44         10.30  small     D       NA
+45    45                  14     45         14.30 medium     E       NA
+46    46                   4     46          4.30  small     B       NA
+47    47                  16     47         16.30  small     F       NA
+48    48                   2     48          2.30 medium     A       NA
+49    49                   9     49          9.30    big     C       NA
+50    50                  18     50         18.30    big     F       NA
+51    51                  13     51         13.30  small     E       NA
+52    52                   8     52          8.30 medium     C       NA
+53    53                  15     53         15.30    big     E       NA
+54    54                   1     54          1.30  small     A       NA
+55    55                  14     55         14.40 medium     E       NA
+56    56                   1     56          1.40  small     A       NA
+57    57                   5     57          5.40 medium     B       NA
+58    58                  12     58         12.40    big     D       NA
+59    59                  15     59         15.40    big     E       NA
+60    60                   2     60          2.40 medium     A       NA
+61    61                  16     61         16.40  small     F       NA
+62    62                  13     62         13.40  small     E       NA
+63    63                   9     63          9.40    big     C       NA
+64    64                   8     64          8.40 medium     C       NA
+65    65                   7     65          7.40  small     C       NA
+66    66                  18     66         18.40    big     F       NA
+67    67                   6     67          6.40    big     B       NA
+68    68                  10     68         10.40  small     D       NA
+69    69                  17     69         17.40 medium     F       NA
+70    70                   3     70          3.40    big     A       NA
+71    71                   4     71          4.40  small     B       NA
+72    72                  11     72         11.40 medium     D       NA
+73    73                   6     73          6.50    big     B       NA
+74    74                   9     74          9.50    big     C       NA
+75    75                  10     75         10.50  small     D       NA
+76    76                  13     76         13.50  small     E       NA
+77    77                   8     77          8.50 medium     C       NA
+78    78                   2     78          2.50 medium     A       NA
+79    79                  17     79         17.50 medium     F       NA
+80    80                  18     80         18.50    big     F       NA
+81    81                   7     81          7.50  small     C       NA
+82    82                   3     82          3.50    big     A       NA
+83    83                   4     83          4.50  small     B       NA
+84    84                  14     84         14.50 medium     E       NA
+85    85                   1     85          1.50  small     A       NA
+86    86                  15     86         15.50    big     E       NA
+87    87                  12     87         12.50    big     D       NA
+88    88                   5     88          5.50 medium     B       NA
+89    89                  16     89         16.50  small     F       NA
+90    90                  11     90         11.50 medium     D       NA
+91    91                  12     91         12.60    big     D       NA
+92    92                   8     92          8.60 medium     C       NA
+93    93                  18     93         18.60    big     F       NA
+94    94                  11     94         11.60 medium     D       NA
+95    95                  16     95         16.60  small     F       NA
+96    96                  17     96         17.60 medium     F       NA
+97    97                   9     97          9.60    big     C       NA
+98    98                   5     98          5.60 medium     B       NA
+99    99                  13     99         13.60  small     E       NA
+100  100                   3    100          3.60    big     A       NA
+101  101                   4    101          4.60  small     B       NA
+102  102                   7    102          7.60  small     C       NA
+103  103                   2    103          2.60 medium     A       NA
+104  104                  15    104         15.60    big     E       NA
+105  105                   6    105          6.60    big     B       NA
+106  106                   1    106          1.60  small     A       NA
+107  107                  10    107         10.60  small     D       NA
+108  108                  14    108         14.60 medium     E       NA
+109  109                   6    109          6.70    big     B       NA
+110  110                   4    110          4.70  small     B       NA
+111  111                   1    111          1.70  small     A       NA
+112  112                   2    112          2.70 medium     A       NA
+113  113                   7    113          7.70  small     C       NA
+114  114                  18    114         18.70    big     F       NA
+115  115                  10    115         10.70  small     D       NA
+116  116                   5    116          5.70 medium     B       NA
+117  117                  16    117         16.70  small     F       NA
+118  118                  17    118         17.70 medium     F       NA
+119  119                  15    119         15.70    big     E       NA
+120  120                  12    120         12.70    big     D       NA
+121  121                  11    121         11.70 medium     D       NA
+122  122                  13    122         13.70  small     E       NA
+123  123                   8    123          8.70 medium     C       NA
+124  124                  14    124         14.70 medium     E       NA
+125  125                   3    125          3.70    big     A       NA
+126  126                   9    126          9.70    big     C       NA
+127  127                  10    127         10.80  small     D       NA
+128  128                  11    128         11.80 medium     D       NA
+129  129                   5    129          5.80 medium     B       NA
+130  130                   1    130          1.80  small     A       NA
+131  131                   2    131          2.80 medium     A       NA
+132  132                   9    132          9.80    big     C       NA
+133  133                   7    133          7.80  small     C       NA
+134  134                  14    134         14.80 medium     E       NA
+135  135                  13    135         13.80  small     E       NA
+136  136                  12    136         12.80    big     D       NA
+137  137                   4    137          4.80  small     B       NA
+138  138                   8    138          8.80 medium     C       NA
+139  139                  17    139         17.80 medium     F       NA
+140  140                   3    140          3.80    big     A       NA
+141  141                  15    141         15.80    big     E       NA
+142  142                  16    142         16.80  small     F       NA
+143  143                  18    143         18.80    big     F       NA
+144  144                   6    144          6.80    big     B       NA
+145  145                   4    145          4.90  small     B       NA
+146  146                   8    146          8.90 medium     C       NA
+147  147                  18    147         18.90    big     F       NA
+148  148                   2    148          2.90 medium     A       NA
+149  149                  11    149         11.90 medium     D       NA
+150  150                  12    150         12.90    big     D       NA
+151  151                   3    151          3.90    big     A       NA
+152  152                  10    152         10.90  small     D       NA
+153  153                  14    153         14.90 medium     E       NA
+154  154                   5    154          5.90 medium     B       NA
+155  155                  17    155         17.90 medium     F       NA
+156  156                   9    156          9.90    big     C       NA
+157  157                  15    157         15.90    big     E       NA
+158  158                  13    158         13.90  small     E       NA
+159  159                   6    159          6.90    big     B       NA
+160  160                   7    160          7.90  small     C       NA
+161  161                  16    161         16.90  small     F       NA
+162  162                   1    162          1.90  small     A       NA
+163  163                  13    163         13.10  small     E       NA
+164  164                   5    164          5.10 medium     B       NA
+165  165                   3    165          3.10    big     A       NA
+166  166                  15    166         15.10    big     E       NA
+167  167                  14    167         14.10 medium     E       NA
+168  168                  17    168         17.10 medium     F       NA
+169  169                   6    169          6.10    big     B       NA
+170  170                   7    170          7.10  small     C       NA
+171  171                  12    171         12.10    big     D       NA
+172  172                  16    172         16.10  small     F       NA
+173  173                  11    173         11.10 medium     D       NA
+174  174                   2    174          2.10 medium     A       NA
+175  175                   1    175          1.10  small     A       NA
+176  176                  10    176         10.10  small     D       NA
+177  177                   9    177          9.10    big     C       NA
+178  178                  18    178         18.10    big     F       NA
+179  179                   8    179          8.10 medium     C       NA
+180  180                   4    180          4.10  small     B       NA
+181  181                   3    181          3.11    big     A       NA
+182  182                   7    182          7.11  small     C       NA
+183  183                   4    183          4.11  small     B       NA
+184  184                   8    184          8.11 medium     C       NA
+185  185                   5    185          5.11 medium     B       NA
+186  186                   1    186          1.11  small     A       NA
+187  187                  17    187         17.11 medium     F       NA
+188  188                   9    188          9.11    big     C       NA
+189  189                   2    189          2.11 medium     A       NA
+190  190                   6    190          6.11    big     B       NA
+191  191                  12    191         12.11    big     D       NA
+192  192                  10    192         10.11  small     D       NA
+193  193                  16    193         16.11  small     F       NA
+194  194                  11    194         11.11 medium     D       NA
+195  195                  13    195         13.11  small     E       NA
+196  196                  15    196         15.11    big     E       NA
+197  197                  18    197         18.11    big     F       NA
+198  198                  14    198         14.11 medium     E       NA
+199  199                  10    199         10.12  small     D       NA
+200  200                   5    200          5.12 medium     B       NA
+201  201                  13    201         13.12  small     E       NA
+202  202                   7    202          7.12  small     C       NA
+203  203                   4    203          4.12  small     B       NA
+204  204                   8    204          8.12 medium     C       NA
+205  205                   3    205          3.12    big     A       NA
+206  206                  11    206         11.12 medium     D       NA
+207  207                  14    207         14.12 medium     E       NA
+208  208                  12    208         12.12    big     D       NA
+209  209                  16    209         16.12  small     F       NA
+210  210                   6    210          6.12    big     B       NA
+211  211                   2    211          2.12 medium     A       NA
+212  212                   9    212          9.12    big     C       NA
+213  213                  15    213         15.12    big     E       NA
+214  214                  17    214         17.12 medium     F       NA
+215  215                  18    215         18.12    big     F       NA
+216  216                   1    216          1.12  small     A       NA
+217  217                  13    217         13.13  small     E       NA
+218  218                  14    218         14.13 medium     E       NA
+219  219                   1    219          1.13  small     A       NA
+220  220                  10    220         10.13  small     D       NA
+221  221                   2    221          2.13 medium     A       NA
+222  222                  17    222         17.13 medium     F       NA
+223  223                  16    223         16.13  small     F       NA
+224  224                   4    224          4.13  small     B       NA
+225  225                   7    225          7.13  small     C       NA
+226  226                   6    226          6.13    big     B       NA
+227  227                   5    227          5.13 medium     B       NA
+228  228                  18    228         18.13    big     F       NA
+229  229                  12    229         12.13    big     D       NA
+230  230                  15    230         15.13    big     E       NA
+231  231                  11    231         11.13 medium     D       NA
+232  232                   9    232          9.13    big     C       NA
+233  233                   8    233          8.13 medium     C       NA
+234  234                   3    234          3.13    big     A       NA
+235  235                  15    235         15.14    big     E       NA
+236  236                  18    236         18.14    big     F       NA
+237  237                   1    237          1.14  small     A       NA
+238  238                  12    238         12.14    big     D       NA
+239  239                   3    239          3.14    big     A       NA
+240  240                  14    240         14.14 medium     E       NA
+241  241                   7    241          7.14  small     C       NA
+242  242                  16    242         16.14  small     F       NA
+243  243                  17    243         17.14 medium     F       NA
+244  244                  13    244         13.14  small     E       NA
+245  245                   8    245          8.14 medium     C       NA
+246  246                   2    246          2.14 medium     A       NA
+247  247                  11    247         11.14 medium     D       NA
+248  248                  10    248         10.14  small     D       NA
+249  249                   5    249          5.14 medium     B       NA
+250  250                   9    250          9.14    big     C       NA
+251  251                   6    251          6.14    big     B       NA
+252  252                   4    252          4.14  small     B       NA
+253  253                   2    253          2.15 medium     A       NA
+254  254                   6    254          6.15    big     B       NA
+255  255                  16    255         16.15  small     F       NA
+256  256                   9    256          9.15    big     C       NA
+257  257                  11    257         11.15 medium     D       NA
+258  258                  13    258         13.15  small     E       NA
+259  259                   7    259          7.15  small     C       NA
+260  260                  15    260         15.15    big     E       NA
+261  261                   1    261          1.15  small     A       NA
+262  262                  10    262         10.15  small     D       NA
+263  263                  12    263         12.15    big     D       NA
+264  264                   3    264          3.15    big     A       NA
+265  265                  17    265         17.15 medium     F       NA
+266  266                   4    266          4.15  small     B       NA
+267  267                   5    267          5.15 medium     B       NA
+268  268                  18    268         18.15    big     F       NA
+269  269                   8    269          8.15 medium     C       NA
+270  270                  14    270         14.15 medium     E       NA
+271  271                   3    271          3.16    big     A       NA
+272  272                  14    272         14.16 medium     E       NA
+273  273                   1    273          1.16  small     A       NA
+274  274                  11    274         11.16 medium     D       NA
+275  275                   7    275          7.16  small     C       NA
+276  276                   6    276          6.16    big     B       NA
+277  277                   5    277          5.16 medium     B       NA
+278  278                  15    278         15.16    big     E       NA
+279  279                  18    279         18.16    big     F       NA
+280  280                  13    280         13.16  small     E       NA
+281  281                  12    281         12.16    big     D       NA
+282  282                   2    282          2.16 medium     A       NA
+283  283                  10    283         10.16  small     D       NA
+284  284                  17    284         17.16 medium     F       NA
+285  285                   4    285          4.16  small     B       NA
+286  286                  16    286         16.16  small     F       NA
+287  287                   8    287          8.16 medium     C       NA
+288  288                   9    288          9.16    big     C       NA
+289  289                  12    289         12.17    big     D       NA
+290  290                  15    290         15.17    big     E       NA
+291  291                  16    291         16.17  small     F       NA
+292  292                  17    292         17.17 medium     F       NA
+293  293                   4    293          4.17  small     B       NA
+294  294                   3    294          3.17    big     A       NA
+295  295                  10    295         10.17  small     D       NA
+296  296                   8    296          8.17 medium     C       NA
+297  297                   6    297          6.17    big     B       NA
+298  298                   9    298          9.17    big     C       NA
+299  299                   5    299          5.17 medium     B       NA
+300  300                   1    300          1.17  small     A       NA
+301  301                  13    301         13.17  small     E       NA
+302  302                  14    302         14.17 medium     E       NA
+303  303                  18    303         18.17    big     F       NA
+304  304                  11    304         11.17 medium     D       NA
+305  305                   2    305          2.17 medium     A       NA
+306  306                   7    306          7.17  small     C       NA
+307  307                   2    307          2.18 medium     A       NA
+308  308                  10    308         10.18  small     D       NA
+309  309                  11    309         11.18 medium     D       NA
+310  310                  15    310         15.18    big     E       NA
+311  311                   8    311          8.18 medium     C       NA
+312  312                   3    312          3.18    big     A       NA
+313  313                   7    313          7.18  small     C       NA
+314  314                  18    314         18.18    big     F       NA
+315  315                  14    315         14.18 medium     E       NA
+316  316                   9    316          9.18    big     C       NA
+317  317                   1    317          1.18  small     A       NA
+318  318                  13    318         13.18  small     E       NA
+319  319                   6    319          6.18    big     B       NA
+320  320                  16    320         16.18  small     F       NA
+321  321                   4    321          4.18  small     B       NA
+322  322                  17    322         17.18 medium     F       NA
+323  323                   5    323          5.18 medium     B       NA
+324  324                  12    324         12.18    big     D       NA
+325  325                   8    325          8.19 medium     C       NA
+326  326                  18    326         18.19    big     F       NA
+327  327                   4    327          4.19  small     B       NA
+328  328                   1    328          1.19  small     A       NA
+329  329                   2    329          2.19 medium     A       NA
+330  330                  11    330         11.19 medium     D       NA
+331  331                  13    331         13.19  small     E       NA
+332  332                  15    332         15.19    big     E       NA
+333  333                  12    333         12.19    big     D       NA
+334  334                  10    334         10.19  small     D       NA
+335  335                   3    335          3.19    big     A       NA
+336  336                  17    336         17.19 medium     F       NA
+337  337                   7    337          7.19  small     C       NA
+338  338                   6    338          6.19    big     B       NA
+339  339                   9    339          9.19    big     C       NA
+340  340                  16    340         16.19  small     F       NA
+341  341                  14    341         14.19 medium     E       NA
+342  342                   5    342          5.19 medium     B       NA
+343  343                   5    343          5.20 medium     B       NA
+344  344                  15    344         15.20    big     E       NA
+345  345                   4    345          4.20  small     B       NA
+346  346                  13    346         13.20  small     E       NA
+347  347                  10    347         10.20  small     D       NA
+348  348                   9    348          9.20    big     C       NA
+349  349                   6    349          6.20    big     B       NA
+350  350                   3    350          3.20    big     A       NA
+351  351                  12    351         12.20    big     D       NA
+352  352                   8    352          8.20 medium     C       NA
+353  353                  16    353         16.20  small     F       NA
+354  354                   1    354          1.20  small     A       NA
+355  355                   2    355          2.20 medium     A       NA
+356  356                  11    356         11.20 medium     D       NA
+357  357                  17    357         17.20 medium     F       NA
+358  358                  18    358         18.20    big     F       NA
+359  359                  14    359         14.20 medium     E       NA
+360  360                   7    360          7.20  small     C       NA
+361  361                  12    361         12.21    big     D       NA
+362  362                  11    362         11.21 medium     D       NA
+363  363                  17    363         17.21 medium     F       NA
+364  364                  16    364         16.21  small     F       NA
+365  365                   9    365          9.21    big     C       NA
+366  366                   4    366          4.21  small     B       NA
+367  367                   7    367          7.21  small     C       NA
+368  368                  15    368         15.21    big     E       NA
+369  369                   2    369          2.21 medium     A       NA
+370  370                   3    370          3.21    big     A       NA
+371  371                   8    371          8.21 medium     C       NA
+372  372                  10    372         10.21  small     D       NA
+373  373                   5    373          5.21 medium     B       NA
+374  374                  18    374         18.21    big     F       NA
+375  375                  13    375         13.21  small     E       NA
+376  376                  14    376         14.21 medium     E       NA
+377  377                   6    377          6.21    big     B       NA
+378  378                   1    378          1.21  small     A       NA
+379  379                   5    379          5.22 medium     B       NA
+380  380                   4    380          4.22  small     B       NA
+381  381                  18    381         18.22    big     F       NA
+382  382                   2    382          2.22 medium     A       NA
+383  383                  12    383         12.22    big     D       NA
+384  384                   9    384          9.22    big     C       NA
+385  385                   7    385          7.22  small     C       NA
+386  386                  16    386         16.22  small     F       NA
+387  387                  14    387         14.22 medium     E       NA
+388  388                  17    388         17.22 medium     F       NA
+389  389                  15    389         15.22    big     E       NA
+390  390                  10    390         10.22  small     D       NA
+391  391                   6    391          6.22    big     B       NA
+392  392                   3    392          3.22    big     A       NA
+393  393                   8    393          8.22 medium     C       NA
+394  394                   1    394          1.22  small     A       NA
+395  395                  11    395         11.22 medium     D       NA
+396  396                  13    396         13.22  small     E       NA
+397  397                  14    397         14.23 medium     E       NA
+398  398                   3    398          3.23    big     A       NA
+399  399                   8    399          8.23 medium     C       NA
+400  400                   1    400          1.23  small     A       NA
+401  401                   4    401          4.23  small     B       NA
+402  402                  12    402         12.23    big     D       NA
+403  403                  16    403         16.23  small     F       NA
+404  404                   7    404          7.23  small     C       NA
+405  405                   6    405          6.23    big     B       NA
+406  406                   9    406          9.23    big     C       NA
+407  407                  18    407         18.23    big     F       NA
+408  408                   5    408          5.23 medium     B       NA
+409  409                  15    409         15.23    big     E       NA
+410  410                   2    410          2.23 medium     A       NA
+411  411                  13    411         13.23  small     E       NA
+412  412                  17    412         17.23 medium     F       NA
+413  413                  11    413         11.23 medium     D       NA
+414  414                  10    414         10.23  small     D       NA
+415  415                   3    415          3.24    big     A       NA
+416  416                  14    416         14.24 medium     E       NA
+417  417                  16    417         16.24  small     F       NA
+418  418                  17    418         17.24 medium     F       NA
+419  419                   8    419          8.24 medium     C       NA
+420  420                  18    420         18.24    big     F       NA
+421  421                   5    421          5.24 medium     B       NA
+422  422                   6    422          6.24    big     B       NA
+423  423                   9    423          9.24    big     C       NA
+424  424                   2    424          2.24 medium     A       NA
+425  425                   4    425          4.24  small     B       NA
+426  426                  15    426         15.24    big     E       NA
+427  427                   1    427          1.24  small     A       NA
+428  428                   7    428          7.24  small     C       NA
+429  429                  13    429         13.24  small     E       NA
+430  430                  12    430         12.24    big     D       NA
+431  431                  10    431         10.24  small     D       NA
+432  432                  11    432         11.24 medium     D       NA
+433  433                  13    433         13.25  small     E       NA
+434  434                   4    434          4.25  small     B       NA
+435  435                   3    435          3.25    big     A       NA
+436  436                   9    436          9.25    big     C       NA
+437  437                  11    437         11.25 medium     D       NA
+438  438                   8    438          8.25 medium     C       NA
+439  439                   7    439          7.25  small     C       NA
+440  440                   1    440          1.25  small     A       NA
+441  441                  14    441         14.25 medium     E       NA
+442  442                  15    442         15.25    big     E       NA
+443  443                  16    443         16.25  small     F       NA
+444  444                  17    444         17.25 medium     F       NA
+445  445                   6    445          6.25    big     B       NA
+446  446                  10    446         10.25  small     D       NA
+447  447                  18    447         18.25    big     F       NA
+448  448                  12    448         12.25    big     D       NA
+449  449                   5    449          5.25 medium     B       NA
+450  450                   2    450          2.25 medium     A       NA
+451  451                   7    451          7.26  small     C       NA
+452  452                  11    452         11.26 medium     D       NA
+453  453                   6    453          6.26    big     B       NA
+454  454                  15    454         15.26    big     E       NA
+455  455                   8    455          8.26 medium     C       NA
+456  456                   4    456          4.26  small     B       NA
+457  457                  14    457         14.26 medium     E       NA
+458  458                  16    458         16.26  small     F       NA
+459  459                   1    459          1.26  small     A       NA
+460  460                  10    460         10.26  small     D       NA
+461  461                  18    461         18.26    big     F       NA
+462  462                   5    462          5.26 medium     B       NA
+463  463                   2    463          2.26 medium     A       NA
+464  464                  12    464         12.26    big     D       NA
+465  465                   9    465          9.26    big     C       NA
+466  466                  13    466         13.26  small     E       NA
+467  467                   3    467          3.26    big     A       NA
+468  468                  17    468         17.26 medium     F       NA
+469  469                  15    469         15.27    big     E       NA
+470  470                   6    470          6.27    big     B       NA
+471  471                   4    471          4.27  small     B       NA
+472  472                   9    472          9.27    big     C       NA
+473  473                  14    473         14.27 medium     E       NA
+474  474                  10    474         10.27  small     D       NA
+475  475                   3    475          3.27    big     A       NA
+476  476                  18    476         18.27    big     F       NA
+477  477                  17    477         17.27 medium     F       NA
+478  478                   2    478          2.27 medium     A       NA
+479  479                   7    479          7.27  small     C       NA
+480  480                   5    480          5.27 medium     B       NA
+481  481                  11    481         11.27 medium     D       NA
+482  482                  12    482         12.27    big     D       NA
+483  483                   8    483          8.27 medium     C       NA
+484  484                   1    484          1.27  small     A       NA
+485  485                  13    485         13.27  small     E       NA
+486  486                  16    486         16.27  small     F       NA
+487  487                   2    487          2.28 medium     A       NA
+488  488                   7    488          7.28  small     C       NA
+489  489                  10    489         10.28  small     D       NA
+490  490                   8    490          8.28 medium     C       NA
+491  491                   9    491          9.28    big     C       NA
+492  492                  11    492         11.28 medium     D       NA
+493  493                   3    493          3.28    big     A       NA
+494  494                  12    494         12.28    big     D       NA
+495  495                   5    495          5.28 medium     B       NA
+496  496                   4    496          4.28  small     B       NA
+497  497                  16    497         16.28  small     F       NA
+498  498                  14    498         14.28 medium     E       NA
+499  499                  13    499         13.28  small     E       NA
+500  500                   1    500          1.28  small     A       NA
+501  501                  18    501         18.28    big     F       NA
+502  502                  15    502         15.28    big     E       NA
+503  503                  17    503         17.28 medium     F       NA
+504  504                   6    504          6.28    big     B       NA
+505  505                  16    505         16.29  small     F       NA
+506  506                  15    506         15.29    big     E       NA
+507  507                  12    507         12.29    big     D       NA
+508  508                   8    508          8.29 medium     C       NA
+509  509                   7    509          7.29  small     C       NA
+510  510                   5    510          5.29 medium     B       NA
+511  511                  18    511         18.29    big     F       NA
+512  512                   1    512          1.29  small     A       NA
+513  513                   3    513          3.29    big     A       NA
+514  514                  17    514         17.29 medium     F       NA
+515  515                  11    515         11.29 medium     D       NA
+516  516                   6    516          6.29    big     B       NA
+517  517                   4    517          4.29  small     B       NA
+518  518                   2    518          2.29 medium     A       NA
+519  519                  10    519         10.29  small     D       NA
+520  520                  13    520         13.29  small     E       NA
+521  521                  14    521         14.29 medium     E       NA
+522  522                   9    522          9.29    big     C       NA
+523  523                  13    523         13.30  small     E       NA
+524  524                   4    524          4.30  small     B       NA
+525  525                   6    525          6.30    big     B       NA
+526  526                   5    526          5.30 medium     B       NA
+527  527                  18    527         18.30    big     F       NA
+528  528                   2    528          2.30 medium     A       NA
+529  529                   8    529          8.30 medium     C       NA
+530  530                  17    530         17.30 medium     F       NA
+531  531                  12    531         12.30    big     D       NA
+532  532                   1    532          1.30  small     A       NA
+533  533                   3    533          3.30    big     A       NA
+534  534                  15    534         15.30    big     E       NA
+535  535                  10    535         10.30  small     D       NA
+536  536                  14    536         14.30 medium     E       NA
+537  537                   9    537          9.30    big     C       NA
+538  538                   7    538          7.30  small     C       NA
+539  539                  16    539         16.30  small     F       NA
+540  540                  11    540         11.30 medium     D       NA
+    insert_time max_mem platform
+1            NA      NA       NA
+2            NA      NA       NA
+3            NA      NA       NA
+4            NA      NA       NA
+5            NA      NA       NA
+6            NA      NA       NA
+7            NA      NA       NA
+8            NA      NA       NA
+9            NA      NA       NA
+10           NA      NA       NA
+11           NA      NA       NA
+12           NA      NA       NA
+13           NA      NA       NA
+14           NA      NA       NA
+15           NA      NA       NA
+16           NA      NA       NA
+17           NA      NA       NA
+18           NA      NA       NA
+19           NA      NA       NA
+20           NA      NA       NA
+21           NA      NA       NA
+22           NA      NA       NA
+23           NA      NA       NA
+24           NA      NA       NA
+25           NA      NA       NA
+26           NA      NA       NA
+27           NA      NA       NA
+28           NA      NA       NA
+29           NA      NA       NA
+30           NA      NA       NA
+31           NA      NA       NA
+32           NA      NA       NA
+33           NA      NA       NA
+34           NA      NA       NA
+35           NA      NA       NA
+36           NA      NA       NA
+37           NA      NA       NA
+38           NA      NA       NA
+39           NA      NA       NA
+40           NA      NA       NA
+41           NA      NA       NA
+42           NA      NA       NA
+43           NA      NA       NA
+44           NA      NA       NA
+45           NA      NA       NA
+46           NA      NA       NA
+47           NA      NA       NA
+48           NA      NA       NA
+49           NA      NA       NA
+50           NA      NA       NA
+51           NA      NA       NA
+52           NA      NA       NA
+53           NA      NA       NA
+54           NA      NA       NA
+55           NA      NA       NA
+56           NA      NA       NA
+57           NA      NA       NA
+58           NA      NA       NA
+59           NA      NA       NA
+60           NA      NA       NA
+61           NA      NA       NA
+62           NA      NA       NA
+63           NA      NA       NA
+64           NA      NA       NA
+65           NA      NA       NA
+66           NA      NA       NA
+67           NA      NA       NA
+68           NA      NA       NA
+69           NA      NA       NA
+70           NA      NA       NA
+71           NA      NA       NA
+72           NA      NA       NA
+73           NA      NA       NA
+74           NA      NA       NA
+75           NA      NA       NA
+76           NA      NA       NA
+77           NA      NA       NA
+78           NA      NA       NA
+79           NA      NA       NA
+80           NA      NA       NA
+81           NA      NA       NA
+82           NA      NA       NA
+83           NA      NA       NA
+84           NA      NA       NA
+85           NA      NA       NA
+86           NA      NA       NA
+87           NA      NA       NA
+88           NA      NA       NA
+89           NA      NA       NA
+90           NA      NA       NA
+91           NA      NA       NA
+92           NA      NA       NA
+93           NA      NA       NA
+94           NA      NA       NA
+95           NA      NA       NA
+96           NA      NA       NA
+97           NA      NA       NA
+98           NA      NA       NA
+99           NA      NA       NA
+100          NA      NA       NA
+101          NA      NA       NA
+102          NA      NA       NA
+103          NA      NA       NA
+104          NA      NA       NA
+105          NA      NA       NA
+106          NA      NA       NA
+107          NA      NA       NA
+108          NA      NA       NA
+109          NA      NA       NA
+110          NA      NA       NA
+111          NA      NA       NA
+112          NA      NA       NA
+113          NA      NA       NA
+114          NA      NA       NA
+115          NA      NA       NA
+116          NA      NA       NA
+117          NA      NA       NA
+118          NA      NA       NA
+119          NA      NA       NA
+120          NA      NA       NA
+121          NA      NA       NA
+122          NA      NA       NA
+123          NA      NA       NA
+124          NA      NA       NA
+125          NA      NA       NA
+126          NA      NA       NA
+127          NA      NA       NA
+128          NA      NA       NA
+129          NA      NA       NA
+130          NA      NA       NA
+131          NA      NA       NA
+132          NA      NA       NA
+133          NA      NA       NA
+134          NA      NA       NA
+135          NA      NA       NA
+136          NA      NA       NA
+137          NA      NA       NA
+138          NA      NA       NA
+139          NA      NA       NA
+140          NA      NA       NA
+141          NA      NA       NA
+142          NA      NA       NA
+143          NA      NA       NA
+144          NA      NA       NA
+145          NA      NA       NA
+146          NA      NA       NA
+147          NA      NA       NA
+148          NA      NA       NA
+149          NA      NA       NA
+150          NA      NA       NA
+151          NA      NA       NA
+152          NA      NA       NA
+153          NA      NA       NA
+154          NA      NA       NA
+155          NA      NA       NA
+156          NA      NA       NA
+157          NA      NA       NA
+158          NA      NA       NA
+159          NA      NA       NA
+160          NA      NA       NA
+161          NA      NA       NA
+162          NA      NA       NA
+163          NA      NA       NA
+164          NA      NA       NA
+165          NA      NA       NA
+166          NA      NA       NA
+167          NA      NA       NA
+168          NA      NA       NA
+169          NA      NA       NA
+170          NA      NA       NA
+171          NA      NA       NA
+172          NA      NA       NA
+173          NA      NA       NA
+174          NA      NA       NA
+175          NA      NA       NA
+176          NA      NA       NA
+177          NA      NA       NA
+178          NA      NA       NA
+179          NA      NA       NA
+180          NA      NA       NA
+181          NA      NA       NA
+182          NA      NA       NA
+183          NA      NA       NA
+184          NA      NA       NA
+185          NA      NA       NA
+186          NA      NA       NA
+187          NA      NA       NA
+188          NA      NA       NA
+189          NA      NA       NA
+190          NA      NA       NA
+191          NA      NA       NA
+192          NA      NA       NA
+193          NA      NA       NA
+194          NA      NA       NA
+195          NA      NA       NA
+196          NA      NA       NA
+197          NA      NA       NA
+198          NA      NA       NA
+199          NA      NA       NA
+200          NA      NA       NA
+201          NA      NA       NA
+202          NA      NA       NA
+203          NA      NA       NA
+204          NA      NA       NA
+205          NA      NA       NA
+206          NA      NA       NA
+207          NA      NA       NA
+208          NA      NA       NA
+209          NA      NA       NA
+210          NA      NA       NA
+211          NA      NA       NA
+212          NA      NA       NA
+213          NA      NA       NA
+214          NA      NA       NA
+215          NA      NA       NA
+216          NA      NA       NA
+217          NA      NA       NA
+218          NA      NA       NA
+219          NA      NA       NA
+220          NA      NA       NA
+221          NA      NA       NA
+222          NA      NA       NA
+223          NA      NA       NA
+224          NA      NA       NA
+225          NA      NA       NA
+226          NA      NA       NA
+227          NA      NA       NA
+228          NA      NA       NA
+229          NA      NA       NA
+230          NA      NA       NA
+231          NA      NA       NA
+232          NA      NA       NA
+233          NA      NA       NA
+234          NA      NA       NA
+235          NA      NA       NA
+236          NA      NA       NA
+237          NA      NA       NA
+238          NA      NA       NA
+239          NA      NA       NA
+240          NA      NA       NA
+241          NA      NA       NA
+242          NA      NA       NA
+243          NA      NA       NA
+244          NA      NA       NA
+245          NA      NA       NA
+246          NA      NA       NA
+247          NA      NA       NA
+248          NA      NA       NA
+249          NA      NA       NA
+250          NA      NA       NA
+251          NA      NA       NA
+252          NA      NA       NA
+253          NA      NA       NA
+254          NA      NA       NA
+255          NA      NA       NA
+256          NA      NA       NA
+257          NA      NA       NA
+258          NA      NA       NA
+259          NA      NA       NA
+260          NA      NA       NA
+261          NA      NA       NA
+262          NA      NA       NA
+263          NA      NA       NA
+264          NA      NA       NA
+265          NA      NA       NA
+266          NA      NA       NA
+267          NA      NA       NA
+268          NA      NA       NA
+269          NA      NA       NA
+270          NA      NA       NA
+271          NA      NA       NA
+272          NA      NA       NA
+273          NA      NA       NA
+274          NA      NA       NA
+275          NA      NA       NA
+276          NA      NA       NA
+277          NA      NA       NA
+278          NA      NA       NA
+279          NA      NA       NA
+280          NA      NA       NA
+281          NA      NA       NA
+282          NA      NA       NA
+283          NA      NA       NA
+284          NA      NA       NA
+285          NA      NA       NA
+286          NA      NA       NA
+287          NA      NA       NA
+288          NA      NA       NA
+289          NA      NA       NA
+290          NA      NA       NA
+291          NA      NA       NA
+292          NA      NA       NA
+293          NA      NA       NA
+294          NA      NA       NA
+295          NA      NA       NA
+296          NA      NA       NA
+297          NA      NA       NA
+298          NA      NA       NA
+299          NA      NA       NA
+300          NA      NA       NA
+301          NA      NA       NA
+302          NA      NA       NA
+303          NA      NA       NA
+304          NA      NA       NA
+305          NA      NA       NA
+306          NA      NA       NA
+307          NA      NA       NA
+308          NA      NA       NA
+309          NA      NA       NA
+310          NA      NA       NA
+311          NA      NA       NA
+312          NA      NA       NA
+313          NA      NA       NA
+314          NA      NA       NA
+315          NA      NA       NA
+316          NA      NA       NA
+317          NA      NA       NA
+318          NA      NA       NA
+319          NA      NA       NA
+320          NA      NA       NA
+321          NA      NA       NA
+322          NA      NA       NA
+323          NA      NA       NA
+324          NA      NA       NA
+325          NA      NA       NA
+326          NA      NA       NA
+327          NA      NA       NA
+328          NA      NA       NA
+329          NA      NA       NA
+330          NA      NA       NA
+331          NA      NA       NA
+332          NA      NA       NA
+333          NA      NA       NA
+334          NA      NA       NA
+335          NA      NA       NA
+336          NA      NA       NA
+337          NA      NA       NA
+338          NA      NA       NA
+339          NA      NA       NA
+340          NA      NA       NA
+341          NA      NA       NA
+342          NA      NA       NA
+343          NA      NA       NA
+344          NA      NA       NA
+345          NA      NA       NA
+346          NA      NA       NA
+347          NA      NA       NA
+348          NA      NA       NA
+349          NA      NA       NA
+350          NA      NA       NA
+351          NA      NA       NA
+352          NA      NA       NA
+353          NA      NA       NA
+354          NA      NA       NA
+355          NA      NA       NA
+356          NA      NA       NA
+357          NA      NA       NA
+358          NA      NA       NA
+359          NA      NA       NA
+360          NA      NA       NA
+361          NA      NA       NA
+362          NA      NA       NA
+363          NA      NA       NA
+364          NA      NA       NA
+365          NA      NA       NA
+366          NA      NA       NA
+367          NA      NA       NA
+368          NA      NA       NA
+369          NA      NA       NA
+370          NA      NA       NA
+371          NA      NA       NA
+372          NA      NA       NA
+373          NA      NA       NA
+374          NA      NA       NA
+375          NA      NA       NA
+376          NA      NA       NA
+377          NA      NA       NA
+378          NA      NA       NA
+379          NA      NA       NA
+380          NA      NA       NA
+381          NA      NA       NA
+382          NA      NA       NA
+383          NA      NA       NA
+384          NA      NA       NA
+385          NA      NA       NA
+386          NA      NA       NA
+387          NA      NA       NA
+388          NA      NA       NA
+389          NA      NA       NA
+390          NA      NA       NA
+391          NA      NA       NA
+392          NA      NA       NA
+393          NA      NA       NA
+394          NA      NA       NA
+395          NA      NA       NA
+396          NA      NA       NA
+397          NA      NA       NA
+398          NA      NA       NA
+399          NA      NA       NA
+400          NA      NA       NA
+401          NA      NA       NA
+402          NA      NA       NA
+403          NA      NA       NA
+404          NA      NA       NA
+405          NA      NA       NA
+406          NA      NA       NA
+407          NA      NA       NA
+408          NA      NA       NA
+409          NA      NA       NA
+410          NA      NA       NA
+411          NA      NA       NA
+412          NA      NA       NA
+413          NA      NA       NA
+414          NA      NA       NA
+415          NA      NA       NA
+416          NA      NA       NA
+417          NA      NA       NA
+418          NA      NA       NA
+419          NA      NA       NA
+420          NA      NA       NA
+421          NA      NA       NA
+422          NA      NA       NA
+423          NA      NA       NA
+424          NA      NA       NA
+425          NA      NA       NA
+426          NA      NA       NA
+427          NA      NA       NA
+428          NA      NA       NA
+429          NA      NA       NA
+430          NA      NA       NA
+431          NA      NA       NA
+432          NA      NA       NA
+433          NA      NA       NA
+434          NA      NA       NA
+435          NA      NA       NA
+436          NA      NA       NA
+437          NA      NA       NA
+438          NA      NA       NA
+439          NA      NA       NA
+440          NA      NA       NA
+441          NA      NA       NA
+442          NA      NA       NA
+443          NA      NA       NA
+444          NA      NA       NA
+445          NA      NA       NA
+446          NA      NA       NA
+447          NA      NA       NA
+448          NA      NA       NA
+449          NA      NA       NA
+450          NA      NA       NA
+451          NA      NA       NA
+452          NA      NA       NA
+453          NA      NA       NA
+454          NA      NA       NA
+455          NA      NA       NA
+456          NA      NA       NA
+457          NA      NA       NA
+458          NA      NA       NA
+459          NA      NA       NA
+460          NA      NA       NA
+461          NA      NA       NA
+462          NA      NA       NA
+463          NA      NA       NA
+464          NA      NA       NA
+465          NA      NA       NA
+466          NA      NA       NA
+467          NA      NA       NA
+468          NA      NA       NA
+469          NA      NA       NA
+470          NA      NA       NA
+471          NA      NA       NA
+472          NA      NA       NA
+473          NA      NA       NA
+474          NA      NA       NA
+475          NA      NA       NA
+476          NA      NA       NA
+477          NA      NA       NA
+478          NA      NA       NA
+479          NA      NA       NA
+480          NA      NA       NA
+481          NA      NA       NA
+482          NA      NA       NA
+483          NA      NA       NA
+484          NA      NA       NA
+485          NA      NA       NA
+486          NA      NA       NA
+487          NA      NA       NA
+488          NA      NA       NA
+489          NA      NA       NA
+490          NA      NA       NA
+491          NA      NA       NA
+492          NA      NA       NA
+493          NA      NA       NA
+494          NA      NA       NA
+495          NA      NA       NA
+496          NA      NA       NA
+497          NA      NA       NA
+498          NA      NA       NA
+499          NA      NA       NA
+500          NA      NA       NA
+501          NA      NA       NA
+502          NA      NA       NA
+503          NA      NA       NA
+504          NA      NA       NA
+505          NA      NA       NA
+506          NA      NA       NA
+507          NA      NA       NA
+508          NA      NA       NA
+509          NA      NA       NA
+510          NA      NA       NA
+511          NA      NA       NA
+512          NA      NA       NA
+513          NA      NA       NA
+514          NA      NA       NA
+515          NA      NA       NA
+516          NA      NA       NA
+517          NA      NA       NA
+518          NA      NA       NA
+519          NA      NA       NA
+520          NA      NA       NA
+521          NA      NA       NA
+522          NA      NA       NA
+523          NA      NA       NA
+524          NA      NA       NA
+525          NA      NA       NA
+526          NA      NA       NA
+527          NA      NA       NA
+528          NA      NA       NA
+529          NA      NA       NA
+530          NA      NA       NA
+531          NA      NA       NA
+532          NA      NA       NA
+533          NA      NA       NA
+534          NA      NA       NA
+535          NA      NA       NA
+536          NA      NA       NA
+537          NA      NA       NA
+538          NA      NA       NA
+539          NA      NA       NA
+540          NA      NA       NA
+#+end_example
+
