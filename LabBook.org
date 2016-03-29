@@ -249,3 +249,129 @@ CREATE NEW CLASS:
    
 Instrumentation Points:
 
+* 2016-03-29 Meeting with Tais
+
+Performance Evalution
+
+- DB Insertion Plugin
+  - _Multiple batches, but are handle sequentially_
+
+- What is the experimental configuration?
+  - Software and hardware
+  - Software: everything in the same machine
+
+_What we shall measure to evaluate?_
+
+- *Batch size*
+  - Input size
+    - Lucas will provide a trace file generator
+      128K, 128M, 1G
+  - Batch size in operations
+    - 128
+    - 256
+    - 512
+    - 1024
+    - 2048
+    - ...
+  - Four platform configurations
+    - _luiza_ Tais' personal notebook (Local/Mac) - Tais
+    - _guarani_ Lucas' guarani (Linux/Local) - Lucas
+    - _orion_ Orion (Linux/Local) - Tais
+    - _hptais_ Tais' work notebook is client (Windows), guarani is server (Linux) (Remote) - Tais
+      - Find out the interconnection topology
+      - The latency and the bandwidth of the network (limits)
+        - Find out a metric to see if you reach the network limit
+
+- What to measure
+  - Global execution time
+    - Only simulation
+    - Only insertion
+  - Global memory occupation
+  |----------------------+---------------------+--------------------------|
+  | Only Simulation Time | Only Insertion Time | Global Memory Occupation |
+  |----------------------+---------------------+--------------------------|
+
+  - How batches have been generated
+    - When a batch has started, when it has ended
+    - Format suggestion for dumping this kind of information
+      |--------------+------------+----------+---------------+------------------------------|
+      | Batch number | Start time | End time | Size in bytes | Size in number of operations |
+      |--------------+------------+----------+---------------+------------------------------|
+
+- *Comparison against C++*
+  - Measure only the simulation time
+    - Null plugin against
+      - =pj_dump= with =-q=
+      - =pj_dump= with =-q= and =-f= (for flex)
+  - Input size
+    -  128K, 128M, 1G
+  - _Platforms_
+    - Tais' personal notebook (Local) - Tais
+    - Lucas' guarani (Local) - Lucas
+    - Orion (Local) - Tais
+  |----------------------|
+  | Only simulation time |
+  |----------------------|
+
+_Experimental Design_
+
+- How many replications? 30.
+- Statistical framework: gaussian distribution, with mean, sd, se
+  - se: =3*sd/sqrt(n)=, CI of 99.7% assuming gaussian
+  - no statistical tests (t-test), because we'll use plots to analyze
+    with mean+se and mean-se
+- See Jain 1992, Part III, Chapter 16.
+
+- _Factors_
+  - Input size
+    - small, big
+  - Batch size
+    - small, big
+  - Platform
+    - two platforms wildly different
+
+- _Real Factors and levels_ (see chapter 23 on page 381)
+  - input size: 3
+  - batch size: 6
+  - platforms: 4
+- 3*6*4
+  #+begin_src R :results output :session :exports both
+  input_size = 3;
+  batch_levels = 6;
+  platforms = 4;
+  r=30;
+  total_number_of_experiments = input_size*batch_levels*platforms*r
+  minutes_each = 15;
+  total_number_of_experiments * minutes_each / 60 / 24
+  #+end_src
+
+  #+RESULTS:
+  : [1] 22.5
+
+_C++ Comparison Analysis_
+
+- Version
+  - Ayira
+  - pajeng with flex
+  - pajeng without flex
+- Input size
+- 30 replications
+
+|------------+---------|
+| Input Size | Version |
+|------------+---------|
+
+_Changes to the *mysql* plugin_
+- add a new parameter to tell the batch size (default is size of input)
+- add a flag (disable by default) to tell the plugin to measure each batch execution
+  - a vector will be used to keep this in memory during execution;
+    only at the end that this is dumped to CSV
+  - generates a new file that has the CSV info in the beggining of
+    each line and then the following information you have measured
+  |--------------+------------+----------+---------------+------------------------------|
+  | Batch number | Start time | End time | Size in bytes | Size in number of operations |
+  |--------------+------------+----------+---------------+------------------------------|
+
+_How to measure memory utilization_
+- MemoryUsage class in Java, check the used() method
+- Compare against top (the column that indicates the virtual memory allocated)
