@@ -320,7 +320,7 @@ _Experimental Design_
   - se: =3*sd/sqrt(n)=, CI of 99.7% assuming gaussian
   - no statistical tests (t-test), because we'll use plots to analyze
     with mean+se and mean-se
-- See Jain 1992, Part III, Chapter 16.
+- See Jain 1991, Part III, Chapter 16.
 
 - _Factors_
   - Input size
