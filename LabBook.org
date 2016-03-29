@@ -375,3 +375,332 @@ _Changes to the *mysql* plugin_
 _How to measure memory utilization_
 - MemoryUsage class in Java, check the used() method
 - Compare against top (the column that indicates the virtual memory allocated)
+* 2016-03-29 DoE for C++ Comparison
+
+The C++ Comparison has two factors: _version_ and _input_, each one with
+three levels. For version, the levels are _ayira_, _pj_, _pjflex_. For
+input, the levels are small (128K), medium (131072K, or 128M), and big
+(1048576K or 1G). We shall use 30 replications randomizing experiments
+to reduce external interference. Two things are measured: the
+execution time represents the _simulation time_, the _platform_ is the
+identification of the platform where measurements took place. Platform
+can be one of _luiza_, _guarani_, _orion_, _hptais_ (TODO: rename this last one).
+
+To understand what functions below do, check:
+- https://cran.r-project.org/web/packages/DoE.base/DoE.base.pdf
+You'll need the =DoE.base= R package.
+
+#+begin_src R :results output silent :session :exports none
+  require(DoE.base);
+  Cpp_Comparison <- fac.design (
+           nfactors=2,
+           replications=30,
+           repeat.only=FALSE,
+           blocks=1,
+           randomize=TRUE,
+           seed=10373,
+           nlevels=c(3,3),
+           factor.names=list(
+                version=c("ayira","pj","pjflex"),
+                input=c("small", "medium", "big")));
+
+  # there is only one response for Cpp Comparison
+  export.design(Cpp_Comparison,
+                path="designs",
+                filename=NULL,
+                type="csv",
+                replace=TRUE,
+                response.names=c("time","platform"));
+#+end_src
+
+Check the file =Cpp_Comparison.csv= in the =designs= directory. It
+contains your experimental design for running the Cpp Comparison
+experimental session. Each line is a experiment. You should run each
+experiment following the factor configuration, providing the execution
+time in the last column.
+
+You can read that CSV with:
+
+#+begin_src R :results output :session :exports both
+csv <- read.csv("designs/Cpp_Comparison.csv");
+csv;
+#+end_src
+
+#+RESULTS:
+#+begin_example
+    name run.no.in.std.order run.no run.no.std.rp version  input time platform
+1      1                   4      1          4.10   ayira medium   NA       NA
+2      2                   9      2          9.10  pjflex    big   NA       NA
+3      3                   2      3          2.10      pj  small   NA       NA
+4      4                   5      4          5.10      pj medium   NA       NA
+5      5                   7      5          7.10   ayira    big   NA       NA
+6      6                   6      6          6.10  pjflex medium   NA       NA
+7      7                   3      7          3.10  pjflex  small   NA       NA
+8      8                   1      8          1.10   ayira  small   NA       NA
+9      9                   8      9          8.10      pj    big   NA       NA
+10    10                   6     10          6.20  pjflex medium   NA       NA
+11    11                   7     11          7.20   ayira    big   NA       NA
+12    12                   8     12          8.20      pj    big   NA       NA
+13    13                   4     13          4.20   ayira medium   NA       NA
+14    14                   3     14          3.20  pjflex  small   NA       NA
+15    15                   5     15          5.20      pj medium   NA       NA
+16    16                   2     16          2.20      pj  small   NA       NA
+17    17                   9     17          9.20  pjflex    big   NA       NA
+18    18                   1     18          1.20   ayira  small   NA       NA
+19    19                   2     19          2.30      pj  small   NA       NA
+20    20                   9     20          9.30  pjflex    big   NA       NA
+21    21                   6     21          6.30  pjflex medium   NA       NA
+22    22                   1     22          1.30   ayira  small   NA       NA
+23    23                   3     23          3.30  pjflex  small   NA       NA
+24    24                   4     24          4.30   ayira medium   NA       NA
+25    25                   5     25          5.30      pj medium   NA       NA
+26    26                   7     26          7.30   ayira    big   NA       NA
+27    27                   8     27          8.30      pj    big   NA       NA
+28    28                   6     28          6.40  pjflex medium   NA       NA
+29    29                   7     29          7.40   ayira    big   NA       NA
+30    30                   5     30          5.40      pj medium   NA       NA
+31    31                   8     31          8.40      pj    big   NA       NA
+32    32                   1     32          1.40   ayira  small   NA       NA
+33    33                   4     33          4.40   ayira medium   NA       NA
+34    34                   9     34          9.40  pjflex    big   NA       NA
+35    35                   3     35          3.40  pjflex  small   NA       NA
+36    36                   2     36          2.40      pj  small   NA       NA
+37    37                   2     37          2.50      pj  small   NA       NA
+38    38                   6     38          6.50  pjflex medium   NA       NA
+39    39                   9     39          9.50  pjflex    big   NA       NA
+40    40                   3     40          3.50  pjflex  small   NA       NA
+41    41                   8     41          8.50      pj    big   NA       NA
+42    42                   4     42          4.50   ayira medium   NA       NA
+43    43                   5     43          5.50      pj medium   NA       NA
+44    44                   7     44          7.50   ayira    big   NA       NA
+45    45                   1     45          1.50   ayira  small   NA       NA
+46    46                   4     46          4.60   ayira medium   NA       NA
+47    47                   5     47          5.60      pj medium   NA       NA
+48    48                   2     48          2.60      pj  small   NA       NA
+49    49                   9     49          9.60  pjflex    big   NA       NA
+50    50                   3     50          3.60  pjflex  small   NA       NA
+51    51                   7     51          7.60   ayira    big   NA       NA
+52    52                   8     52          8.60      pj    big   NA       NA
+53    53                   6     53          6.60  pjflex medium   NA       NA
+54    54                   1     54          1.60   ayira  small   NA       NA
+55    55                   7     55          7.70   ayira    big   NA       NA
+56    56                   1     56          1.70   ayira  small   NA       NA
+57    57                   2     57          2.70      pj  small   NA       NA
+58    58                   5     58          5.70      pj medium   NA       NA
+59    59                   4     59          4.70   ayira medium   NA       NA
+60    60                   8     60          8.70      pj    big   NA       NA
+61    61                   9     61          9.70  pjflex    big   NA       NA
+62    62                   6     62          6.70  pjflex medium   NA       NA
+63    63                   3     63          3.70  pjflex  small   NA       NA
+64    64                   8     64          8.80      pj    big   NA       NA
+65    65                   7     65          7.80   ayira    big   NA       NA
+66    66                   5     66          5.80      pj medium   NA       NA
+67    67                   6     67          6.80  pjflex medium   NA       NA
+68    68                   9     68          9.80  pjflex    big   NA       NA
+69    69                   1     69          1.80   ayira  small   NA       NA
+70    70                   3     70          3.80  pjflex  small   NA       NA
+71    71                   4     71          4.80   ayira medium   NA       NA
+72    72                   2     72          2.80      pj  small   NA       NA
+73    73                   3     73          3.90  pjflex  small   NA       NA
+74    74                   4     74          4.90   ayira medium   NA       NA
+75    75                   5     75          5.90      pj medium   NA       NA
+76    76                   7     76          7.90   ayira    big   NA       NA
+77    77                   9     77          9.90  pjflex    big   NA       NA
+78    78                   1     78          1.90   ayira  small   NA       NA
+79    79                   6     79          6.90  pjflex medium   NA       NA
+80    80                   2     80          2.90      pj  small   NA       NA
+81    81                   8     81          8.90      pj    big   NA       NA
+82    82                   3     82          3.10  pjflex  small   NA       NA
+83    83                   4     83          4.10   ayira medium   NA       NA
+84    84                   8     84          8.10      pj    big   NA       NA
+85    85                   1     85          1.10   ayira  small   NA       NA
+86    86                   2     86          2.10      pj  small   NA       NA
+87    87                   9     87          9.10  pjflex    big   NA       NA
+88    88                   5     88          5.10      pj medium   NA       NA
+89    89                   7     89          7.10   ayira    big   NA       NA
+90    90                   6     90          6.10  pjflex medium   NA       NA
+91    91                   6     91          6.11  pjflex medium   NA       NA
+92    92                   4     92          4.11   ayira medium   NA       NA
+93    93                   5     93          5.11      pj medium   NA       NA
+94    94                   7     94          7.11   ayira    big   NA       NA
+95    95                   9     95          9.11  pjflex    big   NA       NA
+96    96                   3     96          3.11  pjflex  small   NA       NA
+97    97                   8     97          8.11      pj    big   NA       NA
+98    98                   1     98          1.11   ayira  small   NA       NA
+99    99                   2     99          2.11      pj  small   NA       NA
+100  100                   3    100          3.12  pjflex  small   NA       NA
+101  101                   4    101          4.12   ayira medium   NA       NA
+102  102                   7    102          7.12   ayira    big   NA       NA
+103  103                   2    103          2.12      pj  small   NA       NA
+104  104                   5    104          5.12      pj medium   NA       NA
+105  105                   6    105          6.12  pjflex medium   NA       NA
+106  106                   1    106          1.12   ayira  small   NA       NA
+107  107                   8    107          8.12      pj    big   NA       NA
+108  108                   9    108          9.12  pjflex    big   NA       NA
+109  109                   3    109          3.13  pjflex  small   NA       NA
+110  110                   2    110          2.13      pj  small   NA       NA
+111  111                   1    111          1.13   ayira  small   NA       NA
+112  112                   7    112          7.13   ayira    big   NA       NA
+113  113                   9    113          9.13  pjflex    big   NA       NA
+114  114                   8    114          8.13      pj    big   NA       NA
+115  115                   5    115          5.13      pj medium   NA       NA
+116  116                   6    116          6.13  pjflex medium   NA       NA
+117  117                   4    117          4.13   ayira medium   NA       NA
+118  118                   4    118          4.14   ayira medium   NA       NA
+119  119                   2    119          2.14      pj  small   NA       NA
+120  120                   1    120          1.14   ayira  small   NA       NA
+121  121                   5    121          5.14      pj medium   NA       NA
+122  122                   6    122          6.14  pjflex medium   NA       NA
+123  123                   8    123          8.14      pj    big   NA       NA
+124  124                   7    124          7.14   ayira    big   NA       NA
+125  125                   3    125          3.14  pjflex  small   NA       NA
+126  126                   9    126          9.14  pjflex    big   NA       NA
+127  127                   5    127          5.15      pj medium   NA       NA
+128  128                   6    128          6.15  pjflex medium   NA       NA
+129  129                   2    129          2.15      pj  small   NA       NA
+130  130                   1    130          1.15   ayira  small   NA       NA
+131  131                   8    131          8.15      pj    big   NA       NA
+132  132                   3    132          3.15  pjflex  small   NA       NA
+133  133                   7    133          7.15   ayira    big   NA       NA
+134  134                   9    134          9.15  pjflex    big   NA       NA
+135  135                   4    135          4.15   ayira medium   NA       NA
+136  136                   7    136          7.16   ayira    big   NA       NA
+137  137                   4    137          4.16   ayira medium   NA       NA
+138  138                   8    138          8.16      pj    big   NA       NA
+139  139                   2    139          2.16      pj  small   NA       NA
+140  140                   3    140          3.16  pjflex  small   NA       NA
+141  141                   1    141          1.16   ayira  small   NA       NA
+142  142                   5    142          5.16      pj medium   NA       NA
+143  143                   9    143          9.16  pjflex    big   NA       NA
+144  144                   6    144          6.16  pjflex medium   NA       NA
+145  145                   2    145          2.17      pj  small   NA       NA
+146  146                   4    146          4.17   ayira medium   NA       NA
+147  147                   9    147          9.17  pjflex    big   NA       NA
+148  148                   1    148          1.17   ayira  small   NA       NA
+149  149                   8    149          8.17      pj    big   NA       NA
+150  150                   5    150          5.17      pj medium   NA       NA
+151  151                   6    151          6.17  pjflex medium   NA       NA
+152  152                   7    152          7.17   ayira    big   NA       NA
+153  153                   3    153          3.17  pjflex  small   NA       NA
+154  154                   5    154          5.18      pj medium   NA       NA
+155  155                   8    155          8.18      pj    big   NA       NA
+156  156                   9    156          9.18  pjflex    big   NA       NA
+157  157                   2    157          2.18      pj  small   NA       NA
+158  158                   3    158          3.18  pjflex  small   NA       NA
+159  159                   6    159          6.18  pjflex medium   NA       NA
+160  160                   7    160          7.18   ayira    big   NA       NA
+161  161                   4    161          4.18   ayira medium   NA       NA
+162  162                   1    162          1.18   ayira  small   NA       NA
+163  163                   7    163          7.19   ayira    big   NA       NA
+164  164                   3    164          3.19  pjflex  small   NA       NA
+165  165                   2    165          2.19      pj  small   NA       NA
+166  166                   6    166          6.19  pjflex medium   NA       NA
+167  167                   5    167          5.19      pj medium   NA       NA
+168  168                   9    168          9.19  pjflex    big   NA       NA
+169  169                   4    169          4.19   ayira medium   NA       NA
+170  170                   8    170          8.19      pj    big   NA       NA
+171  171                   1    171          1.19   ayira  small   NA       NA
+172  172                   3    172          3.20  pjflex  small   NA       NA
+173  173                   7    173          7.20   ayira    big   NA       NA
+174  174                   2    174          2.20      pj  small   NA       NA
+175  175                   1    175          1.20   ayira  small   NA       NA
+176  176                   6    176          6.20  pjflex medium   NA       NA
+177  177                   9    177          9.20  pjflex    big   NA       NA
+178  178                   5    178          5.20      pj medium   NA       NA
+179  179                   8    179          8.20      pj    big   NA       NA
+180  180                   4    180          4.20   ayira medium   NA       NA
+181  181                   2    181          2.21      pj  small   NA       NA
+182  182                   4    182          4.21   ayira medium   NA       NA
+183  183                   9    183          9.21  pjflex    big   NA       NA
+184  184                   8    184          8.21      pj    big   NA       NA
+185  185                   7    185          7.21   ayira    big   NA       NA
+186  186                   1    186          1.21   ayira  small   NA       NA
+187  187                   5    187          5.21      pj medium   NA       NA
+188  188                   3    188          3.21  pjflex  small   NA       NA
+189  189                   6    189          6.21  pjflex medium   NA       NA
+190  190                   6    190          6.22  pjflex medium   NA       NA
+191  191                   7    191          7.22   ayira    big   NA       NA
+192  192                   2    192          2.22      pj  small   NA       NA
+193  193                   4    193          4.22   ayira medium   NA       NA
+194  194                   9    194          9.22  pjflex    big   NA       NA
+195  195                   1    195          1.22   ayira  small   NA       NA
+196  196                   8    196          8.22      pj    big   NA       NA
+197  197                   3    197          3.22  pjflex  small   NA       NA
+198  198                   5    198          5.22      pj medium   NA       NA
+199  199                   5    199          5.23      pj medium   NA       NA
+200  200                   3    200          3.23  pjflex  small   NA       NA
+201  201                   6    201          6.23  pjflex medium   NA       NA
+202  202                   8    202          8.23      pj    big   NA       NA
+203  203                   2    203          2.23      pj  small   NA       NA
+204  204                   7    204          7.23   ayira    big   NA       NA
+205  205                   1    205          1.23   ayira  small   NA       NA
+206  206                   9    206          9.23  pjflex    big   NA       NA
+207  207                   4    207          4.23   ayira medium   NA       NA
+208  208                   3    208          3.24  pjflex  small   NA       NA
+209  209                   8    209          8.24      pj    big   NA       NA
+210  210                   6    210          6.24  pjflex medium   NA       NA
+211  211                   2    211          2.24      pj  small   NA       NA
+212  212                   9    212          9.24  pjflex    big   NA       NA
+213  213                   7    213          7.24   ayira    big   NA       NA
+214  214                   5    214          5.24      pj medium   NA       NA
+215  215                   4    215          4.24   ayira medium   NA       NA
+216  216                   1    216          1.24   ayira  small   NA       NA
+217  217                   7    217          7.25   ayira    big   NA       NA
+218  218                   9    218          9.25  pjflex    big   NA       NA
+219  219                   1    219          1.25   ayira  small   NA       NA
+220  220                   4    220          4.25   ayira medium   NA       NA
+221  221                   8    221          8.25      pj    big   NA       NA
+222  222                   5    222          5.25      pj medium   NA       NA
+223  223                   6    223          6.25  pjflex medium   NA       NA
+224  224                   3    224          3.25  pjflex  small   NA       NA
+225  225                   2    225          2.25      pj  small   NA       NA
+226  226                   6    226          6.26  pjflex medium   NA       NA
+227  227                   5    227          5.26      pj medium   NA       NA
+228  228                   2    228          2.26      pj  small   NA       NA
+229  229                   1    229          1.26   ayira  small   NA       NA
+230  230                   7    230          7.26   ayira    big   NA       NA
+231  231                   4    231          4.26   ayira medium   NA       NA
+232  232                   9    232          9.26  pjflex    big   NA       NA
+233  233                   8    233          8.26      pj    big   NA       NA
+234  234                   3    234          3.26  pjflex  small   NA       NA
+235  235                   8    235          8.27      pj    big   NA       NA
+236  236                   9    236          9.27  pjflex    big   NA       NA
+237  237                   1    237          1.27   ayira  small   NA       NA
+238  238                   5    238          5.27      pj medium   NA       NA
+239  239                   7    239          7.27   ayira    big   NA       NA
+240  240                   6    240          6.27  pjflex medium   NA       NA
+241  241                   2    241          2.27      pj  small   NA       NA
+242  242                   4    242          4.27   ayira medium   NA       NA
+243  243                   3    243          3.27  pjflex  small   NA       NA
+244  244                   3    244          3.28  pjflex  small   NA       NA
+245  245                   8    245          8.28      pj    big   NA       NA
+246  246                   2    246          2.28      pj  small   NA       NA
+247  247                   1    247          1.28   ayira  small   NA       NA
+248  248                   7    248          7.28   ayira    big   NA       NA
+249  249                   5    249          5.28      pj medium   NA       NA
+250  250                   9    250          9.28  pjflex    big   NA       NA
+251  251                   6    251          6.28  pjflex medium   NA       NA
+252  252                   4    252          4.28   ayira medium   NA       NA
+253  253                   1    253          1.29   ayira  small   NA       NA
+254  254                   3    254          3.29  pjflex  small   NA       NA
+255  255                   7    255          7.29   ayira    big   NA       NA
+256  256                   4    256          4.29   ayira medium   NA       NA
+257  257                   6    257          6.29  pjflex medium   NA       NA
+258  258                   5    258          5.29      pj medium   NA       NA
+259  259                   2    259          2.29      pj  small   NA       NA
+260  260                   8    260          8.29      pj    big   NA       NA
+261  261                   9    261          9.29  pjflex    big   NA       NA
+262  262                   1    262          1.30   ayira  small   NA       NA
+263  263                   7    263          7.30   ayira    big   NA       NA
+264  264                   3    264          3.30  pjflex  small   NA       NA
+265  265                   6    265          6.30  pjflex medium   NA       NA
+266  266                   4    266          4.30   ayira medium   NA       NA
+267  267                   5    267          5.30      pj medium   NA       NA
+268  268                   2    268          2.30      pj  small   NA       NA
+269  269                   8    269          8.30      pj    big   NA       NA
+270  270                   9    270          9.30  pjflex    big   NA       NA
+#+end_example
+
+=NA= means not available. Last two columns should have simulation time
+for that factor combination and the platform where experiments took
+place.
