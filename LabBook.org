@@ -1837,3 +1837,33 @@ csv;
 540          NA      NA       NA
 #+end_example
 
+* 2016-03-29 Tracing batch executions along time
+
+This follows the same design as in:
+- [[*2016-03-29 Tracing batch executions along time][2016-03-29 Tracing batch executions along time]]
+
+The difference is that =ayira= should be instrumented to measure, at _the
+end of every batch execution_, the following information:
+
+# Design factors
+- input (see [[*2016-03-29 DoE for Batch Size Investigation][2016-03-29 DoE for Batch Size Investigation]])
+- batch (see [[*2016-03-29 DoE for Batch Size Investigation][2016-03-29 DoE for Batch Size Investigation]])
+# Tracing info
+- batch number (starting at 1)
+- start time (in seconds)
+- end time (in seconds)
+- size in bytes of the batch
+- size in number of operations
+# Platform
+- Platform
+
+Ideally, each line holds all this information. Note that there might
+be many of these lines since it gets registered at every batch
+execution, specially when size is 128 operations and file is big. So,
+I strongly recommend you buffer this information in a vector and dump
+only at the end. The name of the file should be something unique,
+combining information above, such as =input_batch_platform.csv=, where
+input is big/medium/small, batch is A, B, C and so on. You could use
+all columns values as in the design described in [[*2016-03-29 DoE for Batch Size Investigation][2016-03-29 DoE for
+Batch Size Investigation]] except for those that you measure (simulation
+and insertion times, memory utilization).
