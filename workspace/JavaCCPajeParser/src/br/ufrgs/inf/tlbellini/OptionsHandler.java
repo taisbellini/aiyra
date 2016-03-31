@@ -22,6 +22,7 @@ public class OptionsHandler {
 		opt.getSet().addOption("d", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("u", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("pwd", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
+		opt.getSet().addOption("batch", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
 		// check options
 		printOptionsHelper();
 	}
@@ -42,6 +43,7 @@ public class OptionsHandler {
 			System.out.println("-s <server-name> (optional): server name for the database. Default: localhost");
 			System.out.println("-u <user-name> (optional): username to access database. Default: root");
 			System.out.println("-pwd <password> (optional): password to access database. Default: root");
+			System.out.println("-batch <max_size> (optional): Maximum size of batch to keep in memory");
 
 			System.exit(1);
 		}
@@ -77,8 +79,10 @@ public class OptionsHandler {
 				String database = "paje";
 				String username = opt.getSet().isSet("u") ? opt.getSet().getOption("u").getResultValue(0) : "root";
 				String password = opt.getSet().isSet("pwd") ? opt.getSet().getOption("pwd").getResultValue(0) : "root";
+				boolean batch = opt.getSet().isSet("batch") ? true : false;
+				int batch_size = (int) (batch ? opt.getSet().getOption("batch").getResultValue(0) : 0); 
 				try {
-					PajeGrammar.plugin = new PajeInsertDBPlugin(serverName, database, username, password);
+					PajeGrammar.plugin = new PajeInsertDBPlugin(serverName, database, username, password, batch, batch_size);
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}

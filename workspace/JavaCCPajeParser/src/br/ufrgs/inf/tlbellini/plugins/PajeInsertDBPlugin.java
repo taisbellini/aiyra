@@ -23,7 +23,9 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	private String username;
 	private String password;
 	public long insertionTime;
-	private int fileId; 
+	private int fileId;
+	private boolean batch;
+	private int batch_size;
 	
 	PreparedStatement stmtLink;
 	PreparedStatement stmtEvent;
@@ -31,11 +33,13 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	PreparedStatement stmtState;
 	
 	
-	public PajeInsertDBPlugin(String serverName, String database, String username, String password) throws SQLException {
+	public PajeInsertDBPlugin(String serverName, String database, String username, String password, boolean batch, int batch_size) throws SQLException {
 		this.serverName = serverName;
 		this.mydatabase = database;
 		this.username = username;
 		this.password = password;
+		this.batch = batch;
+		this.batch_size = batch_size;
 		
 		connectDB();
 		
