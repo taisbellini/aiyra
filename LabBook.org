@@ -160,6 +160,10 @@ java br.ufrgs.inf.tlbellini.PajeGrammar -f <path-to-trace-file> \
 ** References
 Command line reader:
 http://www.javaworld.com/article/2074849/core-java/processing-command-line-arguments-in-java--case-closed.html
+
+Memory Usage: 
+http://www.vogella.com/tutorials/JavaPerformance/article.html#runtimeinfo_memory
+https://developer.apple.com/library/mac/documentation/Performance/Conceptual/ManagingMemory/Articles/VMPages.html
 ** Performance
 commit: "create poc of integration of plugins and the Options package"
 - scorep-cg.A.64.paje - 2.1GB - 367918ms
@@ -228,7 +232,7 @@ MODIFY OptionsHandler:
 
 In the OptionsHandler constructor, add the new argument as follows: 
   
-   opt.getSet().addOptions("<alias>", Options.Separator.<SEPARATOR>, Options.Multiplicity.<MULTIPLICITY>);
+   opt.getSet().addOption("<alias>", Options.Separator.<SEPARATOR>, Options.Multiplicity.<MULTIPLICITY>);
 
    <alias> = the alias to identify the argument
    <SEPARATOR> = COLON, EQUALS, BLANK, NONE
