@@ -405,20 +405,22 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	@Override
 	public void finish() {
 		execBatches();
-		dumpBatchInfo();
+		if (batch) dumpBatchInfo();
 		close();
 	}
 	
 	public void execBatches(){
 		try{
-			long startTime = System.currentTimeMillis();
+			// - start time to get the time starting at zero
+			long startTime = System.currentTimeMillis() - PajeGrammar.startTime;
 			stmtEvent.executeBatch();
 			stmtLink.executeBatch();
 			stmtState.executeBatch();
 			stmtVariable.executeBatch();
-			long endTime = System.currentTimeMillis();
-			Long[] info = {endTime, endTime - startTime, (long) this.batchCount};
-			batchInfo.put(startTime, info);
+			long endTime = System.currentTimeMillis() - PajeGrammar.startTime;
+			//get the seconds
+			Long[] info = {endTime/100, (endTime - startTime)/100, (long) this.batchCount};
+			batchInfo.put(startTime/100, info);
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
@@ -441,7 +443,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 		try{
 			FileWriter writer = new FileWriter(filename);
 	 
-			writer.append("BatchNumber,StartTime(ms), EndTime(ms), Duration(ms), Size\n");
+			writer.append("BatchNumber,StartTime(s), EndTime(s), Duration(s), Size\n");
 			Iterator<Entry<Long, Long[]>> it = batchInfo.entrySet().iterator();
 		    while (it.hasNext()) {
 		        Entry<Long, Long[]> pair = it.next();

@@ -19,6 +19,7 @@ public class PajeGrammar{
   public static PajePlugin plugin;
   public static OptionsHandler options;
   private static final long MEGABYTE = 1024L * 1024L;
+  public static long startTime;
 
   public static void evaluateMemoryMemoryUsage()
   {
@@ -61,7 +62,7 @@ public class PajeGrammar{
 		options.checkEntry();    }else
     {
       options.printOptionsHelper();    }
-    long startTime = System.currentTimeMillis();
+    startTime = System.currentTimeMillis();
     simulator.init();    PajeGrammar parser = new PajeGrammar(input);
                 try      {        switch (parser.paje())        {          case 4 :
 		  evaluateMemoryMemoryUsage();
