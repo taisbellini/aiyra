@@ -10,6 +10,7 @@ public class OptionsHandler {
 	public Options opt;
 	public String filename;
 	public String comment = " ";
+	public String platform;
 
 	public OptionsHandler(String args[]) {
 		// get user input
@@ -23,6 +24,7 @@ public class OptionsHandler {
 		opt.getSet().addOption("u", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("pwd", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("batch", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
+		opt.getSet().addOption("plat", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
 		// check options
 		printOptionsHelper();
 	}
@@ -44,6 +46,7 @@ public class OptionsHandler {
 			System.out.println("-u <user-name> (optional): username to access database. Default: root");
 			System.out.println("-pwd <password> (optional): password to access database. Default: root");
 			System.out.println("-batch <max_size> (optional): Maximum size of batch to keep in memory");
+			System.out.println("-plat <platform> (optional): The name of the platform you are using");
 
 			System.exit(1);
 		}
@@ -64,6 +67,7 @@ public class OptionsHandler {
 		} else {
 			PajeGrammar.plugin = new PajeNullPlugin();
 		}
+		platform = opt.getSet().isSet("plat") ? opt.getSet().getOption("plat").getResultValue(0) : "notspecified";
 	}
 	
 	public void pluginHandler(){

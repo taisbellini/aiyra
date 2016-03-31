@@ -1,5 +1,7 @@
 package br.ufrgs.inf.tlbellini.plugins;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -50,7 +52,6 @@ public class PajeInsertDBPlugin extends PajePlugin {
 		this.password = password;
 		this.batch = batch;
 		this.batchSize = batchSize;
-		
 		connectDB();
 		
 		stmtLink = conn.prepareStatement(
@@ -406,7 +407,6 @@ public class PajeInsertDBPlugin extends PajePlugin {
 		execBatches();
 		dumpBatchInfo();
 		close();
-		
 	}
 	
 	public void execBatches(){
@@ -434,14 +434,40 @@ public class PajeInsertDBPlugin extends PajePlugin {
 		}	
 	}
 	
+	
 	public void dumpBatchInfo(){
-		System.out.println("startTime(ms), endTime(ms), Duration(ms), Size");
-		Iterator<Entry<Long, Long[]>> it = batchInfo.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Entry<Long, Long[]> pair = it.next();
-	        System.out.println(pair.getKey() + " , " + pair.getValue()[0]+ " , " + pair.getValue()[1]+ " , " + pair.getValue()[2] );
-	        it.remove(); // avoids a ConcurrentModificationException
-	    }
+		String filename = String.format("%s_%d_%s.csv", PajeGrammar.options.filename, batchSize, PajeGrammar.options.platform);
+		int count = 1;
+		try{
+			FileWriter writer = new FileWriter(filename);
+	 
+			writer.append("BatchNumber,StartTime(ms), EndTime(ms), Duration(ms), Size\n");
+			Iterator<Entry<Long, Long[]>> it = batchInfo.entrySet().iterator();
+		    while (it.hasNext()) {
+		        Entry<Long, Long[]> pair = it.next();
+		        writer.append(Integer.toString(count));
+		        writer.append(",");
+		        writer.append(Long.toString(pair.getKey()));
+		        writer.append(",");
+		        writer.append(Long.toString(pair.getValue()[0]));
+		        writer.append(",");
+		        writer.append(Long.toString(pair.getValue()[1]));
+		        writer.append(",");
+		        writer.append(Long.toString(pair.getValue()[2]));
+		        writer.append("\n");
+		        it.remove(); // avoids a ConcurrentModificationException
+		        count++;
+		    }
+
+
+		    writer.flush();
+		    writer.close();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		} 
+
 	}
 
 }
