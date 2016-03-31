@@ -8,6 +8,9 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import ml.options.*;
 import br.ufrgs.inf.tlbellini.plugins.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 
 public class PajeGrammar{
 
@@ -15,6 +18,37 @@ public class PajeGrammar{
   static PajeSimulator simulator = new PajeSimulator();
   public static PajePlugin plugin;
   public static OptionsHandler options;
+  private static final long MEGABYTE = 1024L * 1024L;
+
+  public static void evaluateMemoryMemoryUsage()
+  {
+  
+	  	MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
+	  	MemoryUsage mem = memory.getHeapMemoryUsage();
+	  	long init = mem.getInit();
+	  	long used = mem.getUsed();
+
+		System.out.println("MemUsage");
+	  	System.out.println("Initial allocated: " + init);
+	  	System.out.println("Used memory is bytes: " + used);
+        System.out.println("Used memory is megabytes: " + used/MEGABYTE);
+
+  }
+  
+  public static void evaluateMemoryRuntime()
+  {
+        // Get the Java runtime
+        Runtime runtime = Runtime.getRuntime();
+        // Run the garbage collector
+        runtime.gc();
+        // Calculate the used memory
+        long memory = runtime.totalMemory() - runtime.freeMemory();
+
+	  	System.out.println("Runtime");
+	  	System.out.println("Used memory is bytes: " + memory);
+        System.out.println("Used memory is megabytes: " + memory/MEGABYTE);
+
+  }
   
 
   public static void main(String args []) throws ParseException, FileNotFoundException  {
@@ -29,7 +63,9 @@ public class PajeGrammar{
       options.printOptionsHelper();    }
     long startTime = System.currentTimeMillis();
     simulator.init();    PajeGrammar parser = new PajeGrammar(input);
-                try      {        switch (parser.paje())        {          case 4 :  
+                try      {        switch (parser.paje())        {          case 4 :
+		  evaluateMemoryMemoryUsage();
+          evaluateMemoryRuntime();
           simulator.finish();          long endTime = System.currentTimeMillis();
           System.out.println("OK. Finished in: " + (endTime - startTime) +"ms");
           break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());
