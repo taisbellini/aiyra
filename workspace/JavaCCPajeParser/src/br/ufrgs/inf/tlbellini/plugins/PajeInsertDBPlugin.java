@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -27,6 +29,13 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	private boolean batch;
 	private int batchSize;
 	private int batchCount = 0;
+	/*
+	 * Key: startTime
+	 * Value: [0] endTime
+	 * 		  [1] duration
+	 * 		  [2] size in number of operations
+	 */
+	private Map<Long, Long[]> batchInfo = new HashMap<Long, Long[]>();
 	
 	PreparedStatement stmtLink;
 	PreparedStatement stmtEvent;
@@ -394,34 +403,45 @@ public class PajeInsertDBPlugin extends PajePlugin {
 
 	@Override
 	public void finish() {
+		execBatches();
+		dumpBatchInfo();
+		close();
+		
+	}
+	
+	public void execBatches(){
 		try{
+			long startTime = System.currentTimeMillis();
 			stmtEvent.executeBatch();
 			stmtLink.executeBatch();
 			stmtState.executeBatch();
 			stmtVariable.executeBatch();
-			close();
+			long endTime = System.currentTimeMillis();
+			Long[] info = {endTime, endTime - startTime, (long) this.batchCount};
+			batchInfo.put(startTime, info);
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
-		
 	}
 	
 	private void verifyBatchCount() {
 		if (batch){
 			this.batchCount++;
 			if (this.batchCount == batchSize){
+				execBatches();
 				this.batchCount = 0;
-				try{
-					stmtEvent.executeBatch();
-					stmtLink.executeBatch();
-					stmtState.executeBatch();
-					stmtVariable.executeBatch();
-				}catch (SQLException e){
-					e.printStackTrace();
-				}
 			}
-		}
-		
+		}	
+	}
+	
+	public void dumpBatchInfo(){
+		System.out.println("startTime(ms), endTime(ms), Duration(ms), Size");
+		Iterator<Entry<Long, Long[]>> it = batchInfo.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Entry<Long, Long[]> pair = it.next();
+	        System.out.println(pair.getKey() + " , " + pair.getValue()[0]+ " , " + pair.getValue()[1]+ " , " + pair.getValue()[2] );
+	        it.remove(); // avoids a ConcurrentModificationException
+	    }
 	}
 
 }
