@@ -1871,3 +1871,20 @@ input is big/medium/small, batch is A, B, C and so on. You could use
 all columns values as in the design described in [[*2016-03-29 DoE for Batch Size Investigation][2016-03-29 DoE for
 Batch Size Investigation]] except for those that you measure (simulation
 and insertion times, memory utilization).
+* 2016-03-31 Adding the Batch Size manipulation 
+** Implementation
+- New argument to "mysql" plugin: -batch <max_size> 
+  - size is in number of operations, not bytes.
+- We have 4 different types of batches, but it is all counted as it
+  was one.
+
+** Batch information data structure
+- It is a Map<Long, Long[]>, where the key is the time when the batch
+  was executed.
+- There is no option of finding out the batch size in bytes.
+- Key: start time. Value: end time, duration, size in operations
+  - size in operations is always the same, but the last one, that will
+    be what is left.
+
+
+
