@@ -25,7 +25,8 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	public long insertionTime;
 	private int fileId;
 	private boolean batch;
-	private int batch_size;
+	private int batchSize;
+	private int batchCount = 0;
 	
 	PreparedStatement stmtLink;
 	PreparedStatement stmtEvent;
@@ -33,13 +34,13 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	PreparedStatement stmtState;
 	
 	
-	public PajeInsertDBPlugin(String serverName, String database, String username, String password, boolean batch, int batch_size) throws SQLException {
+	public PajeInsertDBPlugin(String serverName, String database, String username, String password, boolean batch, int batchSize) throws SQLException {
 		this.serverName = serverName;
 		this.mydatabase = database;
 		this.username = username;
 		this.password = password;
 		this.batch = batch;
-		this.batch_size = batch_size;
+		this.batchSize = batchSize;
 		
 		connectDB();
 		
@@ -266,6 +267,8 @@ public class PajeInsertDBPlugin extends PajePlugin {
 					stmtState.setInt(7, fileId);
 					
 					stmtState.addBatch();
+					verifyBatchCount();
+					verifyBatchCount();
 				}catch (SQLException e){
 					e.printStackTrace();
 				}
@@ -287,6 +290,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 							stmtVariable.setInt(6, fileId);
 							stmtVariable.setDouble(7, ((PajeDoubleTimedEntity) last).getEndTime());
 							stmtVariable.addBatch();
+							verifyBatchCount();
 						}
 						
 					}catch (SQLException e){
@@ -319,6 +323,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 			stmtState.setInt(7, fileId);
 			
 			stmtState.addBatch();
+			verifyBatchCount();
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
@@ -336,6 +341,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 			stmtLink.setString(7, link.getEndContainer().alias);
 			stmtLink.setInt(8, fileId);
 			stmtLink.addBatch();
+			verifyBatchCount();
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
@@ -361,6 +367,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 				stmtVariable.setInt(6, fileId);
 				stmtVariable.setDouble(7, ((PajeDoubleTimedEntity) last).getEndTime());
 				stmtVariable.addBatch();
+				verifyBatchCount();
 			}
 			
 		}catch (SQLException e){
@@ -378,6 +385,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 			stmtEvent.setString(4, event.getValue().getAlias());
 			stmtEvent.setInt(5, fileId);
 			stmtEvent.addBatch();
+			verifyBatchCount();
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
@@ -394,6 +402,24 @@ public class PajeInsertDBPlugin extends PajePlugin {
 			close();
 		}catch (SQLException e){
 			e.printStackTrace();
+		}
+		
+	}
+	
+	private void verifyBatchCount() {
+		if (batch){
+			this.batchCount++;
+			if (this.batchCount == batchSize){
+				this.batchCount = 0;
+				try{
+					stmtEvent.executeBatch();
+					stmtLink.executeBatch();
+					stmtState.executeBatch();
+					stmtVariable.executeBatch();
+				}catch (SQLException e){
+					e.printStackTrace();
+				}
+			}
 		}
 		
 	}

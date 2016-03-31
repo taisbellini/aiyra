@@ -80,7 +80,7 @@ public class OptionsHandler {
 				String username = opt.getSet().isSet("u") ? opt.getSet().getOption("u").getResultValue(0) : "root";
 				String password = opt.getSet().isSet("pwd") ? opt.getSet().getOption("pwd").getResultValue(0) : "root";
 				boolean batch = opt.getSet().isSet("batch") ? true : false;
-				int batch_size = (int) (batch ? opt.getSet().getOption("batch").getResultValue(0) : 0); 
+				int batch_size = batch ? Integer.parseInt(opt.getSet().getOption("batch").getResultValue(0)) : 0; 
 				try {
 					PajeGrammar.plugin = new PajeInsertDBPlugin(serverName, database, username, password, batch, batch_size);
 				} catch (SQLException e) {
