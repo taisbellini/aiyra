@@ -29,7 +29,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	public long insertionTime;
 	private int fileId;
 	private boolean batch;
-	private int batchSize;
+	private int batchSize = Integer.MAX_VALUE;
 	private int batchCount = 0;
 	public long maxMemMega = 0;
 	/*
@@ -407,6 +407,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	public void finish() {
 		execBatches();
 		System.out.println("Max memory used in MB: " + maxMemMega);
+		System.out.println("Batch count: " + this.batchCount);
 		if (batch) dumpBatchInfo();
 		close();
 	}
@@ -430,7 +431,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	}
 	
 	private void verifyBatchCount() {
-		if (batch){
+		if (batch || true){
 			this.batchCount++;
 			if (this.batchCount == batchSize){
 				execBatches();
