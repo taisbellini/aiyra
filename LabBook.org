@@ -1854,8 +1854,8 @@ end of every batch execution_, the following information:
 - batch (see [[*2016-03-29 DoE for Batch Size Investigation][2016-03-29 DoE for Batch Size Investigation]])
 # Tracing info
 - batch number (starting at 1)
-- start time (in seconds)
-- end time (in seconds)
+- start time (in microseconds)
+- end time (in microseconds)
 - size in bytes of the batch
 - size in number of operations
 # Platform
