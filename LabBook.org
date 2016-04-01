@@ -1976,6 +1976,7 @@ while read -r line; do
 done < "$DESIGN"
 #+end_src
 
-
+Until Tuesday, you sent me both scripts.
+Next Friday, we analyze some data.
 
 
