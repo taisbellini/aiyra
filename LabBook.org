@@ -1980,3 +1980,154 @@ Until Tuesday, you sent me both scripts.
 Next Friday, we analyze some data.
 
 
+* 2016-04-01 Generating traces with different sizes                   :Lucas:
+
+For input, the levels are small (128K), medium (131072K, or 128M), and
+big (1048576K or 1G). So, to generate these files, you can use an
+example tool called tracegen that I just developed with poti. To
+quickly introduce yourself, do:
+
+_Clone and Compile_
+
+#+begin_src sh :results output :session :exports both
+git clone https://github.com/schnorr/poti.git
+mkdir -p poti/build; cd poti/build
+cmake ..; make
+#+end_src
+
+#+RESULTS:
+#+begin_example
+-- The C compiler identification is GNU 5.3.1
+-- The CXX compiler identification is GNU 5.3.1
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/schnorr/svn/tais/aiyra/poti/build
+Scanning dependencies of target poti
+[  3%] Building C object CMakeFiles/poti.dir/src/poti.c.o
+[  6%] Building C object CMakeFiles/poti.dir/src/poti_header.c.o
+[ 10%] Building C object CMakeFiles/poti.dir/src/poti_events.c.o
+[ 13%] Building C object CMakeFiles/poti.dir/src/poti_events_unique.c.o
+[ 16%] Building C object CMakeFiles/poti.dir/src/poti_events_unaliased.c.o
+[ 20%] Linking C shared library libpoti.so
+[ 20%] Built target poti
+Scanning dependencies of target containers
+[ 23%] Building C object examples/CMakeFiles/containers.dir/containers.c.o
+[ 26%] Linking C executable containers
+[ 26%] Built target containers
+Scanning dependencies of target eventdef
+[ 30%] Building C object examples/CMakeFiles/eventdef.dir/eventdef.c.o
+[ 33%] Linking C executable eventdef
+[ 33%] Built target eventdef
+Scanning dependencies of target events
+[ 36%] Building C object examples/CMakeFiles/events.dir/events.c.o
+[ 40%] Linking C executable events
+[ 40%] Built target events
+Scanning dependencies of target header
+[ 43%] Building C object examples/CMakeFiles/header.dir/header.c.o
+[ 46%] Linking C executable header
+[ 46%] Built target header
+Scanning dependencies of target links
+[ 50%] Building C object examples/CMakeFiles/links.dir/links.c.o
+[ 53%] Linking C executable links
+[ 53%] Built target links
+Scanning dependencies of target main_example
+[ 56%] Building C object examples/CMakeFiles/main_example.dir/main_example.c.o
+[ 60%] Linking C executable main_example
+[ 60%] Built target main_example
+Scanning dependencies of target states
+[ 63%] Building C object examples/CMakeFiles/states.dir/states.c.o
+[ 66%] Linking C executable states
+[ 66%] Built target states
+Scanning dependencies of target states_unaliased
+[ 70%] Building C object examples/CMakeFiles/states_unaliased.dir/states_unaliased.c.o
+[ 73%] Linking C executable states_unaliased
+[ 73%] Built target states_unaliased
+Scanning dependencies of target tracegen
+[ 76%] Building C object examples/CMakeFiles/tracegen.dir/tracegen.c.o
+[ 80%] Linking C executable tracegen
+[ 80%] Built target tracegen
+Scanning dependencies of target variables
+[ 83%] Building C object examples/CMakeFiles/variables.dir/variables.c.o
+[ 86%] Linking C executable variables
+[ 86%] Built target variables
+Scanning dependencies of target vite-1.2
+[ 90%] Building C object examples/CMakeFiles/vite-1.2.dir/vite-1.2.c.o
+[ 93%] Linking C executable vite-1.2
+[ 93%] Built target vite-1.2
+Scanning dependencies of target vite-svn
+[ 96%] Building C object examples/CMakeFiles/vite-svn.dir/vite-svn.c.o
+[100%] Linking C executable vite-svn
+[100%] Built target vite-svn
+#+end_example
+
+_Get to know tracegen_
+
+#+begin_src sh :results output :session :exports both
+./poti/build/examples/tracegen --help
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Usage: tracegen [OPTION...] FILENAME [SIZE]
+Generates Paje Trace FILENAME, with a limite size of SIZE
+
+  -f, --filename=FILENAME    The filename of the output.
+  -s, --size=SIZE            The target size of the file in bytes.
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+
+Mandatory or optional arguments to long options are also mandatory or optional
+for any corresponding short options.
+#+end_example
+
+As you can see you just have to provide an obligatory filename and an
+optional target size. If size is not provided, it will generate the
+minimal trace file for this example (see tracegen source code [1] for
+details).
+
+[1]: https://github.com/schnorr/poti/blob/master/examples/tracegen.c
+
+_Generating the trace files_
+
+So, to get you trace files, just run the following:
+
+#+begin_src sh :results output :session :exports both
+./poti/build/examples/tracegen --filename trace-128K.paje --size `echo 128*1024 | bc -l`
+./poti/build/examples/tracegen --filename trace-128M.paje --size `echo 128*1024*1024 | bc -l`
+./poti/build/examples/tracegen --filename trace-1G.paje --size `echo 1024*1024*1024 | bc -l`
+#+end_src
+
+#+RESULTS:
+: Output is 131097 bytes (target was 131072; 25 bytes more).
+: Output is 134217754 bytes (target was 134217728; 26 bytes more).
+: Output is 1073741854 bytes (target was 1073741824; 30 bytes more).
+
+Great. Let's it. I'm gzipping them to send to you.
+
+#+begin_src sh :results output :session :exports both
+gzip trace-128K.paje trace-128M.paje trace-1G.paje; ls -lh *.paje.gz
+#+end_src
+
+#+RESULTS:
+: -rw-r--r-- 1 schnorr schnorr  40K Apr  1 16:51 trace-128K.paje.gz
+: -rw-r--r-- 1 schnorr schnorr  36M Apr  1 16:51 trace-128M.paje.gz
+: -rw-r--r-- 1 schnorr schnorr 277M Apr  1 16:52 trace-1G.paje.gz
+
+They are all available here:
+- https://dl.dropboxusercontent.com/u/1119921/Traces/trace-128K.paje.gz
+- https://dl.dropboxusercontent.com/u/1119921/Traces/trace-128M.paje.gz
+- https://dl.dropboxusercontent.com/u/1119921/Traces/trace-1G.paje.gz
+
+You can =gunzip= them.
