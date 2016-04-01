@@ -48,7 +48,7 @@ public class PajeGrammar{
 	  	//System.out.println("Runtime");
 	  	//System.out.println("Used memory is bytes: " + memory);
         //System.out.println("Used memory is megabytes: " + memory/MEGABYTE);
-        return memory/MEGABYTE;
+        return memory;
 
   }
 

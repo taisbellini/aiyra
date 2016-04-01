@@ -406,7 +406,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	@Override
 	public void finish() {
 		execBatches();
-		System.out.println("Max memory used in MB: " + maxMemMega);
+		System.out.println("Max memory used in bytes: " + maxMemMega);
 		System.out.println("Batch count: " + this.batchCount);
 		if (batch) dumpBatchInfo();
 		close();
