@@ -253,7 +253,7 @@ CREATE NEW CLASS:
    
 Instrumentation Points:
 
-* 2016-03-29 Meeting with Tais
+* 2016-03-29 Meeting with Tais                                   :Lucas:Tais:
 
 Performance Evalution
 
