@@ -36,7 +36,7 @@ public class PajeGrammar{
 
   }
   
-  public static void evaluateMemoryRuntime()
+  public static long evaluateMemoryRuntime()
   {
         // Get the Java runtime
         Runtime runtime = Runtime.getRuntime();
@@ -45,11 +45,16 @@ public class PajeGrammar{
         // Calculate the used memory
         long memory = runtime.totalMemory() - runtime.freeMemory();
 
-	  	System.out.println("Runtime");
-	  	System.out.println("Used memory is bytes: " + memory);
-        System.out.println("Used memory is megabytes: " + memory/MEGABYTE);
+	  	//System.out.println("Runtime");
+	  	//System.out.println("Used memory is bytes: " + memory);
+        //System.out.println("Used memory is megabytes: " + memory/MEGABYTE);
+        return memory/MEGABYTE;
 
   }
+
+  public static void evaluateMemory()  {
+    //OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
+	}
   
 
   public static void main(String args []) throws ParseException, FileNotFoundException  {
@@ -65,9 +70,7 @@ public class PajeGrammar{
     startTime = System.currentTimeMillis();
     simulator.init();    PajeGrammar parser = new PajeGrammar(input);
                 try      {        switch (parser.paje())        {          case 4 :
-		  evaluateMemoryMemoryUsage();
-          evaluateMemoryRuntime();
-          simulator.finish();          long endTime = System.currentTimeMillis();
+		  simulator.finish();          long endTime = System.currentTimeMillis();
           System.out.println("OK. Finished in: " + (endTime - startTime) +"ms");
           break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());
       }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());      }    }}PARSER_END(PajeGrammar)SKIP :{  " "| "\r"| "\t"
