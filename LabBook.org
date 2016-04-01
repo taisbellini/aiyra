@@ -1887,12 +1887,27 @@ and insertion times, memory utilization).
     be what is left.
 
 
+* 2016-04-01 Meeting with Tais                                   :Lucas:Tais:
 
-* 2016-04-01 Meeting with Tais
+Batch size is measured in two ways:
+- number of operations
+- in bytes (doubt below)
 
-- Measuring the size of batch
-  - Count the number of bytes in prepared statements
-  - Count the number of bytes when customizing statements
-  - Sum everything to reach the number of bytes for each batch
+How to measure the batch size in bytes?
+- Count the number of bytes in prepared statements
+- Count the number of bytes when customizing statements
+- Sum everything to reach the number of bytes for each batch
 
-- Problem measuring =memory= utilizaton in Java.
+Problem measuring =memory= utilization in Java. Let's do like this:
+- Before each batch execution, we measure the amount of memory in
+  bytes like this:
+  #+BEGIN_EXAMPLE
+  (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())
+  #+END_EXAMPLE
+- The result is compared against a global =maxMemory= variable. It the
+  results is greated, we update =maxMemory=, otherwise we do nothing.
+- Doing this we will obtain the maximum memory utilization of the
+  program, which we can use to run comparisons according to the
+  batch size. We are not sure yet about the resolution of such
+  functions, so let's use the data with care.
+
