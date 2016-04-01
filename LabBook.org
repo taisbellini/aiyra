@@ -1888,3 +1888,11 @@ and insertion times, memory utilization).
 
 
 
+* 2016-04-01 Meeting with Tais
+
+- Measuring the size of batch
+  - Count the number of bytes in prepared statements
+  - Count the number of bytes when customizing statements
+  - Sum everything to reach the number of bytes for each batch
+
+- Problem measuring =memory= utilizaton in Java.
