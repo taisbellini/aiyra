@@ -1911,3 +1911,71 @@ Problem measuring =memory= utilization in Java. Let's do like this:
   batch size. We are not sure yet about the resolution of such
   functions, so let's use the data with care.
 
+Measuring time in nanoseconds _for everything_
+#+BEGIN_EXAMPLE
+System.nanoTime();
+#+END_EXAMPLE
+
+Execution time (OKAY)
+- Should not consider time spent for DB connection
+
+Print batch size (the argument) to the output
+- When no batch is provided, you print the initilization's MAXINT 
+
+_What is missing for launching the experiments?_
+- Three input files
+- Bash script to run the experiment
+  - INPUT: CSV design
+  - OUTPUT: CSV design with measurements
+
+#+begin_src sh :results output :session :exports both :tangle Cpp_Comparison.sh
+#!/bin/bash
+
+# CPP_Comparison.sh
+
+# For each line
+  # get the name of the program (column 5)
+  # get the input size (column 6)
+  # Launch the experiment, get execution time
+  # print the line, with the time.
+
+function usage()
+{
+  echo "./Cpp_Comparison.sh <design> <platform>";
+}
+
+
+DESIGN=$1
+if [ -z "$DESIGN" ]; then
+    usage;
+    exit;
+fi
+PLATFORM=$2
+if [ -z "$PLATFORM" ]; then
+    usage;
+    exit
+fi
+
+while read -r line; do
+#    echo $line
+    PROGRAM=`echo $line | cut -d, -f5 | sed -e "s/\"//g"`
+    INPUTSIZE=`echo $line | cut -d, -f6 | sed -e "s/\"//g"`
+#    echo $PROGRAM $INPUTSIZE
+    if [ $PROGRAM = "aiyra" ]; then
+      # execute aiyra
+	EXEC=1
+    elif [ $PROGRAM = "pj" ]; then
+	# execute pj_dump -q -t
+	EXEC=1
+    elif [ $PROGRAM = "pjflex" ]; then
+	# execute pj_dump -q -t -f
+	EXEC=1
+    fi
+    echo $line | cut -d, -f1-6 | tr '\n' ','
+    echo "$EXEC,$PLATFORM"
+done < "$DESIGN"
+#+end_src
+
+
+
+
