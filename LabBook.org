@@ -379,7 +379,7 @@ _Changes to the *mysql* plugin_
 _How to measure memory utilization_
 - MemoryUsage class in Java, check the used() method
 - Compare against top (the column that indicates the virtual memory allocated)
-* 2016-03-29 DoE for C++ Comparison
+* 2016-03-29 DoE for C++ Comparison                                   :Lucas:
 
 The C++ Comparison has two factors: _version_ and _input_, each one with
 three levels. For version, the levels are _ayira_, _pj_, _pjflex_. For
@@ -707,7 +707,7 @@ csv;
 =NA= means not available. Last two columns should have simulation time
 for that factor combination and the platform where experiments took
 place.
-* 2016-03-29 DoE for Batch Size Investigation
+* 2016-03-29 DoE for Batch Size Investigation                         :Lucas:
 
 The batch size investigation will have two factors: _input_, and
 _batch_. The first one with three levels, the second one with six
@@ -1841,7 +1841,7 @@ csv;
 540          NA      NA       NA
 #+end_example
 
-* 2016-03-29 Tracing batch executions along time
+* 2016-03-29 Tracing batch executions along time                      :Lucas:
 
 This follows the same design as in:
 - [[*2016-03-29 Tracing batch executions along time][2016-03-29 Tracing batch executions along time]]
@@ -1871,7 +1871,7 @@ input is big/medium/small, batch is A, B, C and so on. You could use
 all columns values as in the design described in [[*2016-03-29 DoE for Batch Size Investigation][2016-03-29 DoE for
 Batch Size Investigation]] except for those that you measure (simulation
 and insertion times, memory utilization).
-* 2016-03-31 Adding the Batch Size manipulation 
+* 2016-03-31 Adding the Batch Size manipulation                        :Tais:
 ** Implementation
 - New argument to "mysql" plugin: -batch <max_size> 
   - size is in number of operations, not bytes.
