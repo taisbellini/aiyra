@@ -53,6 +53,7 @@ public class OptionsHandler {
 	}
 
 	public void checkEntry() {
+		platform = opt.getSet().isSet("plat") ? opt.getSet().getOption("plat").getResultValue(0) : "notspecified";
 		if (opt.getSet().isSet("f")) {
 			String[] entry = opt.getSet().getOption("f").getResultValue(0).split("/");
 			filename = entry[entry.length - 1];
@@ -67,7 +68,6 @@ public class OptionsHandler {
 		} else {
 			PajeGrammar.plugin = new PajeNullPlugin();
 		}
-		platform = opt.getSet().isSet("plat") ? opt.getSet().getOption("plat").getResultValue(0) : "notspecified";
 	}
 	
 	public void pluginHandler(){
