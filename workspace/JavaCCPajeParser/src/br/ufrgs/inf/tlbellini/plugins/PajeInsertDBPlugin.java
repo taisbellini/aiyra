@@ -497,12 +497,12 @@ public class PajeInsertDBPlugin extends PajePlugin {
 			// - start time to get the time starting at zero
 			if (PajeGrammar.evaluateMemoryRuntime() > maxMemMega)
 				maxMemMega = PajeGrammar.evaluateMemoryRuntime();
-			long startTime = System.currentTimeMillis() - PajeGrammar.startTime;
+			long startTime = System.nanoTime()/1000 - PajeGrammar.startTime;
 			stmtEvent.executeBatch();
 			stmtLink.executeBatch();
 			stmtState.executeBatch();
 			stmtVariable.executeBatch();
-			long endTime = System.currentTimeMillis() - PajeGrammar.startTime;
+			long endTime = System.nanoTime()/1000 - PajeGrammar.startTime;
 			// get the seconds
 			insertRowCSV(startTime, endTime, this.batchCount, sizeInBytes);
 			sizeInBytes = 518;

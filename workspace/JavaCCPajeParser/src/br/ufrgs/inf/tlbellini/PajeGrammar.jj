@@ -67,10 +67,10 @@ public class PajeGrammar{
 		options.checkEntry();    }else
     {
       options.printOptionsHelper();    }
-    startTime = System.currentTimeMillis();
+    startTime = System.nanoTime()/1000;
     simulator.init();    PajeGrammar parser = new PajeGrammar(input);
                 try      {        switch (parser.paje())        {          case 4 :
-		  simulator.finish();          long endTime = System.currentTimeMillis();
+		  simulator.finish();          long endTime = System.nanoTime()/1000;
           System.out.println("OK. Finished in: " + (endTime - startTime) +"ms");
           break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());
       }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());      }    }}PARSER_END(PajeGrammar)SKIP :{  " "| "\r"| "\t"
