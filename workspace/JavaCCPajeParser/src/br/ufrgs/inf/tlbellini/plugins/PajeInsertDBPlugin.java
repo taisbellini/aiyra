@@ -31,7 +31,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	private boolean batch;
 	private int batchSize = Integer.MAX_VALUE;
 	private int batchCount = 0;
-	public long maxMemMega = 0;
+	public long maxMem = 0;
 	/*
 	 * Key: startTime Value: [0] endTime [1] duration [2] size in number of
 	 * operations
@@ -481,8 +481,8 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	@Override
 	public void finish() {
 		execBatches();
-		System.out.println("Max memory used in bytes: " + maxMemMega);
-		System.out.println("Batch count: " + this.batchCount);
+		System.out.println("Mem: " + maxMem);
+		System.out.println("Batch Size: " + this.batchSize);
 		try {
 			batchInfoFile.flush();
 			batchInfoFile.close();
@@ -495,8 +495,8 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	public void execBatches() {
 		try {
 			// - start time to get the time starting at zero
-			if (PajeGrammar.evaluateMemoryRuntime() > maxMemMega)
-				maxMemMega = PajeGrammar.evaluateMemoryRuntime();
+			if (PajeGrammar.evaluateMemoryRuntime() > maxMem)
+				maxMem = PajeGrammar.evaluateMemoryRuntime();
 			long startTime = System.nanoTime()/1000 - PajeGrammar.startTime;
 			stmtEvent.executeBatch();
 			stmtLink.executeBatch();
