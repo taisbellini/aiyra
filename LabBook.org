@@ -405,7 +405,7 @@ You'll need the =DoE.base= R package.
            seed=10373,
            nlevels=c(3,3),
            factor.names=list(
-                version=c("ayira","pj","pjflex"),
+                version=c("aiyra","pj","pjflex"),
                 input=c("small", "medium", "big")));
 
   export.design(Cpp_Comparison,
