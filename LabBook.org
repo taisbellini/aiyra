@@ -2184,9 +2184,9 @@ So, to get you trace files, just run the following:
 #+end_src
 
 #+RESULTS:
-: Output is 131097 bytes (target was 131072; 25 bytes more).
-: Output is 134217754 bytes (target was 134217728; 26 bytes more).
-: Output is 1073741854 bytes (target was 1073741824; 30 bytes more).
+: Output is 131109 bytes (target was 131072; 37 bytes more).
+: Output is 134217800 bytes (target was 134217728; 72 bytes more).
+: Output is 1073741866 bytes (target was 1073741824; 42 bytes more).
 
 Great. Let's it. I'm gzipping them to send to you.
 
