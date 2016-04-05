@@ -21,21 +21,7 @@ public class PajeGrammar{
   private static final long MEGABYTE = 1024L * 1024L;
   public static long startTime;
 
-  public static void evaluateMemoryMemoryUsage()
-  {
-  
-	  	MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
-	  	MemoryUsage mem = memory.getHeapMemoryUsage();
-	  	long init = mem.getInit();
-	  	long used = mem.getUsed();
-
-		System.out.println("MemUsage");
-	  	System.out.println("Initial allocated: " + init);
-	  	System.out.println("Used memory is bytes: " + used);
-        System.out.println("Used memory is megabytes: " + used/MEGABYTE);
-
-  }
-  
+    
   public static long evaluateMemoryRuntime()
   {
         // Get the Java runtime
@@ -44,19 +30,11 @@ public class PajeGrammar{
         runtime.gc();
         // Calculate the used memory
         long memory = runtime.totalMemory() - runtime.freeMemory();
-
-	  	//System.out.println("Runtime");
-	  	//System.out.println("Used memory is bytes: " + memory);
-        //System.out.println("Used memory is megabytes: " + memory/MEGABYTE);
-        return memory;
+	    return memory;
 
   }
 
-  public static void evaluateMemory()  {
-    //OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
-	}
   
-
   public static void main(String args []) throws ParseException, FileNotFoundException  {
 	FileInputStream input;
 	Scanner sc = new Scanner(System.in);
