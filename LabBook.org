@@ -1984,6 +1984,73 @@ while read -r line; do
 done < "$DESIGN"
 #+end_src
 
+#+begin_src sh :results output :session :exports both :tangle Batch_Size_Investigation.sh
+#!/bin/bash
+
+# CPP_Comparison.sh
+
+# For each line
+  # get the name of the program (column 5)
+  # get the input size (column 6)
+  # Launch the experiment, get execution time
+  # print the line, with the time.
+
+function usage()
+{
+  echo "./Cpp_Batch_Size_Investigation.sh <design> <platform>";
+}
+
+
+DESIGN=$1
+if [ -z "$DESIGN" ]; then
+    usage;
+    exit;
+fi
+PLATFORM=$2
+if [ -z "$PLATFORM" ]; then
+    usage;
+    exit
+fi
+
+sh compile.sh
+
+while read -r line; do
+    INPUTSIZE=`echo $line | cut -d, -f5 | sed -e "s/\"//g"`
+    BATCHSIZE=`echo $line | cut -d, -f6 | sed -e "s/\"//g"`
+    if [[ $INPUTSIZE = "small" ]]; then
+      INPUT="../traces/trace-128K.paje"
+      MAXBATCH=2518
+    elif [[ $INPUTSIZE = "medium" ]]; then
+      INPUT="../traces/trace-128M.paje"
+      MAXBATCH=2352378
+    else 
+      #INPUT="../traces/trace-1G.paje"
+      INPUT="../traces/trace-128M.paje"
+      MAXBATCH=2352378
+    fi
+    if [[ $BATCHSIZE = "A" ]]; then 
+      BATCH=$MAXBATCH
+    elif [[ $BATCHSIZE = "B" ]]; then
+      BATCH=$((MAXBATCH/2))
+    elif [[ $BATCHSIZE = "C" ]]; then
+      BATCH=$((MAXBATCH/4))
+    elif [[ $BATCHSIZE = "D" ]]; then
+      BATCH=$((MAXBATCH/8))
+    elif [[ $BATCHSIZE = "E" ]]; then
+      BATCH=$((MAXBATCH/16))
+    elif [[ $BATCHSIZE = "F" ]]; then
+      BATCH=$((MAXBATCH/32))
+    fi
+    EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f $INPUT -p mysql -batch $BATCH)"
+    TIME=`echo $EXEC | cut -d" " -f18`
+    TIME_INSERTION=`echo $EXEC | cut -d" " -f8`
+    MAX_MEM=`echo $EXEC | cut -d" " -f10`
+    echo $line | cut -d, -f1-6 | tr '\n' ','
+    echo "$TIME,$TIME_INSERTION,$MAX_MEM,$PLATFORM"
+done < "$DESIGN"
+#+end_src
+
+
 Until Tuesday, you sent me both scripts.
 Next Friday, we analyze some data.
 
@@ -2148,3 +2215,9 @@ _What is missing for launching the experiments?_
 - Bash script to run the experiment
   - INPUT: CSV design
   - OUTPUT: CSV design with measurements
+* 2016-04-04 - Bash Scripts
+** Cpp_Comparison:
+- need -t parameter
+- only linux
+** Batch_Size_Investigation:
+-Mac: max number for "big" exceeds gc overhead limit
