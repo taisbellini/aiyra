@@ -12,7 +12,6 @@ import br.ufrgs.inf.tlbellini.lib.PajeValue;
 public class PajeNullPlugin extends PajePlugin {
 	
 	public PajeNullPlugin(){
-		System.out.println("null option");
 	}
 
 	@Override

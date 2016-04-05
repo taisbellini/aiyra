@@ -57,11 +57,9 @@ public class OptionsHandler {
 		if (opt.getSet().isSet("f")) {
 			String[] entry = opt.getSet().getOption("f").getResultValue(0).split("/");
 			filename = entry[entry.length - 1];
-			System.out.println(filename);
 		}
 		if (opt.getSet().isSet("m")) {
 			comment = opt.getSet().getOption("m").getResultValue(0);
-			System.out.println(comment);
 		}
 		if (opt.getSet().isSet("p")) {
 			pluginHandler();

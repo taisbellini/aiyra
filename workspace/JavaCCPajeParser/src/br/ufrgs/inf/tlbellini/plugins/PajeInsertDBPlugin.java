@@ -26,7 +26,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	private String mydatabase;
 	private String username;
 	private String password;
-	public long insertionTime;
+	public long insertionTime = 0;
 	private int fileId;
 	private boolean batch;
 	private int batchSize = Integer.MAX_VALUE;
@@ -110,12 +110,12 @@ public class PajeInsertDBPlugin extends PajePlugin {
 
 	public boolean insert(String sql) {
 
-		long start = System.currentTimeMillis();
+		long start = System.nanoTime()/1000;
 		try {
 			java.sql.Statement stmt = conn.createStatement();
 			stmt.executeUpdate(sql);
 			stmt.close();
-			long end = System.currentTimeMillis();
+			long end = System.nanoTime()/1000;
 			this.insertionTime += end - start;
 			return true;
 		} catch (SQLException e) {
@@ -135,14 +135,14 @@ public class PajeInsertDBPlugin extends PajePlugin {
 
 	// if filename is the same
 	public int getFileId(String filename) throws SQLException {
-		long start = System.currentTimeMillis();
+		long start = System.nanoTime()/1000;
 		java.sql.Statement stmt = conn.createStatement();
 		ResultSet rs = null;
 		try {
 			String sql = "SELECT id FROM file WHERE name = " + toString(filename) + " ORDER BY id DESC LIMIT 1";
 			rs = stmt.executeQuery(sql);
 			rs.next();
-			long end = System.currentTimeMillis();
+			long end = System.nanoTime()/1000;
 			insertionTime += end - start;
 			int result = rs.getInt("id");
 			rs.close();
@@ -481,8 +481,10 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	@Override
 	public void finish() {
 		execBatches();
+		System.out.println("Insertion Time: " + this.insertionTime);
 		System.out.println("Mem: " + maxMem);
 		System.out.println("Batch Size: " + this.batchSize);
+		System.out.println("Batch Count: " + this.batchCount);
 		try {
 			batchInfoFile.flush();
 			batchInfoFile.close();
@@ -505,6 +507,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 			long endTime = System.nanoTime()/1000 - PajeGrammar.startTime;
 			// get the seconds
 			insertRowCSV(startTime, endTime, this.batchCount, sizeInBytes);
+			insertionTime+= endTime - startTime;
 			sizeInBytes = 518;
 		} catch (SQLException e) {
 			e.printStackTrace();
