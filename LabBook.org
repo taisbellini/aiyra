@@ -1956,18 +1956,26 @@ if [ -z "$PLATFORM" ]; then
     exit
 fi
 
+sh compile.sh
+
 while read -r line; do
-#    echo $line
     PROGRAM=`echo $line | cut -d, -f5 | sed -e "s/\"//g"`
     INPUTSIZE=`echo $line | cut -d, -f6 | sed -e "s/\"//g"`
 #    echo $PROGRAM $INPUTSIZE
-    if [ $PROGRAM = "aiyra" ]; then
-      # execute aiyra
-	EXEC=1
-    elif [ $PROGRAM = "pj" ]; then
+    if [[ $PROGRAM = "ayira" ]]; then
+      # execute aiyra 
+      if [[ $INPUTSIZE = "small" ]]; then
+        EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f ../traces/trace-128K.paje | cut -d: -f2)"
+      elif [[ $INPUTSIZE = "medium" ]]; then
+        EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f ../traces/trace-128M.paje | cut -d: -f2)"
+      else 
+        #EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f ../traces/trace-1G.paje | cut -d: -f2)"
+        EXEC=1
+      fi
+    elif [[ $PROGRAM = "pj" ]]; then
 	# execute pj_dump -q -t
 	EXEC=1
-    elif [ $PROGRAM = "pjflex" ]; then
+    elif [[ $PROGRAM = "pjflex" ]]; then
 	# execute pj_dump -q -t -f
 	EXEC=1
     fi
@@ -2131,3 +2139,12 @@ They are all available here:
 - https://dl.dropboxusercontent.com/u/1119921/Traces/trace-1G.paje.gz
 
 You can =gunzip= them.
+
+* 2016-04-02 - Batch Size in bytes
+The size of the string is being considered.
+* 2016-04-02 21:00 - Status
+_What is missing for launching the experiments?_
+- Three input files OK
+- Bash script to run the experiment
+  - INPUT: CSV design
+  - OUTPUT: CSV design with measurements
