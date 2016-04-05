@@ -2013,23 +2013,26 @@ if [ -z "$PLATFORM" ]; then
     exit
 fi
 
-sh compile.sh
-
 while read -r line; do
     INPUTSIZE=`echo $line | cut -d, -f5 | sed -e "s/\"//g"`
     BATCHSIZE=`echo $line | cut -d, -f6 | sed -e "s/\"//g"`
     if [[ $INPUTSIZE = "small" ]]; then
-      INPUT="../traces/trace-128K.paje"
+      INPUT="trace-128K.paje"
       MAXBATCH=2518
     elif [[ $INPUTSIZE = "medium" ]]; then
-      INPUT="../traces/trace-128M.paje"
+      INPUT="trace-128M.paje"
       MAXBATCH=2352378
     elif [[ $INPUTSIZE = "big" ]]; then 
-      INPUT="../traces/trace-1G.paje"
+      INPUT="trace-1G.paje"
       MAXBATCH=2352378
     fi
     if [[ $BATCHSIZE = "A" ]]; then 
       BATCH=$MAXBATCH
+      # if INPUTSIZE is big, EXEC should be NA like this
+      # EXEC=NA
+      # TIME=NA
+      # TIME_INSERTION=NA
+      # MAX_MEM=NA
     elif [[ $BATCHSIZE = "B" ]]; then
       BATCH=$((MAXBATCH/2))
     elif [[ $BATCHSIZE = "C" ]]; then
