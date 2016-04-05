@@ -1961,23 +1961,23 @@ sh compile.sh
 while read -r line; do
     PROGRAM=`echo $line | cut -d, -f5 | sed -e "s/\"//g"`
     INPUTSIZE=`echo $line | cut -d, -f6 | sed -e "s/\"//g"`
+    if [[ $INPUTSIZE = "small" ]]; then
+      INPUT="../traces/trace-128K.paje"
+    elif [[ $INPUTSIZE = "medium" ]]; then
+      INPUT="../traces/trace-128M.paje"
+    else 
+      INPUT="../traces/trace-1G.paje"
+    fi
 #    echo $PROGRAM $INPUTSIZE
     if [[ $PROGRAM = "ayira" ]]; then
       # execute aiyra 
-      if [[ $INPUTSIZE = "small" ]]; then
-        EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f ../traces/trace-128K.paje | cut -d: -f2)"
-      elif [[ $INPUTSIZE = "medium" ]]; then
-        EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f ../traces/trace-128M.paje | cut -d: -f2)"
-      else 
-        #EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f ../traces/trace-1G.paje | cut -d: -f2)"
-        EXEC=1
-      fi
+      EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f $INPUT | cut -d: -f2)"
     elif [[ $PROGRAM = "pj" ]]; then
 	# execute pj_dump -q -t
-	EXEC=1
+	   EXEC="$(../../../pajeng/b2/./pj_dump $INPUT --quiet -t)"
     elif [[ $PROGRAM = "pjflex" ]]; then
 	# execute pj_dump -q -t -f
-	EXEC=1
+    EXEC="$(../../../pajeng/b2/./pj_dump $INPUT --quiet -t -f)"
     fi
     echo $line | cut -d, -f1-6 | tr '\n' ','
     echo "$EXEC,$PLATFORM"
@@ -2024,8 +2024,7 @@ while read -r line; do
       INPUT="../traces/trace-128M.paje"
       MAXBATCH=2352378
     else 
-      #INPUT="../traces/trace-1G.paje"
-      INPUT="../traces/trace-128M.paje"
+      INPUT="../traces/trace-1G.paje"
       MAXBATCH=2352378
     fi
     if [[ $BATCHSIZE = "A" ]]; then 
@@ -2221,3 +2220,6 @@ _What is missing for launching the experiments?_
 - only linux
 ** Batch_Size_Investigation:
 -Mac: max number for "big" exceeds gc overhead limit
+
+* 2016-04-05 - Machines
+** 
