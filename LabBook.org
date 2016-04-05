@@ -1974,10 +1974,10 @@ while read -r line; do
       EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f $INPUT | cut -d: -f2)"
     elif [[ $PROGRAM = "pj" ]]; then
 	# execute pj_dump -q -t
-	   EXEC="$(../../../pajeng/b2/./pj_dump $INPUT --quiet -t)"
+	   EXEC="$(pj_dump $INPUT --quiet -t)"
     elif [[ $PROGRAM = "pjflex" ]]; then
 	# execute pj_dump -q -t -f
-    EXEC="$(../../../pajeng/b2/./pj_dump $INPUT --quiet -t -f)"
+    EXEC="$(pj_dump $INPUT --quiet -t -f)"
     fi
     echo $line | cut -d, -f1-6 | tr '\n' ','
     echo "$EXEC,$PLATFORM"
