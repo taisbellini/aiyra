@@ -2221,5 +2221,30 @@ _What is missing for launching the experiments?_
 ** Batch_Size_Investigation:
 -Mac: max number for "big" exceeds gc overhead limit
 
-* 2016-04-05 - Machines
-** 
+* 2016-04-05 - Mac pj_dump
+- CMake Error: The following variables are used in this project, but they are set to NOTFOUND.
+
+Please set them or make sure they are set and tested correctly in the CMake files:
+
+FL_LIBRARY (ADVANCED)
+
+    linked by target "paje_library" in directory
+   
+This happens beacause the ccmake . is not finding the Flex file libfl.a
+
+If you installed Flex using Brew:
+brew list flex 
+find the path to the "lib" folder: THIS will be the path to the
+missing file. 
+Go to ccmake . 
+find FL_LIBRARY
+put the path , adding libfl.a at the end
+
+Compilation errors:
+brew install argp-standalone 
+libargp.a is not found
+brew list argp-standalone
+find path to libargp.a
+make VERBOSE=yes
+execute the full path and instead of -largp put what you found in brew
+list argp-standalone
