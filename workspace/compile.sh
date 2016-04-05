@@ -11,4 +11,4 @@ popd
 export CLASSPATH=`pwd`/JavaCCPajeParser/src/
 export CLASSPATH=$CLASSPATH:/Users/taisbellini/TCC/aiyra/workspace/include/mysql-connector-java-5.1.38-bin.jar:.:`pwd`/./include/mysql-connector-java-5.1.38-bin.jar
 echo "Execute the program by typing:"
-echo "$ java br.ufrgs.inf.tlbellini.PajeGrammar <path to input Paje tracefile>"
+echo "$ java br.ufrgs.inf.tlbellini.PajeGrammar -f <path to input Paje tracefile> -p <plugin>"
