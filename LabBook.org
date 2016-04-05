@@ -2249,3 +2249,16 @@ find path to libargp.a
 make VERBOSE=yes
 execute the full path and instead of -largp put what you found in brew
 list argp-standalone
+* 2016-04-05 - Machines
+** 
+* 2016-04-05 Batch size for each input trace                          :Lucas:
+
+#+begin_src sh :results output :session :exports both
+for i in *.paje; do echo -n "$i "; cat $i | grep ^13 | wc -l; done
+#+end_src
+
+#+RESULTS:
+: trace-128K.paje 2727
+: trace-128M.paje 2526628
+: trace-1G.paje 19570722
+
