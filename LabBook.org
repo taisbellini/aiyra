@@ -2023,7 +2023,7 @@ while read -r line; do
     elif [[ $INPUTSIZE = "medium" ]]; then
       INPUT="../traces/trace-128M.paje"
       MAXBATCH=2352378
-    else 
+    elif [[ $INPUTSIZE = "big" ]]; then 
       INPUT="../traces/trace-1G.paje"
       MAXBATCH=2352378
     fi
