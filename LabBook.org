@@ -2265,3 +2265,35 @@ for i in *.paje; do echo -n "$i "; cat $i | grep ^13 | wc -l; done
 : trace-128M.paje 2526628
 : trace-1G.paje 19570722
 
+* 2016-04-06 Quick analysis of data =results/guarani/1_tentativa.csv=   :Lucas:
+
+#+begin_src R :results output :session :exports both
+  library(dplyr);
+  df <- read.csv ("results/guarani/1_tentativa.csv");
+  k <- df %>%
+       select(version, input, time, platform) %>%
+       group_by(version, input, platform) %>%
+       summarize(N = n(),
+                 time_avg = mean(time),
+                 time_se = 3*sd(time)/sqrt(N))
+                
+  k;
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Source: local data frame [9 x 6]
+Groups: version, input
+
+  version  input platform  N     time_avg      time_se
+1   aiyra    big  guarani 30           NA           NA
+2   aiyra medium  guarani 30           NA           NA
+3   aiyra  small  guarani 30           NA           NA
+4      pj    big  guarani 30 248.34171373 1.1231438892
+5      pj medium  guarani 30  31.99264657 0.1493861801
+6      pj  small  guarani 30   0.03451830 0.0002804379
+7  pjflex    big  guarani 30 266.65148143 1.6170200167
+8  pjflex medium  guarani 30  34.08444947 0.1362978432
+9  pjflex  small  guarani 30   0.03641293 0.0003676874
+#+end_example
+
