@@ -1988,7 +1988,7 @@ done < "$DESIGN"
 #+begin_src sh :results output :session :exports both :tangle Batch_Size_Investigation.sh
 #!/bin/bash
 
-# CPP_Comparison.sh
+# CPP_BatchSize_Investigation.sh
 
 # For each line
   # get the name of the program (column 5)
@@ -2016,23 +2016,29 @@ fi
 while read -r line; do
     INPUTSIZE=`echo $line | cut -d, -f5 | sed -e "s/\"//g"`
     BATCHSIZE=`echo $line | cut -d, -f6 | sed -e "s/\"//g"`
+    EXEC=" "
+    if [[ $INPUTSIZE = "input" ]]; then
+       echo $line
+       continue
+    fi
     if [[ $INPUTSIZE = "small" ]]; then
       INPUT="trace-128K.paje"
-      MAXBATCH=2518
+      MAXBATCH=2727
     elif [[ $INPUTSIZE = "medium" ]]; then
       INPUT="trace-128M.paje"
-      MAXBATCH=2352378
+      MAXBATCH=2526628
     elif [[ $INPUTSIZE = "big" ]]; then 
       INPUT="trace-1G.paje"
-      MAXBATCH=2352378
+      MAXBATCH=19570722
     fi
     if [[ $BATCHSIZE = "A" ]]; then 
       BATCH=$MAXBATCH
-      # if INPUTSIZE is big, EXEC should be NA like this
-      # EXEC=NA
-      # TIME=NA
-      # TIME_INSERTION=NA
-      # MAX_MEM=NA
+      if [[ $INPUTSIZE = "big" ]]; then
+        EXEC=NA
+        TIME=NA
+        TIME_INSERTION=NA
+        MAX_MEM=NA
+      fi
     elif [[ $BATCHSIZE = "B" ]]; then
       BATCH=$((MAXBATCH/2))
     elif [[ $BATCHSIZE = "C" ]]; then
@@ -2044,14 +2050,19 @@ while read -r line; do
     elif [[ $BATCHSIZE = "F" ]]; then
       BATCH=$((MAXBATCH/32))
     fi
-    EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f $INPUT -p mysql -batch $BATCH)"
-    TIME=`echo $EXEC | cut -d" " -f18`
-    TIME_INSERTION=`echo $EXEC | cut -d" " -f8`
-    MAX_MEM=`echo $EXEC | cut -d" " -f10`
+    if [[ EXEC != NA ]]; then 
+      EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f $INPUT -p mysql -batch $BATCH)"
+      TIME=`echo $EXEC | cut -d" " -f18`
+      TIME_INSERTION=`echo $EXEC | cut -d" " -f8`
+      MAX_MEM=`echo $EXEC | cut -d" " -f10`
+    fi
     echo $line | cut -d, -f1-6 | tr '\n' ','
     echo "$TIME,$TIME_INSERTION,$MAX_MEM,$PLATFORM"
 done < "$DESIGN"
 #+end_src
+
+#+RESULTS:
+: ./Cpp_Batch_Size_Investigation.sh <design> <platform>
 
 
 Until Tuesday, you sent me both scripts.
@@ -2070,85 +2081,10 @@ _Clone and Compile_
 #+begin_src sh :results output :session :exports both
 git clone https://github.com/schnorr/poti.git
 mkdir -p poti/build; cd poti/build
-cmake ..; make
+cmake ..; make VERBOSE=yes
 #+end_src
 
 #+RESULTS:
-#+begin_example
--- The C compiler identification is GNU 5.3.1
--- The CXX compiler identification is GNU 5.3.1
--- Check for working C compiler: /usr/bin/cc
--- Check for working C compiler: /usr/bin/cc -- works
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Detecting C compile features
--- Detecting C compile features - done
--- Check for working CXX compiler: /usr/bin/c++
--- Check for working CXX compiler: /usr/bin/c++ -- works
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Detecting CXX compile features
--- Detecting CXX compile features - done
--- Configuring done
--- Generating done
--- Build files have been written to: /home/schnorr/svn/tais/aiyra/poti/build
-Scanning dependencies of target poti
-[  3%] Building C object CMakeFiles/poti.dir/src/poti.c.o
-[  6%] Building C object CMakeFiles/poti.dir/src/poti_header.c.o
-[ 10%] Building C object CMakeFiles/poti.dir/src/poti_events.c.o
-[ 13%] Building C object CMakeFiles/poti.dir/src/poti_events_unique.c.o
-[ 16%] Building C object CMakeFiles/poti.dir/src/poti_events_unaliased.c.o
-[ 20%] Linking C shared library libpoti.so
-[ 20%] Built target poti
-Scanning dependencies of target containers
-[ 23%] Building C object examples/CMakeFiles/containers.dir/containers.c.o
-[ 26%] Linking C executable containers
-[ 26%] Built target containers
-Scanning dependencies of target eventdef
-[ 30%] Building C object examples/CMakeFiles/eventdef.dir/eventdef.c.o
-[ 33%] Linking C executable eventdef
-[ 33%] Built target eventdef
-Scanning dependencies of target events
-[ 36%] Building C object examples/CMakeFiles/events.dir/events.c.o
-[ 40%] Linking C executable events
-[ 40%] Built target events
-Scanning dependencies of target header
-[ 43%] Building C object examples/CMakeFiles/header.dir/header.c.o
-[ 46%] Linking C executable header
-[ 46%] Built target header
-Scanning dependencies of target links
-[ 50%] Building C object examples/CMakeFiles/links.dir/links.c.o
-[ 53%] Linking C executable links
-[ 53%] Built target links
-Scanning dependencies of target main_example
-[ 56%] Building C object examples/CMakeFiles/main_example.dir/main_example.c.o
-[ 60%] Linking C executable main_example
-[ 60%] Built target main_example
-Scanning dependencies of target states
-[ 63%] Building C object examples/CMakeFiles/states.dir/states.c.o
-[ 66%] Linking C executable states
-[ 66%] Built target states
-Scanning dependencies of target states_unaliased
-[ 70%] Building C object examples/CMakeFiles/states_unaliased.dir/states_unaliased.c.o
-[ 73%] Linking C executable states_unaliased
-[ 73%] Built target states_unaliased
-Scanning dependencies of target tracegen
-[ 76%] Building C object examples/CMakeFiles/tracegen.dir/tracegen.c.o
-[ 80%] Linking C executable tracegen
-[ 80%] Built target tracegen
-Scanning dependencies of target variables
-[ 83%] Building C object examples/CMakeFiles/variables.dir/variables.c.o
-[ 86%] Linking C executable variables
-[ 86%] Built target variables
-Scanning dependencies of target vite-1.2
-[ 90%] Building C object examples/CMakeFiles/vite-1.2.dir/vite-1.2.c.o
-[ 93%] Linking C executable vite-1.2
-[ 93%] Built target vite-1.2
-Scanning dependencies of target vite-svn
-[ 96%] Building C object examples/CMakeFiles/vite-svn.dir/vite-svn.c.o
-[100%] Linking C executable vite-svn
-[100%] Built target vite-svn
-#+end_example
 
 _Get to know tracegen_
 
@@ -2157,18 +2093,6 @@ _Get to know tracegen_
 #+end_src
 
 #+RESULTS:
-#+begin_example
-Usage: tracegen [OPTION...] FILENAME [SIZE]
-Generates Paje Trace FILENAME, with a limite size of SIZE
-
-  -f, --filename=FILENAME    The filename of the output.
-  -s, --size=SIZE            The target size of the file in bytes.
-  -?, --help                 Give this help list
-      --usage                Give a short usage message
-
-Mandatory or optional arguments to long options are also mandatory or optional
-for any corresponding short options.
-#+end_example
 
 As you can see you just have to provide an obligatory filename and an
 optional target size. If size is not provided, it will generate the
@@ -2188,9 +2112,6 @@ So, to get you trace files, just run the following:
 #+end_src
 
 #+RESULTS:
-: Output is 131109 bytes (target was 131072; 37 bytes more).
-: Output is 134217800 bytes (target was 134217728; 72 bytes more).
-: Output is 1073741866 bytes (target was 1073741824; 42 bytes more).
 
 Great. Let's it. I'm gzipping them to send to you.
 
