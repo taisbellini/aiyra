@@ -2050,7 +2050,7 @@ while read -r line; do
     elif [[ $BATCHSIZE = "F" ]]; then
       BATCH=$((MAXBATCH/32))
     fi
-    if [[ EXEC != NA ]]; then 
+    if [[ $EXEC != NA ]]; then 
       EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f $INPUT -p mysql -batch $BATCH)"
       TIME=`echo $EXEC | cut -d" " -f18`
       TIME_INSERTION=`echo $EXEC | cut -d" " -f8`
