@@ -2051,7 +2051,7 @@ while read -r line; do
       BATCH=$((MAXBATCH/32))
     fi
     if [[ $EXEC != NA ]]; then 
-      EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f $INPUT -p mysql -batch $BATCH)"
+      EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f $INPUT -p mysql -batch $BATCH -test)"
       TIME=`echo $EXEC | cut -d" " -f18`
       TIME_INSERTION=`echo $EXEC | cut -d" " -f8`
       MAX_MEM=`echo $EXEC | cut -d" " -f10`
@@ -2173,8 +2173,6 @@ find path to libargp.a
 make VERBOSE=yes
 execute the full path and instead of -largp put what you found in brew
 list argp-standalone
-* 2016-04-05 - Machines
-** 
 * 2016-04-05 Batch size for each input trace                          :Lucas:
 
 #+begin_src sh :results output :session :exports both
@@ -2217,4 +2215,10 @@ Groups: version, input
 8  pjflex medium  guarani 30  34.08444947 0.1362978432
 9  pjflex  small  guarani 30   0.03641293 0.0003676874
 #+end_example
+
+* 2016-04-07 First attempts mac
+** Batch
+1) reached full memory before completed.
+2) Added -test option that erases the data from DB
+3) initial memory available: 58.03 GB
 
