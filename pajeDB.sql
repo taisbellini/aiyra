@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS `paje`.`container` (
   `parent_container_alias` VARCHAR(20) NULL,
   `type_alias` VARCHAR(20) NOT NULL,
   `file_id` INT NOT NULL,
+  `depth` INT NULL,
   PRIMARY KEY (`alias`, `file_id`),
   INDEX `fk_container_container_idx` (`parent_container_alias` ASC),
   INDEX `fk_container_type1_idx` (`type_alias` ASC),

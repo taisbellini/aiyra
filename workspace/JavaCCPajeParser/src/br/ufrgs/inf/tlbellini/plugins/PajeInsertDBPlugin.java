@@ -196,9 +196,9 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	}
 
 	public String generateInsertContainerSQL(String alias, String name, double start, double end, String parent_alias,
-			String type_alias, int fileId) {
+			String type_alias, int depth, int fileId) {
 		StringBuilder sb = new StringBuilder(
-				"INSERT INTO container (alias, name, startTime, endTime, parent_container_alias, type_alias, file_id) VALUES (");
+				"INSERT INTO container (alias, name, startTime, endTime, parent_container_alias, type_alias, depth, file_id) VALUES (");
 		sb.append(toString(alias));
 		sb.append(", ");
 		sb.append(toString(name));
@@ -212,6 +212,8 @@ public class PajeInsertDBPlugin extends PajePlugin {
 		sb.append(toString(type_alias));
 		sb.append(",");
 		sb.append(fileId);
+		sb.append(",");
+		sb.append(depth);
 		sb.append(")");
 		return sb.toString();
 
@@ -266,7 +268,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	public void addNewContainer(PajeContainer newContainer) {
 		String sql = generateInsertContainerSQL(newContainer.alias, newContainer.getName(), newContainer.getStartTime(),
 				-1, newContainer.getContainer() != null ? newContainer.getContainer().alias : "null",
-				newContainer.getType().getAlias(), fileId);
+				newContainer.getType().getAlias(), newContainer.depth, fileId);
 		insert(sql);
 	}
 
