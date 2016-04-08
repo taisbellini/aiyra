@@ -563,9 +563,6 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	public void insertRowCSV(long startTime, long endTime, long sizeOp, long sizeBytes) {
 
 		try {
-			batchInfoFile.append(
-					"BatchNumber,StartTime(microseconds), EndTime(microseconds), Duration(microseconds), Size (Operations), Size (Bytes)\n");
-
 			batchInfoFile.append(Integer.toString(rowCount));
 			batchInfoFile.append(",");
 			batchInfoFile.append(Long.toString(startTime));
