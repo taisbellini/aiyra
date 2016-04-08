@@ -50,6 +50,7 @@ public class PajeGrammar{
                 try      {        switch (parser.paje())        {          case 4 :
 		  simulator.finish();          long endTime = System.nanoTime()/1000;
           System.out.println("Time: "+ (endTime - startTime));
+          plugin.endSimulation();
           break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());
       }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());      }    }}PARSER_END(PajeGrammar)SKIP :{  " "| "\r"| "\t"
 |  <  "#" (~["\r", "\n"])* ("\n" | "\r\n") >}

@@ -19,5 +19,6 @@ public abstract class PajePlugin {
 	public abstract void setVar(PajeUserVariable var);
 	public abstract void addEvent(PajeUserEvent event);
 	public abstract void finish();
+	public abstract void endSimulation();
 
 }

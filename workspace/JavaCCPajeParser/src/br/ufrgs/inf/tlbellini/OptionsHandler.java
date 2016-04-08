@@ -11,6 +11,7 @@ public class OptionsHandler {
 	public String filename;
 	public String comment = " ";
 	public String platform;
+	public boolean test;
 
 	public OptionsHandler(String args[]) {
 		// get user input
@@ -25,6 +26,7 @@ public class OptionsHandler {
 		opt.getSet().addOption("pwd", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("batch", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("plat", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
+		opt.getSet().addOption("test", Options.Multiplicity.ZERO_OR_ONE);
 		// check options
 		printOptionsHelper();
 	}
@@ -47,6 +49,7 @@ public class OptionsHandler {
 			System.out.println("-pwd <password> (optional): password to access database. Default: root");
 			System.out.println("-batch <max_size> (optional): Maximum size of batch to keep in memory");
 			System.out.println("-plat <platform> (optional): The name of the platform you are using");
+			System.out.println("-test: Deletes data from database after simulation");
 
 			System.exit(1);
 		}
@@ -54,13 +57,12 @@ public class OptionsHandler {
 
 	public void checkEntry() {
 		platform = opt.getSet().isSet("plat") ? opt.getSet().getOption("plat").getResultValue(0) : "notspecified";
+		test = opt.getSet().isSet("test") ? true : false;
 		if (opt.getSet().isSet("f")) {
 			String[] entry = opt.getSet().getOption("f").getResultValue(0).split("/");
 			filename = entry[entry.length - 1];
 		}
-		if (opt.getSet().isSet("m")) {
-			comment = opt.getSet().getOption("m").getResultValue(0);
-		}
+		comment = opt.getSet().isSet("m") ? opt.getSet().getOption("m").getResultValue(0) : " ";
 		if (opt.getSet().isSet("p")) {
 			pluginHandler();
 		} else {

@@ -211,7 +211,11 @@ public class PajeDumpPlugin extends PajePlugin {
 
 	@Override
 	public void setVar(PajeUserVariable var) {
-		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void endSimulation() {
 		
 	}
 	
