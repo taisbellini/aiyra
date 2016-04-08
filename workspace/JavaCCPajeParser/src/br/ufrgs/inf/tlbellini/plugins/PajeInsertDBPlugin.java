@@ -211,9 +211,9 @@ public class PajeInsertDBPlugin extends PajePlugin {
 		sb.append(", ");
 		sb.append(toString(type_alias));
 		sb.append(",");
-		sb.append(fileId);
-		sb.append(",");
 		sb.append(depth);
+		sb.append(",");
+		sb.append(fileId);
 		sb.append(")");
 		return sb.toString();
 
