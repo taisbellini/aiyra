@@ -555,6 +555,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 				PajeGrammar.options.platform);
 		try {
 			batchInfoFile = new FileWriter(filename);
+			batchInfoFile.append("BatchNumber,StartTime(microseconds), EndTime(microseconds), Duration(microseconds), Size (Operations), Size (Bytes)\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
