@@ -1,12 +1,16 @@
 package br.ufrgs.inf.tlbellini.plugins;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import com.ibatis.common.jdbc.ScriptRunner;
 
 import br.ufrgs.inf.tlbellini.PajeGrammar;
 import br.ufrgs.inf.tlbellini.lib.*;
@@ -69,6 +74,31 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		insertFileSQL(PajeGrammar.options.filename, PajeGrammar.options.comment, sdf.format(d));
 		openFileBatchInfo();
+	}
+	
+	public void connectMySQL(){
+		Connection connection = null;
+
+		try {
+			String driverName = "com.mysql.jdbc.Driver";
+			Class.forName(driverName);
+			String useSSL = "?verifyServerCertificate=false" + "&useSSL=false";
+			String batch = "&rewriteBatchedStatements=true";
+			String url = "jdbc:mysql://" + serverName + "/" + useSSL + batch;
+			connection = DriverManager.getConnection(url, username, password);
+			if (connection != null) {
+				status = ("STATUS--->Successfully connected");
+			} else {
+				status = ("STATUS--->Not connected");
+			}
+			this.conn = connection;
+			System.out.println(status);
+		}catch (ClassNotFoundException e) {
+			System.out.println("The driver specified was not found.");
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		
 	}
 
 	public void connectDB() {
@@ -518,8 +548,23 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	
 	private void deleteSimulation(){
 		if(PajeGrammar.options.test){
-			connectDB();
-			String sql = String.format("DELETE FROM state WHERE container_file_id = %d; ", fileId);
+			connectMySQL();
+			String sql = "DROP DATABASE `paje`;";
+			insert(sql);
+			ScriptRunner runner = new ScriptRunner(conn, false, false);
+			Reader reader;
+			try {
+				reader = new FileReader("../pajeDB.sql");
+				runner.runScript(reader);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			/*String sql = String.format("DELETE FROM state WHERE container_file_id = %d; ", fileId);
 			insert(sql);
 			sql = String.format("DELETE FROM event WHERE type_file_id = %d; ", fileId);
 			insert(sql);
@@ -534,7 +579,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 			sql = String.format("DELETE FROM type WHERE file_id = %d ORDER BY depth DESC; ", fileId);
 			insert(sql);
 			sql = String.format("DELETE FROM file WHERE id = %d; ", fileId);
-			insert(sql);
+			insert(sql);*/
 			close();
 		}
 		
