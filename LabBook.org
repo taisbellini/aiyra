@@ -2229,3 +2229,491 @@ Groups: version, input
 ** Batch
 1) initial memory available 398GB
 
+* 2016-04-12 Meeting                                             :Lucas:Tais:
+
+_Batch size_
+- =results/batch_size/bateria_01_batch_luiza.csv=
+
+_Cpp Comparison_
+- =results/cpp_comparison/bateria_01_orion1.csv=
+
+Let's analyze the second one. 
+
+Remember that aiyra's time is in microseconds.
+
+#+begin_src R :results output :session :exports both
+df <- read.csv("results/cpp_comparison/bateria_01_orion1.csv");
+df[df$version == "aiyra",]$time = df[df$version == "aiyra",]$time/1000000;
+head(df);
+#+end_src
+
+#+RESULTS:
+#+begin_example
+  name run.no.in.std.order run.no run.no.std.rp version  input       time
+1    1                   4      1           4.1   aiyra medium  13.199061
+2    2                   9      2           9.1  pjflex    big 280.152443
+3    3                   2      3           2.1      pj  small   0.049384
+4    4                   5      4           5.1      pj medium  33.616784
+5    5                   7      5           7.1   aiyra    big 111.191072
+6    6                   6      6           6.1  pjflex medium  35.570650
+  platform
+1   orion1
+2   orion1
+3   orion1
+4   orion1
+5   orion1
+6   orion1
+#+end_example
+
+Great, we load them into the =df= data frame.
+
+#+begin_src R :results output :session :exports both
+library(dplyr);
+k <- df %>%
+     select(version, input, time, platform) %>%
+     group_by(version, input, platform) %>%
+     summarize(N = n(),
+               time_avg = mean(time),
+               time_se = 3*sd(time)/sqrt(N)) %>%
+     as.data.frame();
+k
+#+end_src
+
+#+RESULTS:
+#+begin_example
+  version  input platform  N     time_avg     time_se
+1   aiyra    big   orion1 30 111.78373253 1.012192396
+2   aiyra medium   orion1 30  13.08560363 0.123976860
+3   aiyra  small   orion1 30   0.22622977 0.009292423
+4      pj    big   orion1 30 259.72360747 1.115892686
+5      pj medium   orion1 30  33.47163073 0.125393689
+6      pj  small   orion1 30   0.04607153 0.002206699
+7  pjflex    big   orion1 30 279.74462510 0.924957991
+8  pjflex medium   orion1 30  36.08434247 0.158896225
+9  pjflex  small   orion1 30   0.04819160 0.002599552
+#+end_example
+
+Let's plot this with a simple plot.
+
+Learn =ggplot2=:
+- http://ggplot2.org/
+
+How to install gpplot2:
+
+#+begin_src R :results output :session :exports both
+install.packages("ggplot2");
+#+end_src
+
+Let's finally plot.
+
+(Literate Programming)
+- https://en.wikipedia.org/wiki/Literate_programming
+
+#+begin_src R :results output graphics :file img/first_plot_1.png :exports both :width 600 :height 400 :session
+library(ggplot2);
+ggplot(k, aes(x=version, y=time_avg, color=input)) +
+  geom_point() +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  theme_bw() + ylim(0, NA);
+#+end_src
+
+#+RESULTS:
+[[file:img/first_plot_1.png]]
+
+Strange, CPP is much slower for =big= and =medium=. A possible explanation
+is that =aiyra= keeps a minimum memory footprint, while the cpp version
+buffers everything (but do not dump at the end). So, execution times
+of =pj= and =pjflex= considers all the burden of allocating memory.
+
+Let's plot again using bars.
+
+#+begin_src R :results output graphics :file img/first_plot_2.png  :exports both :width 600 :height 400 :session
+library(ggplot2);
+ggplot(k, aes(x=version, fill=time_avg)) +
+  geom_bar(position="dodge") +
+#  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  theme_bw() + ylim(0, NA);
+#+end_src
+
+#+RESULTS:
+[[file:img/first_plot_2.png]]
+
+Didn't work, to be improved.
+
+Let's look to the other batch size data.
+
+But that has some strange errors, see:
+
+#+begin_src sh :results output :session :exports both
+cat results/batch_size/bateria_01_batch_luiza.csv | grep overhead
+#+end_src
+
+#+RESULTS:
+#+begin_example
+"6","6",6,"6.1","big","B",,overhead,exceeded,luiza
+"23","6",23,"6.2","big","B",,overhead,exceeded,luiza
+"40","6",40,"6.3","big","B",,overhead,exceeded,luiza
+"67","6",67,"6.4","big","B",,overhead,exceeded,luiza
+"73","6",73,"6.5","big","B",,overhead,exceeded,luiza
+"105","6",105,"6.6","big","B",,overhead,exceeded,luiza
+"109","6",109,"6.7","big","B",,overhead,exceeded,luiza
+"144","6",144,"6.8","big","B",,overhead,exceeded,luiza
+"159","6",159,"6.9","big","B",,overhead,exceeded,luiza
+"169","6",169,"6.10","big","B",,overhead,exceeded,luiza
+"190","6",190,"6.11","big","B",,overhead,exceeded,luiza
+"210","6",210,"6.12","big","B",,overhead,exceeded,luiza
+"226","6",226,"6.13","big","B",,overhead,exceeded,luiza
+"251","6",251,"6.14","big","B",,overhead,exceeded,luiza
+"254","6",254,"6.15","big","B",,overhead,exceeded,luiza
+"276","6",276,"6.16","big","B",,overhead,exceeded,luiza
+"297","6",297,"6.17","big","B",,overhead,exceeded,luiza
+"319","6",319,"6.18","big","B",,overhead,exceeded,luiza
+"338","6",338,"6.19","big","B",,overhead,exceeded,luiza
+"349","6",349,"6.20","big","B",,overhead,exceeded,luiza
+"377","6",377,"6.21","big","B",,overhead,exceeded,luiza
+"391","6",391,"6.22","big","B",,overhead,exceeded,luiza
+"405","6",405,"6.23","big","B",,overhead,exceeded,luiza
+"422","6",422,"6.24","big","B",,overhead,exceeded,luiza
+"445","6",445,"6.25","big","B",,overhead,exceeded,luiza
+"453","6",453,"6.26","big","B",,overhead,exceeded,luiza
+"470","6",470,"6.27","big","B",,overhead,exceeded,luiza
+"504","6",504,"6.28","big","B",,overhead,exceeded,luiza
+"516","6",516,"6.29","big","B",,overhead,exceeded,luiza
+"525","6",525,"6.30","big","B",,overhead,exceeded,luiza
+#+end_example
+
+All this should be ignored, so, let's remove with =sed=.
+
+#+begin_src sh :results output :session :exports both
+sed -i "/overhead/d" results/batch_size/bateria_01_batch_luiza.csv
+#+end_src
+
+#+RESULTS:
+
+I'll commit this by hand. Tais will check what's the problems with
+these executions (see above the parameters), and try to improve the
+script to avoid these kind of problems to be dumped to the resulting
+CSV. It is okay to not work, but NA should be there instead.
+
+Read the data.
+
+#+begin_src R :results output :session :exports both
+dfbs <- read.csv("results/batch_size/bateria_01_batch_luiza.csv");
+dfbs$sim_time = dfbs$sim_time / 1000000;
+dfbs$insert_time = dfbs$insert_time / 1000000;
+head(dfbs);
+#+end_src
+
+#+RESULTS:
+#+begin_example
+  name run.no.in.std.order run.no run.no.std.rp  input batch   sim_time
+1    1                   8      1           8.1 medium     C  91.388223
+2    2                  18      2          18.1    big     F 729.791324
+3    3                   5      3           5.1 medium     B  96.152690
+4    4                  12      4          12.1    big     D 759.280008
+5    5                  16      5          16.1  small     F   0.783357
+6    7                  15      7          15.1    big     E 732.142820
+  insert_time    max_mem platform
+1   56.979417  277594552    luiza
+2  435.170061  269932680    luiza
+3   57.000087  554541128    luiza
+4  434.433669 1070246512    luiza
+5    0.157434    3218096    luiza
+6  431.922201  538188168    luiza
+#+end_example
+
+Let's get better columns names:
+
+#+begin_src R :results output :session :exports both
+dfbsc <- dfbs;
+names(dfbsc)[7] = "ExecutionTime";
+names(dfbsc)[8] = "InsertTime";
+dfbsc$SimulationTime = dfbsc$ExecutionTime - dfbsc$InsertTime;
+head(dfbsc)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+  name run.no.in.std.order run.no run.no.std.rp  input batch ExecutionTime
+1    1                   8      1           8.1 medium     C     91.388223
+2    2                  18      2          18.1    big     F    729.791324
+3    3                   5      3           5.1 medium     B     96.152690
+4    4                  12      4          12.1    big     D    759.280008
+5    5                  16      5          16.1  small     F      0.783357
+6    7                  15      7          15.1    big     E    732.142820
+  InsertTime    max_mem platform SimulationTime
+1  56.979417  277594552    luiza      34.408806
+2 435.170061  269932680    luiza     294.621263
+3  57.000087  554541128    luiza      39.152603
+4 434.433669 1070246512    luiza     324.846339
+5   0.157434    3218096    luiza       0.625923
+6 431.922201  538188168    luiza     300.220619
+#+end_example
+
+What we want to do now:
+- When changing the batch size for each input, we want to see the
+  (E/S/I) times and memory
+
+#+begin_src R :results output :session :exports both
+  library(dplyr);
+  g <- dfbsc %>%
+       group_by(input, batch, platform) %>%
+       summarize(N = n(),
+
+                 et_av = mean(ExecutionTime),
+                 et_se = 3*sd(ExecutionTime)/sqrt(N),
+
+                 it_av = mean(InsertTime),
+                 it_se = 3*sd(InsertTime)/sqrt(N),
+
+                 st_av = mean(SimulationTime),
+                 st_se = 3*sd(SimulationTime)/sqrt(N),
+
+                 me_av = mean(max_mem),
+                 me_se = 3*sd(max_mem)/sqrt(N)) %>%
+       as.data.frame();
+  g
+#+end_src
+
+#+RESULTS:
+#+begin_example
+    input batch platform  N       et_av       et_se       it_av       it_se
+1     big     A    luiza 30          NA          NA          NA          NA
+2     big     C    luiza 30 795.2285569 2.218592773 437.5494863 1.267252406
+3     big     D    luiza 30 757.8684267 2.385838687 437.5375775 1.478032249
+4     big     E    luiza 30 740.0890006 2.381837838 436.4725984 1.834735939
+5     big     F    luiza 30 732.7663411 2.660387652 435.8199257 1.784366366
+6  medium     A    luiza 30  96.8813858 0.385917646  56.5639982 0.269410061
+7  medium     B    luiza 30  96.0545934 0.280779158  56.6305572 0.222547405
+8  medium     C    luiza 30  91.1218662 0.399244420  56.4963666 0.255846178
+9  medium     D    luiza 30  90.4261607 0.315775543  56.3642670 0.242080362
+10 medium     E    luiza 30  88.9492936 0.342191492  56.4912891 0.229589689
+11 medium     F    luiza 30  85.4662720 0.402239479  56.7788707 0.288559939
+12  small     A    luiza 30   0.4561541 0.005422778   0.1267087 0.005748402
+13  small     B    luiza 30   0.4557321 0.003834888   0.1064588 0.004098957
+14  small     C    luiza 30   0.4735896 0.002656302   0.1086365 0.002453057
+15  small     D    luiza 30   0.5168988 0.003670323   0.1154382 0.002838226
+16  small     E    luiza 30   0.6006172 0.003741141   0.1249221 0.002336092
+17  small     F    luiza 30   0.7626586 0.004948073   0.1527009 0.002402932
+         st_av       st_se      me_av     me_se
+1           NA          NA         NA        NA
+2  357.6790706 1.542601163 2140734030 706.46323
+3  320.3308492 1.524688718 1070244381 494.68928
+4  303.6164022 1.058449357  538188762 452.58933
+5  296.9464154 1.317535584  269933135 721.92381
+6   40.3173876 0.192735894 1086477209 748.30554
+7   39.4240362 0.151464040  554542096 655.43978
+8   34.6254996 0.197764297  277595270 711.53454
+9   34.0618938 0.135503437  139863937 776.69469
+10  32.4580045 0.166169367   71097261 650.56412
+11  28.6874013 0.153427395   37724969 528.99102
+12   0.3294454 0.002127062    4363366  47.31092
+13   0.3492733 0.002585717    3782599  47.65022
+14   0.3649531 0.003181645    3487619  48.21309
+15   0.4014607 0.003002626    3326572  47.84435
+16   0.4756951 0.003460140    3255328  47.97908
+17   0.6099577 0.004742031    3218205  49.33970
+#+end_example
+
+We are surprised by these results, again:
+- insertion time is stable no matter the batch size
+- simulation time reduces when batch size is smaller
+  - Overhead of the garbage collector
+  - Everything is being in kept in memory
+
+Discussion about interfereces in the experimental session.
+
+Let's =melt= data.
+
+#+begin_src R :results output :session :exports both
+library(reshape);
+h <- melt(g, vars=c("input", "batch", "platform"));
+h
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Using input, batch, platform as id variables
+     input batch platform variable        value
+1      big     A    luiza        N 3.000000e+01
+2      big     C    luiza        N 3.000000e+01
+3      big     D    luiza        N 3.000000e+01
+4      big     E    luiza        N 3.000000e+01
+5      big     F    luiza        N 3.000000e+01
+6   medium     A    luiza        N 3.000000e+01
+7   medium     B    luiza        N 3.000000e+01
+8   medium     C    luiza        N 3.000000e+01
+9   medium     D    luiza        N 3.000000e+01
+10  medium     E    luiza        N 3.000000e+01
+11  medium     F    luiza        N 3.000000e+01
+12   small     A    luiza        N 3.000000e+01
+13   small     B    luiza        N 3.000000e+01
+14   small     C    luiza        N 3.000000e+01
+15   small     D    luiza        N 3.000000e+01
+16   small     E    luiza        N 3.000000e+01
+17   small     F    luiza        N 3.000000e+01
+18     big     A    luiza    et_av           NA
+19     big     C    luiza    et_av 7.952286e+02
+20     big     D    luiza    et_av 7.578684e+02
+21     big     E    luiza    et_av 7.400890e+02
+22     big     F    luiza    et_av 7.327663e+02
+23  medium     A    luiza    et_av 9.688139e+01
+24  medium     B    luiza    et_av 9.605459e+01
+25  medium     C    luiza    et_av 9.112187e+01
+26  medium     D    luiza    et_av 9.042616e+01
+27  medium     E    luiza    et_av 8.894929e+01
+28  medium     F    luiza    et_av 8.546627e+01
+29   small     A    luiza    et_av 4.561541e-01
+30   small     B    luiza    et_av 4.557321e-01
+31   small     C    luiza    et_av 4.735896e-01
+32   small     D    luiza    et_av 5.168988e-01
+33   small     E    luiza    et_av 6.006172e-01
+34   small     F    luiza    et_av 7.626586e-01
+35     big     A    luiza    et_se           NA
+36     big     C    luiza    et_se 2.218593e+00
+37     big     D    luiza    et_se 2.385839e+00
+38     big     E    luiza    et_se 2.381838e+00
+39     big     F    luiza    et_se 2.660388e+00
+40  medium     A    luiza    et_se 3.859176e-01
+41  medium     B    luiza    et_se 2.807792e-01
+42  medium     C    luiza    et_se 3.992444e-01
+43  medium     D    luiza    et_se 3.157755e-01
+44  medium     E    luiza    et_se 3.421915e-01
+45  medium     F    luiza    et_se 4.022395e-01
+46   small     A    luiza    et_se 5.422778e-03
+47   small     B    luiza    et_se 3.834888e-03
+48   small     C    luiza    et_se 2.656302e-03
+49   small     D    luiza    et_se 3.670323e-03
+50   small     E    luiza    et_se 3.741141e-03
+51   small     F    luiza    et_se 4.948073e-03
+52     big     A    luiza    it_av           NA
+53     big     C    luiza    it_av 4.375495e+02
+54     big     D    luiza    it_av 4.375376e+02
+55     big     E    luiza    it_av 4.364726e+02
+56     big     F    luiza    it_av 4.358199e+02
+57  medium     A    luiza    it_av 5.656400e+01
+58  medium     B    luiza    it_av 5.663056e+01
+59  medium     C    luiza    it_av 5.649637e+01
+60  medium     D    luiza    it_av 5.636427e+01
+61  medium     E    luiza    it_av 5.649129e+01
+62  medium     F    luiza    it_av 5.677887e+01
+63   small     A    luiza    it_av 1.267087e-01
+64   small     B    luiza    it_av 1.064588e-01
+65   small     C    luiza    it_av 1.086365e-01
+66   small     D    luiza    it_av 1.154382e-01
+67   small     E    luiza    it_av 1.249221e-01
+68   small     F    luiza    it_av 1.527009e-01
+69     big     A    luiza    it_se           NA
+70     big     C    luiza    it_se 1.267252e+00
+71     big     D    luiza    it_se 1.478032e+00
+72     big     E    luiza    it_se 1.834736e+00
+73     big     F    luiza    it_se 1.784366e+00
+74  medium     A    luiza    it_se 2.694101e-01
+75  medium     B    luiza    it_se 2.225474e-01
+76  medium     C    luiza    it_se 2.558462e-01
+77  medium     D    luiza    it_se 2.420804e-01
+78  medium     E    luiza    it_se 2.295897e-01
+79  medium     F    luiza    it_se 2.885599e-01
+80   small     A    luiza    it_se 5.748402e-03
+81   small     B    luiza    it_se 4.098957e-03
+82   small     C    luiza    it_se 2.453057e-03
+83   small     D    luiza    it_se 2.838226e-03
+84   small     E    luiza    it_se 2.336092e-03
+85   small     F    luiza    it_se 2.402932e-03
+86     big     A    luiza    st_av           NA
+87     big     C    luiza    st_av 3.576791e+02
+88     big     D    luiza    st_av 3.203308e+02
+89     big     E    luiza    st_av 3.036164e+02
+90     big     F    luiza    st_av 2.969464e+02
+91  medium     A    luiza    st_av 4.031739e+01
+92  medium     B    luiza    st_av 3.942404e+01
+93  medium     C    luiza    st_av 3.462550e+01
+94  medium     D    luiza    st_av 3.406189e+01
+95  medium     E    luiza    st_av 3.245800e+01
+96  medium     F    luiza    st_av 2.868740e+01
+97   small     A    luiza    st_av 3.294454e-01
+98   small     B    luiza    st_av 3.492733e-01
+99   small     C    luiza    st_av 3.649531e-01
+100  small     D    luiza    st_av 4.014607e-01
+101  small     E    luiza    st_av 4.756951e-01
+102  small     F    luiza    st_av 6.099577e-01
+103    big     A    luiza    st_se           NA
+104    big     C    luiza    st_se 1.542601e+00
+105    big     D    luiza    st_se 1.524689e+00
+106    big     E    luiza    st_se 1.058449e+00
+107    big     F    luiza    st_se 1.317536e+00
+108 medium     A    luiza    st_se 1.927359e-01
+109 medium     B    luiza    st_se 1.514640e-01
+110 medium     C    luiza    st_se 1.977643e-01
+111 medium     D    luiza    st_se 1.355034e-01
+112 medium     E    luiza    st_se 1.661694e-01
+113 medium     F    luiza    st_se 1.534274e-01
+114  small     A    luiza    st_se 2.127062e-03
+115  small     B    luiza    st_se 2.585717e-03
+116  small     C    luiza    st_se 3.181645e-03
+117  small     D    luiza    st_se 3.002626e-03
+118  small     E    luiza    st_se 3.460140e-03
+119  small     F    luiza    st_se 4.742031e-03
+120    big     A    luiza    me_av           NA
+121    big     C    luiza    me_av 2.140734e+09
+122    big     D    luiza    me_av 1.070244e+09
+123    big     E    luiza    me_av 5.381888e+08
+124    big     F    luiza    me_av 2.699331e+08
+125 medium     A    luiza    me_av 1.086477e+09
+126 medium     B    luiza    me_av 5.545421e+08
+127 medium     C    luiza    me_av 2.775953e+08
+128 medium     D    luiza    me_av 1.398639e+08
+129 medium     E    luiza    me_av 7.109726e+07
+130 medium     F    luiza    me_av 3.772497e+07
+131  small     A    luiza    me_av 4.363366e+06
+132  small     B    luiza    me_av 3.782599e+06
+133  small     C    luiza    me_av 3.487619e+06
+134  small     D    luiza    me_av 3.326572e+06
+135  small     E    luiza    me_av 3.255328e+06
+136  small     F    luiza    me_av 3.218205e+06
+137    big     A    luiza    me_se           NA
+138    big     C    luiza    me_se 7.064632e+02
+139    big     D    luiza    me_se 4.946893e+02
+140    big     E    luiza    me_se 4.525893e+02
+141    big     F    luiza    me_se 7.219238e+02
+142 medium     A    luiza    me_se 7.483055e+02
+143 medium     B    luiza    me_se 6.554398e+02
+144 medium     C    luiza    me_se 7.115345e+02
+145 medium     D    luiza    me_se 7.766947e+02
+146 medium     E    luiza    me_se 6.505641e+02
+147 medium     F    luiza    me_se 5.289910e+02
+148  small     A    luiza    me_se 4.731092e+01
+149  small     B    luiza    me_se 4.765022e+01
+150  small     C    luiza    me_se 4.821309e+01
+151  small     D    luiza    me_se 4.784435e+01
+152  small     E    luiza    me_se 4.797908e+01
+153  small     F    luiza    me_se 4.933970e+01
+#+end_example
+
+Let's plot this:
+
+#+begin_src R :results output graphics :file img/first_plot_3.png :exports both :width 600 :height 400 :session
+library(ggplot2);
+ggplot(g, aes(x=input, y=time_avg, color=input)) +
+  geom_point() +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  theme_bw() + ylim(0, NA);
+#+end_src
+
+#+RESULTS:
+[[file:img/first_plot_3.png]]
+
+
+It didn't work.
+
+_pj_dump_ in windows
+
+Let's try to compile. Cmake didn't work in windows because it cannot
+detect MinGW. So, let's compile by hand (first time this is pursued):
+
+#+begin_src sh :results output :session :exports both
+touch libpaje_config.h
+bison --verbose -d -o parser.cc ../src/libpaje/parser.y
+flex -F -o lexer.cc ../src/libpaje/scanner.l
+g++ -I. -DLIBPAJE_VERSION_STRING="\"\"" -I../src/libpaje/ `find ../src/libpaje/ ../src/tools/ | grep -v equals | grep -v "#" | grep -e cc$` parser.cc lexer.cc -o x -lfl
+#+end_src
