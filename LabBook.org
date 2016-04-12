@@ -2715,5 +2715,5 @@ detect MinGW. So, let's compile by hand (first time this is pursued):
 touch libpaje_config.h
 bison --verbose -d -o parser.cc ../src/libpaje/parser.y
 flex -F -o lexer.cc ../src/libpaje/scanner.l
-g++ -I. -DLIBPAJE_VERSION_STRING="\"\"" -I../src/libpaje/ `find ../src/libpaje/ ../src/tools/ | grep -v equals | grep -v "#" | grep -e cc$` parser.cc lexer.cc -o x -lfl
+g++ -static -I. -DLIBPAJE_VERSION_STRING="\"\"" -I../src/libpaje/ `find ../src/libpaje/ ../src/tools/ | grep -v equals | grep -v "#" | grep -e cc$` parser.cc lexer.cc -o x -lfl
 #+end_src
