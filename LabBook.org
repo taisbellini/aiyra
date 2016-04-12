@@ -1891,7 +1891,7 @@ and insertion times, memory utilization).
     be what is left.
 
 
-* 2016-04-01 Meeting with Tais                                   :Lucas:Tais:
+* 2016-04-01 Meeting with Tais (Scripts)                         :Lucas:Tais:
 
 Batch size is measured in two ways:
 - number of operations
@@ -2037,12 +2037,6 @@ while read -r line; do
     fi
     if [[ $BATCHSIZE = "A" ]]; then 
       BATCH=$MAXBATCH
-      if [[ $INPUTSIZE = "big" ]]; then
-        EXEC=NA
-        TIME=NA
-        TIME_INSERTION=NA
-        MAX_MEM=NA
-      fi
     elif [[ $BATCHSIZE = "B" ]]; then
       BATCH=$((MAXBATCH/2))
     elif [[ $BATCHSIZE = "C" ]]; then
@@ -2054,11 +2048,15 @@ while read -r line; do
     elif [[ $BATCHSIZE = "F" ]]; then
       BATCH=$((MAXBATCH/32))
     fi
-    if [[ $EXEC != NA ]]; then 
-      EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f $INPUT -p mysql -batch $BATCH -test)"
-      TIME=`echo $EXEC | cut -d" " -f18`
-      TIME_INSERTION=`echo $EXEC | cut -d" " -f8`
-      MAX_MEM=`echo $EXEC | cut -d" " -f10`
+    EXEC="$(java br.ufrgs.inf.tlbellini.PajeGrammar -f $INPUT -p mysql -batch $BATCH -test)"
+    TIME=`echo $EXEC | cut -d" " -f18`
+    TIME_INSERTION=`echo $EXEC | cut -d" " -f8`
+    MAX_MEM=`echo $EXEC | cut -d" " -f10`
+    if [[ $MAX_MEM = "exceeded" ]]; then
+      EXEC=NA
+      TIME=NA 
+      TIME_INSERTION=NA
+      MAX_MEM=NA
     fi
     echo $line | cut -d, -f1-6 | tr '\n' ','
     echo "$TIME,$TIME_INSERTION,$MAX_MEM,$PLATFORM"
