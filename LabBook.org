@@ -2220,5 +2220,8 @@ Groups: version, input
 ** Batch
 1) reached full memory before completed.
 2) Added -test option that erases the data from DB
-3) initial memory available: 58.03 GB
+3) initial memory available: 55 GB
+* 2016-04-10 First atempts windows
+** Batch
+1) initial memory available 398GB
 
