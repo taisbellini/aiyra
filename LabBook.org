@@ -7,6 +7,10 @@
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+SEQ_TODO: TODO(t!) STARTED(s!) WAITING(w!) | DONE(d!) CANCELLED(c!) DEFERRED(f!)
 
+* XXXX-XX-XX Proper emacs configuration file                          :Lucas:
+
+I recommend you use Arnaud's emacs configuration file, available here:
++ http://mescal.imag.fr/membres/arnaud.legrand/misc/init.php
 * 2015-09-15 Planning                                            :Lucas:Tais:
 
 |---------+--------------------------------------------------|
