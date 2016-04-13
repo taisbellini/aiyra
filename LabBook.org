@@ -28,6 +28,7 @@ I recommend you use Arnaud's emacs configuration file, available here:
 2. Basic Concepts? (5 pages max)
    + JavaCC?
    + Ferramentas de análise de desempenho
+   + MySQL ? 
 3. PajeNG
    + How it is used by others (pjdump, etc)
    + Description of how it works internally
@@ -35,8 +36,17 @@ I recommend you use Arnaud's emacs configuration file, available here:
      + Focus on your contribution
 4. Java Simulator
    + JavaCC / Perf. Eval. against others / Why JavaCC?
-5. Database modeling
-6. Perf. Eval. / Experimentation / Results
+5. Plugins
+  + Null
+  + PjDump
+  + MySQL
+    + Database modeling
+    + arguments (batches, server, etc.)
+6. Performance Evaluation
+  + Overview of what is being evaluated and why (my sql is the only NEW feature)
+  + Methodology
+  + Results and grafics
+  + Possible explanations
 7. Conclusion
 * 2016-02-15 Performance issues                                  :Lucas:Tais:
 
