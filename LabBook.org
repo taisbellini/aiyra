@@ -2725,3 +2725,30 @@ bison --verbose -d -o parser.cc ../src/libpaje/parser.y
 flex -F -o lexer.cc ../src/libpaje/scanner.l
 g++ -static -I. -DLIBPAJE_VERSION_STRING="\"\"" -I../src/libpaje/ `find ../src/libpaje/ ../src/tools/ | grep -v equals | grep -v "#" | grep -e cc$` parser.cc lexer.cc -o x -lfl
 #+end_src
+* 2016-04-20 Batch size investigation specific for =orion1=        :Lucas:Tais:
+
+Save all traces from all experiments, no matter what.
+
+Change experimental design for batch size investigation.
+
+#+begin_src R :results output silent :session :exports none
+  require(DoE.base);
+  Batch_Size_Investigation_v2_orion1 <- fac.design (
+           nfactors=2,
+           replications=10,
+           repeat.only=FALSE,
+           blocks=1,
+           randomize=TRUE,
+           seed=10373,
+           nlevels=c(3,5),
+           factor.names=list(
+                input=c("small", "medium", "big"),
+                batch=c("B", "C", "D", "E", "F")));
+
+  export.design(Batch_Size_Investigation_v2_orion1,
+                path="designs",
+                filename=NULL,
+                type="csv",
+                replace=TRUE,
+                response.names=c("sim_time","insert_time","max_mem","platform"));
+#+end_src
