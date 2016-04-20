@@ -2752,3 +2752,20 @@ Change experimental design for batch size investigation.
                 replace=TRUE,
                 response.names=c("sim_time","insert_time","max_mem","platform"));
 #+end_src
+* 2016-04-20 Meeting                                             :Lucas:Tais:
+
+We have discussed about the TCC structure.
+
+What is missing in the (please complete):
+
+- Guarani
+  - cpp comparison
+  - batch size and time
+- Luiza
+  - 
+- Orion
+
+Networked.
+- Do not find connection.
+
+Create the bitbucket repo.
