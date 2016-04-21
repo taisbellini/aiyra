@@ -28,6 +28,7 @@ I recommend you use Arnaud's emacs configuration file, available here:
 2. Basic Concepts? (5 pages max)
    + JavaCC?
    + Ferramentas de análise de desempenho
+   + MySQL ? 
 3. PajeNG
    + How it is used by others (pjdump, etc)
    + Description of how it works internally
@@ -35,8 +36,17 @@ I recommend you use Arnaud's emacs configuration file, available here:
      + Focus on your contribution
 4. Java Simulator
    + JavaCC / Perf. Eval. against others / Why JavaCC?
-5. Database modeling
-6. Perf. Eval. / Experimentation / Results
+5. Plugins
+  + Null
+  + PjDump
+  + MySQL
+    + Database modeling
+    + arguments (batches, server, etc.)
+6. Performance Evaluation
+  + Overview of what is being evaluated and why (my sql is the only NEW feature)
+  + Methodology
+  + Results and grafics
+  + Possible explanations
 7. Conclusion
 * 2016-02-15 Performance issues                                  :Lucas:Tais:
 
@@ -2715,3 +2725,47 @@ bison --verbose -d -o parser.cc ../src/libpaje/parser.y
 flex -F -o lexer.cc ../src/libpaje/scanner.l
 g++ -static -I. -DLIBPAJE_VERSION_STRING="\"\"" -I../src/libpaje/ `find ../src/libpaje/ ../src/tools/ | grep -v equals | grep -v "#" | grep -e cc$` parser.cc lexer.cc -o x -lfl
 #+end_src
+* 2016-04-20 Batch size investigation specific for =orion1=        :Lucas:Tais:
+
+Save all traces from all experiments, no matter what.
+
+Change experimental design for batch size investigation.
+
+#+begin_src R :results output silent :session :exports none
+  require(DoE.base);
+  Batch_Size_Investigation_v2_orion1 <- fac.design (
+           nfactors=2,
+           replications=10,
+           repeat.only=FALSE,
+           blocks=1,
+           randomize=TRUE,
+           seed=10373,
+           nlevels=c(3,5),
+           factor.names=list(
+                input=c("small", "medium", "big"),
+                batch=c("B", "C", "D", "E", "F")));
+
+  export.design(Batch_Size_Investigation_v2_orion1,
+                path="designs",
+                filename=NULL,
+                type="csv",
+                replace=TRUE,
+                response.names=c("sim_time","insert_time","max_mem","platform"));
+#+end_src
+* 2016-04-20 Meeting                                             :Lucas:Tais:
+
+We have discussed about the TCC structure.
+
+What is missing in the (please complete):
+
+- Guarani
+  - cpp comparison
+  - batch size and time
+- Luiza
+  - 
+- Orion
+
+Networked.
+- Do not find connection.
+
+Create the bitbucket repo.
