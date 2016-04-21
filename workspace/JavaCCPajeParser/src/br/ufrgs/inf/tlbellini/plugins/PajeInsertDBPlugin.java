@@ -564,22 +564,6 @@ public class PajeInsertDBPlugin extends PajePlugin {
 				e.printStackTrace();
 			}
 			
-			/*String sql = String.format("DELETE FROM state WHERE container_file_id = %d; ", fileId);
-			insert(sql);
-			sql = String.format("DELETE FROM event WHERE type_file_id = %d; ", fileId);
-			insert(sql);
-			sql = String.format("DELETE FROM link WHERE type_file_id = %d; ", fileId);
-			insert(sql);
-			sql = String.format("DELETE FROM variable WHERE container_file_id = %d; ", fileId);
-			insert(sql);
-			sql = String.format("DELETE FROM value WHERE type_file_id = %d; ", fileId);
-			insert(sql);
-			sql = String.format("DELETE FROM container WHERE file_id = %d ORDER BY depth DESC; ", fileId);
-			insert(sql);
-			sql = String.format("DELETE FROM type WHERE file_id = %d ORDER BY depth DESC; ", fileId);
-			insert(sql);
-			sql = String.format("DELETE FROM file WHERE id = %d; ", fileId);
-			insert(sql);*/
 			close();
 		}
 		
