@@ -73,7 +73,8 @@ public class PajeInsertDBPlugin extends PajePlugin {
 		Date d = new Date();
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		insertFileSQL(PajeGrammar.options.filename, PajeGrammar.options.comment, sdf.format(d));
-		openFileBatchInfo();
+		if(PajeGrammar.options.test) 
+			openFileBatchInfo();
 	}
 	
 	public void connectMySQL(){
@@ -517,12 +518,15 @@ public class PajeInsertDBPlugin extends PajePlugin {
 		System.out.println("Mem: " + maxMem);
 		System.out.println("Batch Size: " + this.batchSize);
 		System.out.println("Batch Count: " + this.batchCount);
-		try {
-			batchInfoFile.flush();
-			batchInfoFile.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(PajeGrammar.options.test){
+			try {
+				batchInfoFile.flush();
+				batchInfoFile.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+		
 		close();
 	}
 
@@ -537,10 +541,11 @@ public class PajeInsertDBPlugin extends PajePlugin {
 			stmtState.executeBatch();
 			stmtVariable.executeBatch();
 			long endTime = System.nanoTime()/1000 - PajeGrammar.startTime;
-			// get the seconds
-			insertRowCSV(startTime, endTime, this.batchCount, sizeInBytes);
+			if(PajeGrammar.options.test)
+				insertRowCSV(startTime, endTime, this.batchCount, sizeInBytes);
 			insertionTime+= endTime - startTime;
 			sizeInBytes = 518;
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -570,7 +575,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	}
 
 	private void verifyBatchCount() {
-		if (batch || true) {
+		if (batch) {
 			this.batchCount++;
 			if (this.batchCount == batchSize) {
 				execBatches();
@@ -580,8 +585,9 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	}
 
 	public void openFileBatchInfo() {
-		String filename = String.format("%s_%d_%s.csv", PajeGrammar.options.filename, batchSize,
-				PajeGrammar.options.platform);
+		Date date = new Date();
+		String filename = String.format("%s_%d_%s_%d.csv", PajeGrammar.options.filename, batchSize,
+				PajeGrammar.options.platform, date.hashCode());
 		try {
 			batchInfoFile = new FileWriter(filename);
 			batchInfoFile.append("BatchNumber,StartTime(microseconds), EndTime(microseconds), Duration(microseconds), Size (Operations), Size (Bytes)\n");
