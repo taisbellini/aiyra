@@ -2769,3 +2769,5 @@ Networked.
 - Do not find connection.
 
 Create the bitbucket repo.
+* 2016-04-25 MySQL remote access problem 
+/etc/my/cnf - > remove bind-address. I don`t have sudo access.
