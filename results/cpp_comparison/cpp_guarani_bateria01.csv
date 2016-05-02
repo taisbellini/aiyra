@@ -1,0 +1,271 @@
+"name","run.no.in.std.order","run.no","run.no.std.rp","version","input","time","platform"
+"1","4",1,"4.1","aiyra","medium", 13701759,guarani
+"2","9",2,"9.1","pjflex","big",249.857839,guarani
+"3","2",3,"2.1","pj","small",0.054071,guarani
+"4","5",4,"5.1","pj","medium",30.111618,guarani
+"5","7",5,"7.1","aiyra","big", 124634754,guarani
+"6","6",6,"6.1","pjflex","medium",32.494418,guarani
+"7","3",7,"3.1","pjflex","small",0.062186,guarani
+"8","1",8,"1.1","aiyra","small", 177205,guarani
+"9","8",9,"8.1","pj","big",232.692384,guarani
+"10","6",10,"6.2","pjflex","medium",32.443110,guarani
+"11","7",11,"7.2","aiyra","big", 125391457,guarani
+"12","8",12,"8.2","pj","big",233.004965,guarani
+"13","4",13,"4.2","aiyra","medium", 12917650,guarani
+"14","3",14,"3.2","pjflex","small",0.057677,guarani
+"15","5",15,"5.2","pj","medium",30.112721,guarani
+"16","2",16,"2.2","pj","small",0.031795,guarani
+"17","9",17,"9.2","pjflex","big",246.145938,guarani
+"18","1",18,"1.2","aiyra","small", 173691,guarani
+"19","2",19,"2.3","pj","small",0.056024,guarani
+"20","9",20,"9.3","pjflex","big",249.364042,guarani
+"21","6",21,"6.3","pjflex","medium",32.151919,guarani
+"22","1",22,"1.3","aiyra","small", 173801,guarani
+"23","3",23,"3.3","pjflex","small",0.033739,guarani
+"24","4",24,"4.3","aiyra","medium", 13700523,guarani
+"25","5",25,"5.3","pj","medium",29.992562,guarani
+"26","7",26,"7.3","aiyra","big", 124986704,guarani
+"27","8",27,"8.3","pj","big",231.683547,guarani
+"28","6",28,"6.4","pjflex","medium",31.799881,guarani
+"29","7",29,"7.4","aiyra","big", 124340921,guarani
+"30","5",30,"5.4","pj","medium",30.071015,guarani
+"31","8",31,"8.4","pj","big",231.791653,guarani
+"32","1",32,"1.4","aiyra","small", 169270,guarani
+"33","4",33,"4.4","aiyra","medium", 13191978,guarani
+"34","9",34,"9.4","pjflex","big",247.891867,guarani
+"35","3",35,"3.4","pjflex","small",0.037566,guarani
+"36","2",36,"2.4","pj","small",0.032360,guarani
+"37","2",37,"2.5","pj","small",0.031741,guarani
+"38","6",38,"6.5","pjflex","medium",31.715829,guarani
+"39","9",39,"9.5","pjflex","big",248.880735,guarani
+"40","3",40,"3.5","pjflex","small",0.061659,guarani
+"41","8",41,"8.5","pj","big",231.962538,guarani
+"42","4",42,"4.5","aiyra","medium", 14148286,guarani
+"43","5",43,"5.5","pj","medium",30.055586,guarani
+"44","7",44,"7.5","aiyra","big", 121827396,guarani
+"45","1",45,"1.5","aiyra","small", 171630,guarani
+"46","4",46,"4.6","aiyra","medium", 13202200,guarani
+"47","5",47,"5.6","pj","medium",30.030844,guarani
+"48","2",48,"2.6","pj","small",0.031473,guarani
+"49","9",49,"9.6","pjflex","big",249.878327,guarani
+"50","3",50,"3.6","pjflex","small",0.033738,guarani
+"51","7",51,"7.6","aiyra","big", 119255907,guarani
+"52","8",52,"8.6","pj","big",232.242889,guarani
+"53","6",53,"6.6","pjflex","medium",32.040628,guarani
+"54","1",54,"1.6","aiyra","small", 172660,guarani
+"55","7",55,"7.7","aiyra","big", 124256759,guarani
+"56","1",56,"1.7","aiyra","small", 171275,guarani
+"57","2",57,"2.7","pj","small",0.048873,guarani
+"58","5",58,"5.7","pj","medium",29.906110,guarani
+"59","4",59,"4.7","aiyra","medium", 13591009,guarani
+"60","8",60,"8.7","pj","big",231.582816,guarani
+"61","9",61,"9.7","pjflex","big",249.489067,guarani
+"62","6",62,"6.7","pjflex","medium",32.338512,guarani
+"63","3",63,"3.7","pjflex","small",0.033933,guarani
+"64","8",64,"8.8","pj","big",231.007134,guarani
+"65","7",65,"7.8","aiyra","big", 123245369,guarani
+"66","5",66,"5.8","pj","medium",29.823501,guarani
+"67","6",67,"6.8","pjflex","medium",31.938693,guarani
+"68","9",68,"9.8","pjflex","big",246.477689,guarani
+"69","1",69,"1.8","aiyra","small", 170642,guarani
+"70","3",70,"3.8","pjflex","small",0.059649,guarani
+"71","4",71,"4.8","aiyra","medium", 13751748,guarani
+"72","2",72,"2.8","pj","small",0.049988,guarani
+"73","3",73,"3.9","pjflex","small",0.044166,guarani
+"74","4",74,"4.9","aiyra","medium", 13745280,guarani
+"75","5",75,"5.9","pj","medium",30.065738,guarani
+"76","7",76,"7.9","aiyra","big", 124327895,guarani
+"77","9",77,"9.9","pjflex","big",248.846654,guarani
+"78","1",78,"1.9","aiyra","small", 173753,guarani
+"79","6",79,"6.9","pjflex","medium",32.270948,guarani
+"80","2",80,"2.9","pj","small",0.058292,guarani
+"81","8",81,"8.9","pj","big",231.382006,guarani
+"82","3",82,"3.10","pjflex","small",0.033574,guarani
+"83","4",83,"4.10","aiyra","medium", 13452302,guarani
+"84","8",84,"8.10","pj","big",228.862519,guarani
+"85","1",85,"1.10","aiyra","small", 170068,guarani
+"86","2",86,"2.10","pj","small",0.031709,guarani
+"87","9",87,"9.10","pjflex","big",248.669008,guarani
+"88","5",88,"5.10","pj","medium",29.834602,guarani
+"89","7",89,"7.10","aiyra","big", 124360957,guarani
+"90","6",90,"6.10","pjflex","medium",31.957360,guarani
+"91","6",91,"6.11","pjflex","medium",32.040910,guarani
+"92","4",92,"4.11","aiyra","medium", 13797175,guarani
+"93","5",93,"5.11","pj","medium",29.629039,guarani
+"94","7",94,"7.11","aiyra","big", 130327511,guarani
+"95","9",95,"9.11","pjflex","big",251.561711,guarani
+"96","3",96,"3.11","pjflex","small",0.033186,guarani
+"97","8",97,"8.11","pj","big",232.593827,guarani
+"98","1",98,"1.11","aiyra","small", 172452,guarani
+"99","2",99,"2.11","pj","small",0.055046,guarani
+"100","3",100,"3.12","pjflex","small",0.046664,guarani
+"101","4",101,"4.12","aiyra","medium", 14031401,guarani
+"102","7",102,"7.12","aiyra","big", 123209919,guarani
+"103","2",103,"2.12","pj","small",0.047786,guarani
+"104","5",104,"5.12","pj","medium",29.707951,guarani
+"105","6",105,"6.12","pjflex","medium",32.152582,guarani
+"106","1",106,"1.12","aiyra","small", 172686,guarani
+"107","8",107,"8.12","pj","big",231.702400,guarani
+"108","9",108,"9.12","pjflex","big",250.089718,guarani
+"109","3",109,"3.13","pjflex","small",0.034246,guarani
+"110","2",110,"2.13","pj","small",0.032094,guarani
+"111","1",111,"1.13","aiyra","small", 169376,guarani
+"112","7",112,"7.13","aiyra","big", 127939858,guarani
+"113","9",113,"9.13","pjflex","big",250.019028,guarani
+"114","8",114,"8.13","pj","big",232.537509,guarani
+"115","5",115,"5.13","pj","medium",30.044318,guarani
+"116","6",116,"6.13","pjflex","medium",32.232734,guarani
+"117","4",117,"4.13","aiyra","medium", 14305578,guarani
+"118","4",118,"4.14","aiyra","medium", 13637664,guarani
+"119","2",119,"2.14","pj","small",0.052562,guarani
+"120","1",120,"1.14","aiyra","small", 173852,guarani
+"121","5",121,"5.14","pj","medium",29.778227,guarani
+"122","6",122,"6.14","pjflex","medium",32.613255,guarani
+"123","8",123,"8.14","pj","big",232.222602,guarani
+"124","7",124,"7.14","aiyra","big", 122414365,guarani
+"125","3",125,"3.14","pjflex","small",0.044001,guarani
+"126","9",126,"9.14","pjflex","big",247.674236,guarani
+"127","5",127,"5.15","pj","medium",29.932127,guarani
+"128","6",128,"6.15","pjflex","medium",32.003949,guarani
+"129","2",129,"2.15","pj","small",0.032041,guarani
+"130","1",130,"1.15","aiyra","small", 171564,guarani
+"131","8",131,"8.15","pj","big",232.140372,guarani
+"132","3",132,"3.15","pjflex","small",0.034325,guarani
+"133","7",133,"7.15","aiyra","big", 124226193,guarani
+"134","9",134,"9.15","pjflex","big",247.338904,guarani
+"135","4",135,"4.15","aiyra","medium", 13358337,guarani
+"136","7",136,"7.16","aiyra","big", 123398289,guarani
+"137","4",137,"4.16","aiyra","medium", 12977742,guarani
+"138","8",138,"8.16","pj","big",232.978701,guarani
+"139","2",139,"2.16","pj","small",0.048591,guarani
+"140","3",140,"3.16","pjflex","small",0.042983,guarani
+"141","1",141,"1.16","aiyra","small", 170694,guarani
+"142","5",142,"5.16","pj","medium",29.979011,guarani
+"143","9",143,"9.16","pjflex","big",250.157032,guarani
+"144","6",144,"6.16","pjflex","medium",32.256518,guarani
+"145","2",145,"2.17","pj","small",0.032023,guarani
+"146","4",146,"4.17","aiyra","medium", 14455546,guarani
+"147","9",147,"9.17","pjflex","big",251.723048,guarani
+"148","1",148,"1.17","aiyra","small", 170933,guarani
+"149","8",149,"8.17","pj","big",232.735446,guarani
+"150","5",150,"5.17","pj","medium",30.471959,guarani
+"151","6",151,"6.17","pjflex","medium",32.752368,guarani
+"152","7",152,"7.17","aiyra","big", 126716750,guarani
+"153","3",153,"3.17","pjflex","small",0.051179,guarani
+"154","5",154,"5.18","pj","medium",30.149475,guarani
+"155","8",155,"8.18","pj","big",233.296915,guarani
+"156","9",156,"9.18","pjflex","big",247.660300,guarani
+"157","2",157,"2.18","pj","small",0.058470,guarani
+"158","3",158,"3.18","pjflex","small",0.049864,guarani
+"159","6",159,"6.18","pjflex","medium",32.193335,guarani
+"160","7",160,"7.18","aiyra","big", 124517456,guarani
+"161","4",161,"4.18","aiyra","medium", 13733689,guarani
+"162","1",162,"1.18","aiyra","small", 170061,guarani
+"163","7",163,"7.19","aiyra","big", 123739569,guarani
+"164","3",164,"3.19","pjflex","small",0.037926,guarani
+"165","2",165,"2.19","pj","small",0.032884,guarani
+"166","6",166,"6.19","pjflex","medium",32.133402,guarani
+"167","5",167,"5.19","pj","medium",29.929547,guarani
+"168","9",168,"9.19","pjflex","big",246.628800,guarani
+"169","4",169,"4.19","aiyra","medium", 13610061,guarani
+"170","8",170,"8.19","pj","big",233.053508,guarani
+"171","1",171,"1.19","aiyra","small", 173107,guarani
+"172","3",172,"3.20","pjflex","small",0.050276,guarani
+"173","7",173,"7.20","aiyra","big", 124608696,guarani
+"174","2",174,"2.20","pj","small",0.032006,guarani
+"175","1",175,"1.20","aiyra","small", 169777,guarani
+"176","6",176,"6.20","pjflex","medium",32.498931,guarani
+"177","9",177,"9.20","pjflex","big",246.676053,guarani
+"178","5",178,"5.20","pj","medium",29.837679,guarani
+"179","8",179,"8.20","pj","big",233.160894,guarani
+"180","4",180,"4.20","aiyra","medium", 13948071,guarani
+"181","2",181,"2.21","pj","small",0.042467,guarani
+"182","4",182,"4.21","aiyra","medium", 13701082,guarani
+"183","9",183,"9.21","pjflex","big",246.548154,guarani
+"184","8",184,"8.21","pj","big",232.909847,guarani
+"185","7",185,"7.21","aiyra","big", 121134316,guarani
+"186","1",186,"1.21","aiyra","small", 170417,guarani
+"187","5",187,"5.21","pj","medium",29.526948,guarani
+"188","3",188,"3.21","pjflex","small",0.034867,guarani
+"189","6",189,"6.21","pjflex","medium",31.967919,guarani
+"190","6",190,"6.22","pjflex","medium",32.064194,guarani
+"191","7",191,"7.22","aiyra","big", 123194322,guarani
+"192","2",192,"2.22","pj","small",0.049175,guarani
+"193","4",193,"4.22","aiyra","medium", 13862171,guarani
+"194","9",194,"9.22","pjflex","big",246.180662,guarani
+"195","1",195,"1.22","aiyra","small", 176760,guarani
+"196","8",196,"8.22","pj","big",230.733066,guarani
+"197","3",197,"3.22","pjflex","small",0.054626,guarani
+"198","5",198,"5.22","pj","medium",30.313916,guarani
+"199","5",199,"5.23","pj","medium",30.136052,guarani
+"200","3",200,"3.23","pjflex","small",0.033399,guarani
+"201","6",201,"6.23","pjflex","medium",31.880924,guarani
+"202","8",202,"8.23","pj","big",232.179443,guarani
+"203","2",203,"2.23","pj","small",0.060196,guarani
+"204","7",204,"7.23","aiyra","big", 124924603,guarani
+"205","1",205,"1.23","aiyra","small", 175506,guarani
+"206","9",206,"9.23","pjflex","big",245.471804,guarani
+"207","4",207,"4.23","aiyra","medium", 13663658,guarani
+"208","3",208,"3.24","pjflex","small",0.035364,guarani
+"209","8",209,"8.24","pj","big",233.199727,guarani
+"210","6",210,"6.24","pjflex","medium",32.054317,guarani
+"211","2",211,"2.24","pj","small",0.032004,guarani
+"212","9",212,"9.24","pjflex","big",252.839795,guarani
+"213","7",213,"7.24","aiyra","big", 123021812,guarani
+"214","5",214,"5.24","pj","medium",30.152475,guarani
+"215","4",215,"4.24","aiyra","medium", 12816556,guarani
+"216","1",216,"1.24","aiyra","small", 177493,guarani
+"217","7",217,"7.25","aiyra","big", 122580481,guarani
+"218","9",218,"9.25","pjflex","big",249.178701,guarani
+"219","1",219,"1.25","aiyra","small", 176086,guarani
+"220","4",220,"4.25","aiyra","medium", 14372858,guarani
+"221","8",221,"8.25","pj","big",232.023496,guarani
+"222","5",222,"5.25","pj","medium",30.409075,guarani
+"223","6",223,"6.25","pjflex","medium",31.826389,guarani
+"224","3",224,"3.25","pjflex","small",0.056985,guarani
+"225","2",225,"2.25","pj","small",0.045990,guarani
+"226","6",226,"6.26","pjflex","medium",32.413473,guarani
+"227","5",227,"5.26","pj","medium",29.905987,guarani
+"228","2",228,"2.26","pj","small",0.031943,guarani
+"229","1",229,"1.26","aiyra","small", 171178,guarani
+"230","7",230,"7.26","aiyra","big", 123815205,guarani
+"231","4",231,"4.26","aiyra","medium", 13357419,guarani
+"232","9",232,"9.26","pjflex","big",247.813038,guarani
+"233","8",233,"8.26","pj","big",230.171080,guarani
+"234","3",234,"3.26","pjflex","small",0.062276,guarani
+"235","8",235,"8.27","pj","big",233.117422,guarani
+"236","9",236,"9.27","pjflex","big",248.540922,guarani
+"237","1",237,"1.27","aiyra","small", 169836,guarani
+"238","5",238,"5.27","pj","medium",29.552294,guarani
+"239","7",239,"7.27","aiyra","big", 127803636,guarani
+"240","6",240,"6.27","pjflex","medium",32.148445,guarani
+"241","2",241,"2.27","pj","small",0.031755,guarani
+"242","4",242,"4.27","aiyra","medium", 13410474,guarani
+"243","3",243,"3.27","pjflex","small",0.056627,guarani
+"244","3",244,"3.28","pjflex","small",0.045653,guarani
+"245","8",245,"8.28","pj","big",233.334309,guarani
+"246","2",246,"2.28","pj","small",0.031927,guarani
+"247","1",247,"1.28","aiyra","small", 170051,guarani
+"248","7",248,"7.28","aiyra","big", 125973212,guarani
+"249","5",249,"5.28","pj","medium",29.929242,guarani
+"250","9",250,"9.28","pjflex","big",246.401777,guarani
+"251","6",251,"6.28","pjflex","medium",32.382237,guarani
+"252","4",252,"4.28","aiyra","medium", 14066524,guarani
+"253","1",253,"1.29","aiyra","small", 175317,guarani
+"254","3",254,"3.29","pjflex","small",0.034869,guarani
+"255","7",255,"7.29","aiyra","big", 123316151,guarani
+"256","4",256,"4.29","aiyra","medium", 13083962,guarani
+"257","6",257,"6.29","pjflex","medium",31.743230,guarani
+"258","5",258,"5.29","pj","medium",29.852144,guarani
+"259","2",259,"2.29","pj","small",0.031757,guarani
+"260","8",260,"8.29","pj","big",230.940789,guarani
+"261","9",261,"9.29","pjflex","big",253.404259,guarani
+"262","1",262,"1.30","aiyra","small", 171138,guarani
+"263","7",263,"7.30","aiyra","big", 123859929,guarani
+"264","3",264,"3.30","pjflex","small",0.038832,guarani
+"265","6",265,"6.30","pjflex","medium",31.985459,guarani
+"266","4",266,"4.30","aiyra","medium", 13301260,guarani
+"267","5",267,"5.30","pj","medium",29.970390,guarani
+"268","2",268,"2.30","pj","small",0.060023,guarani
+"269","8",269,"8.30","pj","big",230.145417,guarani
+"270","9",270,"9.30","pjflex","big",248.148744,guarani
