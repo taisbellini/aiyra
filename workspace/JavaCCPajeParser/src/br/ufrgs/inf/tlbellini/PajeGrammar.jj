@@ -15,8 +15,7 @@ import java.lang.management.MemoryUsage;
 public class PajeGrammar{
 
   public static ArrayList<PajeEventDefinition> eventDefinitions = new ArrayList<PajeEventDefinition>(); 
-  static PajeSimulator simulator = new PajeSimulator();
-  public static PajePlugin plugin;
+  public static PajeSimulator simulator = new PajeSimulator();
   public static OptionsHandler options;
   private static final long MEGABYTE = 1024L * 1024L;
   public static long startTime;
@@ -44,13 +43,13 @@ public class PajeGrammar{
 		input = new FileInputStream(options.opt.getSet().getOption("f").getResultValue(0));
 		options.checkEntry();    }else
     {
-      options.printOptionsHelper();    }
+      options.checkOptionsHelper();    }
     startTime = System.nanoTime()/1000;
     simulator.init();    PajeGrammar parser = new PajeGrammar(input);
                 try      {        switch (parser.paje())        {          case 4 :
 		  simulator.finish();          long endTime = System.nanoTime()/1000;
           System.out.println("Time: "+ (endTime - startTime));
-          plugin.endSimulation();
+          ((PajeInsertDBPlugin) simulator.plugin).endSimulation();
           break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());
       }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());      }    }}PARSER_END(PajeGrammar)SKIP :{  " "| "\r"| "\t"
 |  <  "#" (~["\r", "\n"])* ("\n" | "\r\n") >}

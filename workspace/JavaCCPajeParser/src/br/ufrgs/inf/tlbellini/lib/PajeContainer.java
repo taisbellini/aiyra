@@ -158,7 +158,7 @@ public class PajeContainer extends PajeNamedEntity {
 		}
 		
 		//Send destroyed container to plugin
-		PajeGrammar.plugin.destroyedContainer(this);
+		PajeGrammar.simulator.plugin.destroyedContainer(this);
 		
 		this.recursiveDestroy(time);
 		
@@ -184,7 +184,7 @@ public class PajeContainer extends PajeNamedEntity {
 		this.getEntities().get(type).add(newState);
 		this.getStackStates().get(type).add(newState);
 		
-		PajeGrammar.plugin.setState(newState);
+		PajeGrammar.simulator.plugin.setState(newState);
 		
 	}
 	
@@ -214,7 +214,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		this.getEntities().get(type).add(newState);
 		this.getStackStates().get(type).add(newState);
 		
-		PajeGrammar.plugin.pushState(newState);
+		PajeGrammar.simulator.plugin.pushState(newState);
 		
 	}
 
@@ -241,7 +241,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			throw new Exception("Trying to Pop a State of type "+ type.getAlias() + " that was not previously Pushed in line " + traceEvent.getLine());
 		}
 		
-		PajeGrammar.plugin.popState(state);
+		PajeGrammar.simulator.plugin.popState(state);
 		
 		this.getEntities().get(type).remove(state);
 		this.getStackStates().get(type).remove(state);
@@ -260,7 +260,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		if(this.getEntities().isEmpty() || !this.getEntities().containsKey(type))
 			this.getEntities().put(type, new ArrayList<PajeEntity>());
 		
-		PajeGrammar.plugin.newEvent(newEvent);
+		PajeGrammar.simulator.plugin.newEvent(newEvent);
 		
 	}
 	
@@ -294,7 +294,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		this.getEntities().get(type).add(newValue);
 		
 		
-		PajeGrammar.plugin.setVar(first, last, newValue);
+		PajeGrammar.simulator.plugin.setVar(first, last, newValue);
 	}
 	
 	private void pajeAddVariable(PajeVariableEvent event) throws Exception{
@@ -325,7 +325,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		PajeUserVariable newValue = new PajeUserVariable(this, type, time, lastVal + value, traceEvent);		
 		this.getEntities().get(type).add(newValue);
 		
-		PajeGrammar.plugin.updateVar(first, last, newValue);
+		PajeGrammar.simulator.plugin.updateVar(first, last, newValue);
 	}
 	
 	private void pajeSubVariable(PajeVariableEvent event) throws Exception {
@@ -356,7 +356,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		PajeUserVariable newValue = new PajeUserVariable(this, type, time, lastVal - value, traceEvent);		
 		this.getEntities().get(type).add(newValue);
 		
-		PajeGrammar.plugin.updateVar(first, last, newValue);
+		PajeGrammar.simulator.plugin.updateVar(first, last, newValue);
 	}
 	
 	public void pajeStartLink(PajeLinkEvent event) throws Exception{
@@ -393,7 +393,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			if(!this.getEntities().containsKey(type))
 				this.getEntities().put(type, new ArrayList<PajeEntity>());
 			
-			PajeGrammar.plugin.newCompletedLink(link);
+			PajeGrammar.simulator.plugin.newCompletedLink(link);
 			
 			pendingLinks.get(type).remove(key);
 			if(!linksUsedKeys.containsKey(type))
@@ -402,7 +402,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			
 		}
 		
-		PajeGrammar.plugin.startLink(link);
+		PajeGrammar.simulator.plugin.startLink(link);
 	}
 	
 	public void pajeEndLink(PajeLinkEvent event) throws Exception{
@@ -440,7 +440,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			if(!this.getEntities().containsKey(type))
 				this.getEntities().put(type, new ArrayList<PajeEntity>());
 			
-			PajeGrammar.plugin.newCompletedLink(link);
+			PajeGrammar.simulator.plugin.newCompletedLink(link);
 			
 			pendingLinks.get(type).remove(key);
 			if(!linksUsedKeys.containsKey(type))
@@ -449,7 +449,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			
 		}
 		
-		PajeGrammar.plugin.endLink(link);
+		PajeGrammar.simulator.plugin.endLink(link);
 	}
 	
 	//check if trace is correctly ordered
@@ -479,7 +479,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			if(getStackStates().containsKey(event.getType())){
 				for (PajeUserState state : this.getStackStates().get(event.getType())){
 					state.setEndTime(event.getTime());
-					PajeGrammar.plugin.popState(state);
+					PajeGrammar.simulator.plugin.popState(state);
 					this.getStackStates().get(event.getType()).remove(state);
 				}
 			}

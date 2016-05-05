@@ -5,8 +5,11 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import br.ufrgs.inf.tlbellini.PajeGrammar;
+import br.ufrgs.inf.tlbellini.plugins.PajePlugin;
 
 public class PajeSimulator extends PajeComponent {
+	
+	public PajePlugin plugin;
 
 	private PajeContainerType rootType;
 	private PajeContainer root;
@@ -41,8 +44,8 @@ public class PajeSimulator extends PajeComponent {
 		contNamesMap.put(root.getName(), root);
 		
 		//send to plugin
-		PajeGrammar.plugin.newType(rootType);
-		PajeGrammar.plugin.newCreatedContainer(root);
+		plugin.newType(rootType);
+		plugin.newCreatedContainer(root);
 		
 	}
 
@@ -81,7 +84,7 @@ public class PajeSimulator extends PajeComponent {
 	
 	public void finish() throws Exception{
 		this.root.recursiveDestroy(this.lastKnownTime);
-		PajeGrammar.plugin.finish();
+		plugin.finish();
 	}
 
 
@@ -193,7 +196,7 @@ public class PajeSimulator extends PajeComponent {
 		containerType.addChildrenType(name, alias, newType);
 		
 		//send to Plugin
-		PajeGrammar.plugin.newType(newType);
+		plugin.newType(newType);
 	}
 
 	private void pajeDefineStateType(PajeTraceEvent event) throws Exception {
@@ -230,7 +233,7 @@ public class PajeSimulator extends PajeComponent {
 		containerType.addChildrenType(name, alias, newType);
 		
 		//send to Plugin
-		PajeGrammar.plugin.newType(newType);
+		plugin.newType(newType);
 	}
 
 	private void pajeDefineEventType(PajeTraceEvent event) throws Exception {
@@ -267,7 +270,7 @@ public class PajeSimulator extends PajeComponent {
 		containerType.addChildrenType(name, alias, newType);
 		
 		//send to Plugin
-		PajeGrammar.plugin.newType(newType);
+		plugin.newType(newType);
 	}
 
 	private void pajeDefineVariableType(PajeTraceEvent event) throws Exception {
@@ -314,7 +317,7 @@ public class PajeSimulator extends PajeComponent {
 		containerType.addChildrenType(name, alias, newType);
 		
 		//send to Plugin
-		PajeGrammar.plugin.newType(newType);
+		plugin.newType(newType);
 	}
 
 	private void pajeDefineLinkType(PajeTraceEvent event) throws Exception {
@@ -386,7 +389,7 @@ public class PajeSimulator extends PajeComponent {
 		containerType.addChildrenType(name, alias, newType);
 		
 		//send to Plugin
-		PajeGrammar.plugin.newType(newType);
+		plugin.newType(newType);
 	}
 
 	private void pajeDefineEntityValue(PajeTraceEvent event) throws Exception {
@@ -443,7 +446,7 @@ public class PajeSimulator extends PajeComponent {
 		}
 		
 		//send to Plugin
-		PajeGrammar.plugin.newValue(newValue);
+		plugin.newValue(newValue);
 
 	}
 
@@ -504,7 +507,7 @@ public class PajeSimulator extends PajeComponent {
 
 		parentContainer.addChildren(identifier, newContainer);
 		
-		PajeGrammar.plugin.newCreatedContainer(newContainer);
+		plugin.newCreatedContainer(newContainer);
 
 	}
 
