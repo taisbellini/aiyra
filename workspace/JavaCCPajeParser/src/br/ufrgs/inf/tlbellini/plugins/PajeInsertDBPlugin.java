@@ -41,7 +41,6 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	 * Key: startTime Value: [0] endTime [1] duration [2] size in number of
 	 * operations
 	 */
-	private Map<Long, Long[]> batchInfo = new HashMap<Long, Long[]>();
 
 	PreparedStatement stmtLink;
 	PreparedStatement stmtEvent;
@@ -124,7 +123,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 		catch (ClassNotFoundException e) {
 			System.out.println("The driver specified was not found.");
 
-		} catch (SQLException e) {
+		}catch (SQLException e) {
 			System.out.println("The database was not found.");
 
 		}
@@ -251,7 +250,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	}
 
 	@Override
-	public void addType(PajeType newType) {
+	public void newType(PajeType newType) {
 		String sql;
 		switch (newType.getNature()) {
 		case ContainerType:
@@ -289,14 +288,14 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	}
 
 	@Override
-	public void addValue(PajeValue value) {
+	public void newValue(PajeValue value) {
 		String sql = generateInsertValueSQL(value.getAlias(), value.getName(), value.getType().getAlias(),
 				value.getColor(), fileId);
 		insert(sql);
 	}
 
 	@Override
-	public void addNewContainer(PajeContainer newContainer) {
+	public void newCreatedContainer(PajeContainer newContainer) {
 		String sql = generateInsertContainerSQL(newContainer.alias, newContainer.getName(), newContainer.getStartTime(),
 				-1, newContainer.getContainer() != null ? newContainer.getContainer().alias : "null",
 				newContainer.getType().getAlias(), newContainer.depth, fileId);
@@ -304,7 +303,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	}
 
 	@Override
-	public void addDestroyedContainer(PajeContainer pajeContainer) {
+	public void destroyedContainer(PajeContainer pajeContainer) {
 		StringBuilder sb = new StringBuilder("UPDATE container SET endTime = ");
 		sb.append(pajeContainer.getEndTime());
 		sb.append(" WHERE alias = ");
@@ -381,7 +380,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	}
 
 	@Override
-	public void addState(PajeUserState newState) {
+	public void setState(PajeUserState newState) {
 	}
 
 	@Override
@@ -419,7 +418,7 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	}
 
 	@Override
-	public void addLink(PajeUserLink link) {
+	public void newCompletedLink(PajeUserLink link) {
 		try {
 			stmtLink.setDouble(1, link.getStartTime());
 			stmtLink.setDouble(2, link.getEndTime());
@@ -449,13 +448,14 @@ public class PajeInsertDBPlugin extends PajePlugin {
 	}
 
 	@Override
-	public void setVar(PajeUserVariable newVar) {
-		// add only when it`s complete (with end time)
+	public void setVar(PajeEntity first, PajeEntity last, PajeUserVariable newVar) {
+		
 	}
 
 	@Override
-	public void addVar(PajeEntity first, PajeEntity last, PajeUserVariable newValue) {
+	public void updateVar(PajeEntity first, PajeEntity last, PajeUserVariable newVar) {
 		// adds the last one to db, since it is complete with start and end
+	
 		try {
 			if (last != null && ((PajeDoubleTimedEntity) last).getEndTime() > 0) {
 				stmtVariable.setDouble(1, ((PajeSingleTimedEntity) first).getStartTime());
@@ -483,10 +483,11 @@ public class PajeInsertDBPlugin extends PajePlugin {
 			e.printStackTrace();
 		}
 
+
 	}
 
 	@Override
-	public void addEvent(PajeUserEvent event) {
+	public void newEvent(PajeUserEvent event) {
 		try {
 			stmtEvent.setDouble(1, event.getStartTime());
 			stmtEvent.setString(2, event.getType().getAlias());
@@ -619,9 +620,20 @@ public class PajeInsertDBPlugin extends PajePlugin {
 
 	}
 
-	@Override
 	public void endSimulation() {
 		deleteSimulation();
+	}
+
+	@Override
+	public void startLink(PajeUserLink link) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void endLink(PajeUserLink link) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
