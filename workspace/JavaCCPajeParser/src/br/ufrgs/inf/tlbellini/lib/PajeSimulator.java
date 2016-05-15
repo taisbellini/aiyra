@@ -41,8 +41,8 @@ public class PajeSimulator extends PajeComponent {
 		contNamesMap.put(root.getName(), root);
 		
 		//send to plugin
-		PajeGrammar.plugin.addType(rootType);
-		PajeGrammar.plugin.addNewContainer(root);
+		PajeGrammar.plugin.newType(rootType);
+		PajeGrammar.plugin.newCreatedContainer(root);
 		
 	}
 
@@ -193,7 +193,7 @@ public class PajeSimulator extends PajeComponent {
 		containerType.addChildrenType(name, alias, newType);
 		
 		//send to Plugin
-		PajeGrammar.plugin.addType(newType);
+		PajeGrammar.plugin.newType(newType);
 	}
 
 	private void pajeDefineStateType(PajeTraceEvent event) throws Exception {
@@ -230,7 +230,7 @@ public class PajeSimulator extends PajeComponent {
 		containerType.addChildrenType(name, alias, newType);
 		
 		//send to Plugin
-		PajeGrammar.plugin.addType(newType);
+		PajeGrammar.plugin.newType(newType);
 	}
 
 	private void pajeDefineEventType(PajeTraceEvent event) throws Exception {
@@ -267,7 +267,7 @@ public class PajeSimulator extends PajeComponent {
 		containerType.addChildrenType(name, alias, newType);
 		
 		//send to Plugin
-		PajeGrammar.plugin.addType(newType);
+		PajeGrammar.plugin.newType(newType);
 	}
 
 	private void pajeDefineVariableType(PajeTraceEvent event) throws Exception {
@@ -314,7 +314,7 @@ public class PajeSimulator extends PajeComponent {
 		containerType.addChildrenType(name, alias, newType);
 		
 		//send to Plugin
-		PajeGrammar.plugin.addType(newType);
+		PajeGrammar.plugin.newType(newType);
 	}
 
 	private void pajeDefineLinkType(PajeTraceEvent event) throws Exception {
@@ -386,7 +386,7 @@ public class PajeSimulator extends PajeComponent {
 		containerType.addChildrenType(name, alias, newType);
 		
 		//send to Plugin
-		PajeGrammar.plugin.addType(newType);
+		PajeGrammar.plugin.newType(newType);
 	}
 
 	private void pajeDefineEntityValue(PajeTraceEvent event) throws Exception {
@@ -416,7 +416,7 @@ public class PajeSimulator extends PajeComponent {
 			pajeColor = getColor(color, event);
 		}
 
-		//pajeColor = null;
+		PajeValue newValue = null;
 
 		// check if type is an acceptable type
 		if (targetType.getNature().equals(PajeTypeNature.ContainerType))
@@ -439,8 +439,11 @@ public class PajeSimulator extends PajeComponent {
 			throw new Exception("Trying to redefine the value " + identifier
 					+ " for " + type + " in line " + line);
 		} else {
-			targetType.addValue(name, alias, pajeColor);
+			newValue = targetType.addValue(name, alias, pajeColor);
 		}
+		
+		//send to Plugin
+		PajeGrammar.plugin.newValue(newValue);
 
 	}
 
@@ -501,7 +504,7 @@ public class PajeSimulator extends PajeComponent {
 
 		parentContainer.addChildren(identifier, newContainer);
 		
-		PajeGrammar.plugin.addNewContainer(newContainer);
+		PajeGrammar.plugin.newCreatedContainer(newContainer);
 
 	}
 

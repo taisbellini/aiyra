@@ -15,27 +15,27 @@ public class PajeNullPlugin extends PajePlugin {
 	}
 
 	@Override
-	public void addType(PajeType newType) {
+	public void newType(PajeType newType) {
 		
 	}
 
 	@Override
-	public void addValue(PajeValue value) {
+	public void newValue(PajeValue value) {
 		
 	}
 
 	@Override
-	public void addNewContainer(PajeContainer newContainer) {
+	public void newCreatedContainer(PajeContainer newContainer) {
 		
 	}
 
 	@Override
-	public void addDestroyedContainer(PajeContainer pajeContainer) {
+	public void destroyedContainer(PajeContainer pajeContainer) {
 		
 	}
 
 	@Override
-	public void addState(PajeUserState newState) {
+	public void setState(PajeUserState newState) {
 		
 	}
 
@@ -50,17 +50,17 @@ public class PajeNullPlugin extends PajePlugin {
 	}
 
 	@Override
-	public void addLink(PajeUserLink link) {
+	public void newCompletedLink(PajeUserLink link) {
 		
 	}
 
 	@Override
-	public void addVar(PajeEntity first, PajeEntity last, PajeUserVariable newValue) {
+	public void updateVar(PajeEntity first, PajeEntity last, PajeUserVariable newValue) {
 		
 	}
 
 	@Override
-	public void addEvent(PajeUserEvent event) {
+	public void newEvent(PajeUserEvent event) {
 		
 	}
 
@@ -70,12 +70,19 @@ public class PajeNullPlugin extends PajePlugin {
 	}
 
 	@Override
-	public void setVar(PajeUserVariable var) {
+	public void setVar(PajeEntity first, PajeEntity last, PajeUserVariable var) {
 		
 	}
 
 	@Override
-	public void endSimulation() {
+	public void startLink(PajeUserLink link) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void endLink(PajeUserLink link) {
+		// TODO Auto-generated method stub
 		
 	}
 

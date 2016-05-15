@@ -158,7 +158,7 @@ public class PajeContainer extends PajeNamedEntity {
 		}
 		
 		//Send destroyed container to plugin
-		PajeGrammar.plugin.addDestroyedContainer(this);
+		PajeGrammar.plugin.destroyedContainer(this);
 		
 		this.recursiveDestroy(time);
 		
@@ -184,7 +184,7 @@ public class PajeContainer extends PajeNamedEntity {
 		this.getEntities().get(type).add(newState);
 		this.getStackStates().get(type).add(newState);
 		
-		PajeGrammar.plugin.addState(newState);
+		PajeGrammar.plugin.setState(newState);
 		
 	}
 	
@@ -260,7 +260,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		if(this.getEntities().isEmpty() || !this.getEntities().containsKey(type))
 			this.getEntities().put(type, new ArrayList<PajeEntity>());
 		
-		PajeGrammar.plugin.addEvent(newEvent);
+		PajeGrammar.plugin.newEvent(newEvent);
 		
 	}
 	
@@ -269,6 +269,8 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		PajeType type = event.getType();
 		double value = event.getDoubleValue();
 		PajeTraceEvent traceEvent = event.getEvent();
+		PajeEntity last = null;
+		PajeEntity first = null;
 		
 		checkTimeOrder(event);
 		
@@ -277,7 +279,8 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		
 		//if same timestamp, just replaces value
 		if(!this.getEntities().get(type).isEmpty()){
-			PajeEntity last = this.getEntities().get(type).get(this.getEntities().get(type).size() -1);
+			last = this.getEntities().get(type).get(this.getEntities().get(type).size() -1);
+			first = this.getEntities().get(type).get(0);
 	
 			if(((PajeUserVariable) last).getStartTime() == time){
 				((PajeUserVariable) last).setValue(value);
@@ -291,7 +294,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		this.getEntities().get(type).add(newValue);
 		
 		
-		PajeGrammar.plugin.setVar(newValue);
+		PajeGrammar.plugin.setVar(first, last, newValue);
 	}
 	
 	private void pajeAddVariable(PajeVariableEvent event) throws Exception{
@@ -322,7 +325,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		PajeUserVariable newValue = new PajeUserVariable(this, type, time, lastVal + value, traceEvent);		
 		this.getEntities().get(type).add(newValue);
 		
-		PajeGrammar.plugin.addVar(first, last, newValue);
+		PajeGrammar.plugin.updateVar(first, last, newValue);
 	}
 	
 	private void pajeSubVariable(PajeVariableEvent event) throws Exception {
@@ -353,7 +356,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		PajeUserVariable newValue = new PajeUserVariable(this, type, time, lastVal - value, traceEvent);		
 		this.getEntities().get(type).add(newValue);
 		
-		PajeGrammar.plugin.addVar(first,last, newValue);
+		PajeGrammar.plugin.updateVar(first, last, newValue);
 	}
 	
 	public void pajeStartLink(PajeLinkEvent event) throws Exception{
@@ -363,6 +366,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		PajeValue value = event.getValue();
 		PajeTraceEvent traceEvent = event.getEvent();
 		PajeContainer startContainer = event.getLinkedContainer();
+		PajeUserLink link;
 		
 		if (this.linksUsedKeys.containsKey(type) && this.linksUsedKeys.get(type).contains(key)){
 		    throw new Exception ("Illegal event in "+traceEvent.getLine()+", the key was already used for another link");
@@ -372,11 +376,11 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			pendingLinks.put(type, new HashMap<String, PajeUserLink>());
 		
 		if(!pendingLinks.get(type).containsKey(key)){
-			PajeUserLink link = new PajeUserLink(this, type, time, value, key, startContainer, traceEvent);
+			link = new PajeUserLink(this, type, time, value, key, startContainer, traceEvent);
 			pendingLinks.get(type).put(key, link);
 		}else{
 			//there is a PajeEndLink
-			PajeUserLink link = pendingLinks.get(type).get(key);
+			link = pendingLinks.get(type).get(key);
 			link.setStartTime(time);
 			link.setStartContainer(startContainer);
 			
@@ -389,7 +393,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			if(!this.getEntities().containsKey(type))
 				this.getEntities().put(type, new ArrayList<PajeEntity>());
 			
-			PajeGrammar.plugin.addLink(link);
+			PajeGrammar.plugin.newCompletedLink(link);
 			
 			pendingLinks.get(type).remove(key);
 			if(!linksUsedKeys.containsKey(type))
@@ -397,6 +401,8 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			linksUsedKeys.get(type).add(key);
 			
 		}
+		
+		PajeGrammar.plugin.startLink(link);
 	}
 	
 	public void pajeEndLink(PajeLinkEvent event) throws Exception{
@@ -406,6 +412,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 		PajeValue value = event.getValue();
 		PajeTraceEvent traceEvent = event.getEvent();
 		PajeContainer endContainer = event.getLinkedContainer();
+		PajeUserLink link;
 		
 		if (this.linksUsedKeys.containsKey(type) && this.linksUsedKeys.get(type).contains(key)){
 		    throw new Exception ("Illegal event in "+traceEvent.getLine()+", the key was already used for another link");
@@ -415,12 +422,12 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			pendingLinks.put(type, new HashMap<String, PajeUserLink>());
 		
 		if(!pendingLinks.get(type).containsKey(key)){
-			PajeUserLink link = new PajeUserLink(this, type, time, value, key, null, traceEvent);
+			link = new PajeUserLink(this, type, time, value, key, null, traceEvent);
 			link.setEndContainer(endContainer);
 			pendingLinks.get(type).put(key, link);
 		}else{
 			//there is a PajeStartLink
-			PajeUserLink link = pendingLinks.get(type).get(key);
+			link = pendingLinks.get(type).get(key);
 			link.setEndTime(time);
 			link.setEndContainer(endContainer);
 			
@@ -433,7 +440,7 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			if(!this.getEntities().containsKey(type))
 				this.getEntities().put(type, new ArrayList<PajeEntity>());
 			
-			PajeGrammar.plugin.addLink(link);
+			PajeGrammar.plugin.newCompletedLink(link);
 			
 			pendingLinks.get(type).remove(key);
 			if(!linksUsedKeys.containsKey(type))
@@ -441,6 +448,8 @@ private void pajePushState(PajeStateEvent event) throws Exception{
 			linksUsedKeys.get(type).add(key);
 			
 		}
+		
+		PajeGrammar.plugin.endLink(link);
 	}
 	
 	//check if trace is correctly ordered
