@@ -3504,3 +3504,445 @@ ggplot(df[df$input == "big" & df$platform != "orion1",], aes(x=starttime, xend=e
 #+RESULTS:
 [[file:img/batch_time_v1.pdf]]
 
+* 2016-05-16 Results analysis + figures for dissertation         :Lucas:Tais:
+
+Merge everything in a single CSV file:
+
+#+begin_src sh :results output :session :exports both
+cd results/cpp_comparison
+head -n1 cpp_guarani_bateria01.csv > all_but_first.csv
+for i in `ls -1 *.csv | grep -v _cpp_c`; do
+  tail -n+2 $i
+done >> all_but_first.csv
+#+end_src
+
+Now, let's read the file =all_but_first.csv=.
+
+#+begin_src R :results output :session :exports both
+df <- read.csv ("results/cpp_comparison/all_but_first.csv");
+df[df$version == "aiyra",]$time = df[df$version == "aiyra",]$time/1000000;
+summary(df);
+head(df);
+#+end_src
+
+#+RESULTS:
+#+begin_example
+      name       run.no.in.std.order     run.no      run.no.std.rp  
+ Min.   :  1.0   Min.   :1           Min.   :  1.0   Min.   :1.100  
+ 1st Qu.: 68.0   1st Qu.:3           1st Qu.: 68.0   1st Qu.:3.160  
+ Median :135.5   Median :5           Median :135.5   Median :5.225  
+ Mean   :135.5   Mean   :5           Mean   :135.5   Mean   :5.290  
+ 3rd Qu.:203.0   3rd Qu.:7           3rd Qu.:203.0   3rd Qu.:7.300  
+ Max.   :270.0   Max.   :9           Max.   :270.0   Max.   :9.900  
+   version       input          time              platform  
+ aiyra :270   big   :270   Min.   :   0.0245   guarani:270  
+ pj    :270   medium:270   1st Qu.:   0.1738   luiza  :270  
+ pjflex:270   small :270   Median :  25.7898   orion1 :270  
+                           Mean   :  76.8609                
+                           3rd Qu.: 123.2365                
+                           Max.   :2888.0565
+  name run.no.in.std.order run.no run.no.std.rp version  input       time
+1    1                   4      1           4.1   aiyra medium  13.199061
+2    2                   9      2           9.1  pjflex    big 280.152443
+3    3                   2      3           2.1      pj  small   0.049384
+4    4                   5      4           5.1      pj medium  33.616784
+5    5                   7      5           7.1   aiyra    big 111.191072
+6    6                   6      6           6.1  pjflex medium  35.570650
+  platform
+1   orion1
+2   orion1
+3   orion1
+4   orion1
+5   orion1
+6   orion1
+#+end_example
+
+Let's average measurements:
+
+#+begin_src R :results output :session :exports both
+library(dplyr);
+k <- df %>%
+     select(version, input, time, platform) %>%
+     group_by(version, input, platform) %>%
+     summarize(N = n(),
+               time_avg = mean(time),
+               time_se = 3*sd(time)/sqrt(N)) %>%
+     as.data.frame();
+k
+#+end_src
+
+#+RESULTS:
+#+begin_example
+   version  input platform  N     time_avg      time_se
+1    aiyra    big  guarani 30 124.24501307 1.152943e+00
+2    aiyra    big    luiza 30 176.45010810 2.805133e+02
+3    aiyra    big   orion1 30 111.78373253 1.012192e+00
+4    aiyra medium  guarani 30  13.62979877 2.309004e-01
+5    aiyra medium    luiza 30   9.38572857 1.159134e-01
+6    aiyra medium   orion1 30  13.08560363 1.239769e-01
+7    aiyra  small  guarani 30   0.17240930 1.343752e-03
+8    aiyra  small    luiza 30   0.18415197 1.450459e-03
+9    aiyra  small   orion1 30   0.22622977 9.292423e-03
+10      pj    big  guarani 30 232.04630737 5.956094e-01
+11      pj    big    luiza 30 207.43421557 9.992199e+00
+12      pj    big   orion1 30 259.72360747 1.115893e+00
+13      pj medium  guarani 30  29.97373843 1.207393e-01
+14      pj medium    luiza 30  24.92862427 2.842269e-01
+15      pj medium   orion1 30  33.47163073 1.253937e-01
+16      pj  small  guarani 30   0.04223553 6.087253e-03
+17      pj  small    luiza 30   0.02562413 7.886749e-04
+18      pj  small   orion1 30   0.04607153 2.206699e-03
+19  pjflex    big  guarani 30 248.65192840 1.108033e+00
+20  pjflex    big    luiza 30 215.79006593 2.822790e+00
+21  pjflex    big   orion1 30 279.74462510 9.249580e-01
+22  pjflex medium  guarani 30  32.14986230 1.422113e-01
+23  pjflex medium    luiza 30  25.85007707 2.419624e-01
+24  pjflex medium   orion1 30  36.08434247 1.588962e-01
+25  pjflex  small  guarani 30   0.04453450 5.719485e-03
+26  pjflex  small    luiza 30   0.02540013 4.037376e-04
+27  pjflex  small   orion1 30   0.04819160 2.599552e-03
+#+end_example
+
+#+begin_src R :results output graphics :file img/cpp/first_plot_1.png :exports both :width 600 :height 400 :session
+library(ggplot2);
+ggplot(k, aes(x=version, y=time_avg, color=input)) +
+  geom_point() +
+  scale_colour_manual(values = c("red","blue", "green")) +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  theme_bw() + facet_wrap(~platform);
+#+end_src
+
+#+RESULTS:
+[[file:img/cpp/first_plot_1.png]]
+
+There is something really strange with =luiza= =aiyra= =big=, let's look to
+the measurements.
+
+#+begin_src R :results output :session :exports both
+df[df$platform == "luiza" & df$version == "aiyra" & df$input == "big",];
+#+end_src
+
+#+RESULTS:
+#+begin_example
+    name run.no.in.std.order run.no run.no.std.rp version input       time
+275    5                   7      5          7.10   aiyra   big   82.81775
+281   11                   7     11          7.20   aiyra   big   86.17196
+296   26                   7     26          7.30   aiyra   big 2888.05648
+299   29                   7     29          7.40   aiyra   big   80.86330
+314   44                   7     44          7.50   aiyra   big   82.80871
+321   51                   7     51          7.60   aiyra   big   80.60814
+325   55                   7     55          7.70   aiyra   big   81.70027
+335   65                   7     65          7.80   aiyra   big   81.60717
+346   76                   7     76          7.90   aiyra   big   81.75732
+359   89                   7     89          7.10   aiyra   big   81.35299
+364   94                   7     94          7.11   aiyra   big   83.07451
+372  102                   7    102          7.12   aiyra   big   86.38635
+382  112                   7    112          7.13   aiyra   big   84.73248
+394  124                   7    124          7.14   aiyra   big   84.30511
+403  133                   7    133          7.15   aiyra   big   83.61456
+406  136                   7    136          7.16   aiyra   big   87.41428
+422  152                   7    152          7.17   aiyra   big   82.55839
+430  160                   7    160          7.18   aiyra   big   83.14233
+433  163                   7    163          7.19   aiyra   big   82.74059
+443  173                   7    173          7.20   aiyra   big   80.96755
+455  185                   7    185          7.21   aiyra   big   83.47831
+461  191                   7    191          7.22   aiyra   big   82.58781
+474  204                   7    204          7.23   aiyra   big   80.05653
+483  213                   7    213          7.24   aiyra   big   80.95360
+487  217                   7    217          7.25   aiyra   big   84.05692
+500  230                   7    230          7.26   aiyra   big   84.04072
+509  239                   7    239          7.27   aiyra   big   88.34312
+518  248                   7    248          7.28   aiyra   big   81.86359
+525  255                   7    255          7.29   aiyra   big   80.94467
+533  263                   7    263          7.30   aiyra   big   80.49776
+    platform
+275    luiza
+281    luiza
+296    luiza
+299    luiza
+314    luiza
+321    luiza
+325    luiza
+335    luiza
+346    luiza
+359    luiza
+364    luiza
+372    luiza
+382    luiza
+394    luiza
+403    luiza
+406    luiza
+422    luiza
+430    luiza
+433    luiza
+443    luiza
+455    luiza
+461    luiza
+474    luiza
+483    luiza
+487    luiza
+500    luiza
+509    luiza
+518    luiza
+525    luiza
+533    luiza
+#+end_example
+
+We need to remove the outlier where execution time took $2888.05648$
+seconds. To do so, we modify the =df= dataframe:
+
+#+begin_src R :results output :session :exports both
+df2 <- df[df$time < 2000,]
+df2[df2$platform == "luiza" & df2$version == "aiyra" & df2$input == "big",];
+
+#+end_src
+
+#+RESULTS:
+#+begin_example
+    name run.no.in.std.order run.no run.no.std.rp version input     time
+275    5                   7      5          7.10   aiyra   big 82.81775
+281   11                   7     11          7.20   aiyra   big 86.17196
+299   29                   7     29          7.40   aiyra   big 80.86330
+314   44                   7     44          7.50   aiyra   big 82.80871
+321   51                   7     51          7.60   aiyra   big 80.60814
+325   55                   7     55          7.70   aiyra   big 81.70027
+335   65                   7     65          7.80   aiyra   big 81.60717
+346   76                   7     76          7.90   aiyra   big 81.75732
+359   89                   7     89          7.10   aiyra   big 81.35299
+364   94                   7     94          7.11   aiyra   big 83.07451
+372  102                   7    102          7.12   aiyra   big 86.38635
+382  112                   7    112          7.13   aiyra   big 84.73248
+394  124                   7    124          7.14   aiyra   big 84.30511
+403  133                   7    133          7.15   aiyra   big 83.61456
+406  136                   7    136          7.16   aiyra   big 87.41428
+422  152                   7    152          7.17   aiyra   big 82.55839
+430  160                   7    160          7.18   aiyra   big 83.14233
+433  163                   7    163          7.19   aiyra   big 82.74059
+443  173                   7    173          7.20   aiyra   big 80.96755
+455  185                   7    185          7.21   aiyra   big 83.47831
+461  191                   7    191          7.22   aiyra   big 82.58781
+474  204                   7    204          7.23   aiyra   big 80.05653
+483  213                   7    213          7.24   aiyra   big 80.95360
+487  217                   7    217          7.25   aiyra   big 84.05692
+500  230                   7    230          7.26   aiyra   big 84.04072
+509  239                   7    239          7.27   aiyra   big 88.34312
+518  248                   7    248          7.28   aiyra   big 81.86359
+525  255                   7    255          7.29   aiyra   big 80.94467
+533  263                   7    263          7.30   aiyra   big 80.49776
+    platform
+275    luiza
+281    luiza
+299    luiza
+314    luiza
+321    luiza
+325    luiza
+335    luiza
+346    luiza
+359    luiza
+364    luiza
+372    luiza
+382    luiza
+394    luiza
+403    luiza
+406    luiza
+422    luiza
+430    luiza
+433    luiza
+443    luiza
+455    luiza
+461    luiza
+474    luiza
+483    luiza
+487    luiza
+500    luiza
+509    luiza
+518    luiza
+525    luiza
+533    luiza
+#+end_example
+
+Great, it has worked.
+
+Recalculate the averages, do the plot again.
+
+#+begin_src R :results output :session :exports both
+library(dplyr);
+k2 <- df2 %>%
+     select(version, input, time, platform) %>%
+     group_by(version, input, platform) %>%
+     summarize(N = n(),
+               time_avg = mean(time),
+               time_se = 3*sd(time)/sqrt(N)) %>%
+     as.data.frame();
+k2
+#+end_src
+
+#+RESULTS:
+#+begin_example
+   version  input platform  N     time_avg      time_se
+1    aiyra    big  guarani 30 124.24501307 1.1529429416
+2    aiyra    big    luiza 29  82.94644007 1.1744753970
+3    aiyra    big   orion1 30 111.78373253 1.0121923958
+4    aiyra medium  guarani 30  13.62979877 0.2309003501
+5    aiyra medium    luiza 30   9.38572857 0.1159133555
+6    aiyra medium   orion1 30  13.08560363 0.1239768599
+7    aiyra  small  guarani 30   0.17240930 0.0013437523
+8    aiyra  small    luiza 30   0.18415197 0.0014504593
+9    aiyra  small   orion1 30   0.22622977 0.0092924233
+10      pj    big  guarani 30 232.04630737 0.5956093796
+11      pj    big    luiza 30 207.43421557 9.9921988357
+12      pj    big   orion1 30 259.72360747 1.1158926857
+13      pj medium  guarani 30  29.97373843 0.1207393162
+14      pj medium    luiza 30  24.92862427 0.2842269263
+15      pj medium   orion1 30  33.47163073 0.1253936889
+16      pj  small  guarani 30   0.04223553 0.0060872534
+17      pj  small    luiza 30   0.02562413 0.0007886749
+18      pj  small   orion1 30   0.04607153 0.0022066994
+19  pjflex    big  guarani 30 248.65192840 1.1080330952
+20  pjflex    big    luiza 30 215.79006593 2.8227903219
+21  pjflex    big   orion1 30 279.74462510 0.9249579906
+22  pjflex medium  guarani 30  32.14986230 0.1422112908
+23  pjflex medium    luiza 30  25.85007707 0.2419624421
+24  pjflex medium   orion1 30  36.08434247 0.1588962252
+25  pjflex  small  guarani 30   0.04453450 0.0057194849
+26  pjflex  small    luiza 30   0.02540013 0.0004037376
+27  pjflex  small   orion1 30   0.04819160 0.0025995518
+#+end_example
+
+
+#+begin_src R :results output graphics :file img/cpp/first_plot_2.png :exports both :width 600 :height 400 :session
+library(ggplot2);
+ggplot(k2, aes(x=version, y=time_avg, color=input)) +
+  geom_point() +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  scale_colour_manual(values = c("red","blue", "green")) +
+  theme_bw() + facet_wrap(~platform);
+#+end_src
+
+#+RESULTS:
+[[file:img/cpp/first_plot_2.png]]
+
+You have to explain the larger variability during the =luiza=, =pj=,
+=big=. Maybe because something was disturbing the experiment during that
+time. But remember we have randomize the design, so, it should have
+affected other configurations as well.
+
+#+begin_src R :results output :session :exports both
+df[df$platform == "luiza" & df$version == "pj" & df$input == "big",];
+
+#+end_src
+
+#+RESULTS:
+#+begin_example
+    name run.no.in.std.order run.no run.no.std.rp version input     time
+279    9                   8      9          8.10      pj   big 203.8820
+282   12                   8     12          8.20      pj   big 303.2675
+297   27                   8     27          8.30      pj   big 208.4385
+301   31                   8     31          8.40      pj   big 202.1743
+311   41                   8     41          8.50      pj   big 203.3942
+322   52                   8     52          8.60      pj   big 204.3809
+330   60                   8     60          8.70      pj   big 205.7884
+334   64                   8     64          8.80      pj   big 202.2098
+351   81                   8     81          8.90      pj   big 205.4249
+354   84                   8     84          8.10      pj   big 203.5652
+367   97                   8     97          8.11      pj   big 206.1473
+377  107                   8    107          8.12      pj   big 203.0834
+384  114                   8    114          8.13      pj   big 205.3515
+393  123                   8    123          8.14      pj   big 204.3712
+401  131                   8    131          8.15      pj   big 203.8469
+408  138                   8    138          8.16      pj   big 203.6601
+419  149                   8    149          8.17      pj   big 204.7679
+425  155                   8    155          8.18      pj   big 200.8791
+440  170                   8    170          8.19      pj   big 199.3703
+449  179                   8    179          8.20      pj   big 204.9851
+454  184                   8    184          8.21      pj   big 206.1524
+466  196                   8    196          8.22      pj   big 202.3681
+472  202                   8    202          8.23      pj   big 206.3542
+479  209                   8    209          8.24      pj   big 204.6642
+491  221                   8    221          8.25      pj   big 205.7807
+503  233                   8    233          8.26      pj   big 209.4978
+505  235                   8    235          8.27      pj   big 198.3630
+515  245                   8    245          8.28      pj   big 203.5347
+530  260                   8    260          8.29      pj   big 203.6857
+539  269                   8    269          8.30      pj   big 203.6370
+    platform
+279    luiza
+282    luiza
+297    luiza
+301    luiza
+311    luiza
+322    luiza
+330    luiza
+334    luiza
+351    luiza
+354    luiza
+367    luiza
+377    luiza
+384    luiza
+393    luiza
+401    luiza
+408    luiza
+419    luiza
+425    luiza
+440    luiza
+449    luiza
+454    luiza
+466    luiza
+472    luiza
+479    luiza
+491    luiza
+503    luiza
+505    luiza
+515    luiza
+530    luiza
+539    luiza
+#+end_example
+
+You can see a =300= seconds measurement that probably is the explanation
+for the higher standard error. We don't know, we could remove it, but
+you can keep it and explain with something. Maybe mention that is
+unrelated, because the experimental execution order was 12 for this
+one..., with the other outlier you have seen also in =luiza= (see
+above).
+
+Ok.
+
+Aiyra wins for big and medium. What about small? We can't see, let's
+do a plot only about it.
+
+
+#+begin_src R :results output graphics :file img/cpp/first_plot_3.png :exports both :width 600 :height 400 :session
+library(ggplot2);
+ggplot(k2[k2$input == "small",], aes(x=version, y=time_avg, color=input)) +
+  geom_point() +
+  scale_colour_manual(values = c("green")) +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  theme_bw() + facet_wrap(~platform);
+#+end_src
+
+#+RESULTS:
+[[file:img/cpp/first_plot_3.png]]
+
+Aiyra loses. But pay the attention to the colors now (also .
+
+Let's do this same plot in PDF so you can include in your
+dissertation.
+
+#+begin_src R :results output graphics :file img/cpp/first_plot_3.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k2[k2$input == "small",], aes(x=version, y=time_avg, color=input)) +
+  geom_point() +
+  scale_colour_manual(values = c("green"), name="Input") +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  ylab("Average Execution Time (s)") +
+  xlab("Version") +
+  ggtitle ("Comparing Aiyra against two versions\n of PajeNG for a small input") +
+  theme_bw() + ylim(0,NA) + 
+  facet_wrap(~platform) +
+#  title ("teste") +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/cpp/first_plot_3.pdf]]
+
