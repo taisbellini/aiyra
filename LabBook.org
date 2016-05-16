@@ -3516,6 +3516,8 @@ for i in `ls -1 *.csv | grep -v _cpp_c`; do
 done >> all_but_first.csv
 #+end_src
 
+#+RESULTS:
+
 Now, let's read the file =all_but_first.csv=.
 
 #+begin_src R :results output :session :exports both
@@ -3573,6 +3575,16 @@ k
 
 #+RESULTS:
 #+begin_example
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
    version  input platform  N     time_avg      time_se
 1    aiyra    big  guarani 30 124.24501307 1.152943e+00
 2    aiyra    big    luiza 30 176.45010810 2.805133e+02
@@ -3809,18 +3821,22 @@ k2
 27  pjflex  small   orion1 30   0.04819160 0.0025995518
 #+end_example
 
-
-#+begin_src R :results output graphics :file img/cpp/first_plot_2.png :exports both :width 600 :height 400 :session
+#+begin_src R :results output graphics :file img/cpp/aiyra-pj-pjflex_overview.pdf :exports both :width 6 :height 4 :session
 library(ggplot2);
 ggplot(k2, aes(x=version, y=time_avg, color=input)) +
   geom_point() +
   geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
-  scale_colour_manual(values = c("red","blue", "green")) +
-  theme_bw() + facet_wrap(~platform);
+  scale_colour_manual(values = c("red","blue", "green"), name="Input Size") +
+  theme_bw() + facet_wrap(~platform) +
+  ylab("Average Execution Time (s)") +
+  xlab("Version") +
+  ggtitle ("Comparing Aiyra against two versions of PajeNG") +
+  theme_bw() + ylim(0,NA) + 
+  theme(legend.position="right"); # no legend since we have only small
 #+end_src
 
 #+RESULTS:
-[[file:img/cpp/first_plot_2.png]]
+[[file:img/cpp/aiyra-pj-pjflex_overview.pdf]]
 
 You have to explain the larger variability during the =luiza=, =pj=,
 =big=. Maybe because something was disturbing the experiment during that
@@ -3928,7 +3944,7 @@ Aiyra loses. But pay the attention to the colors now (also .
 Let's do this same plot in PDF so you can include in your
 dissertation.
 
-#+begin_src R :results output graphics :file img/cpp/first_plot_3.pdf :exports both :width 6 :height 4 :session
+#+begin_src R :results output graphics :file img/cpp/aiyra-pj-pjflex_small.pdf :exports both :width 6 :height 4 :session
 library(ggplot2);
 ggplot(k2[k2$input == "small",], aes(x=version, y=time_avg, color=input)) +
   geom_point() +
@@ -3944,5 +3960,5 @@ ggplot(k2[k2$input == "small",], aes(x=version, y=time_avg, color=input)) +
 #+end_src
 
 #+RESULTS:
-[[file:img/cpp/first_plot_3.pdf]]
+[[file:img/cpp/aiyra-pj-pjflex_small.pdf]]
 
