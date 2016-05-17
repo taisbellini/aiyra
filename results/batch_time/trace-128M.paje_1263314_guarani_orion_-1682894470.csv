@@ -1,4 +1,0 @@
-BatchNumber,StartTime(microseconds), EndTime(microseconds), Duration(microseconds), Size (Operations), Size (Bytes)
-1,16070120,46993550,30923430,1263314,50556784
-2,66848664,98365334,31516670,1263314,52779172
-3,98403409,98411118,7709,1,546
