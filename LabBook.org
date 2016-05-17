@@ -3504,7 +3504,7 @@ ggplot(df[df$input == "big" & df$platform != "orion1",], aes(x=starttime, xend=e
 #+RESULTS:
 [[file:img/batch_time_v1.pdf]]
 
-* 2016-05-16 Results analysis + figures for dissertation         :Lucas:Tais:
+* 2016-05-16 CPP Comparison (figures)                            :Lucas:Tais:
 
 Merge everything in a single CSV file:
 
