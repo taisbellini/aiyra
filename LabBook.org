@@ -4561,3 +4561,166 @@ sum(10 * k2$time_avg)/60/60/24;
 #+end_example
 
 * 2016-05-17 Batch traces (figures)                              :Lucas:Tais:
+
+Ok.
+
+#+begin_src sh :results output :session :exports both
+cd results/batch_time
+#for each scenario
+for scenario in `ls -1 | cut -d"_" -f1-3 | sort | uniq`; do
+  #for each execution in temporal order
+  CONTADOR=0
+  for execution in `ls -1 ${scenario}* | sort --version-sort`; do
+     NOME=`echo $execution | cut -d"_" -f1-3`_$CONTADOR.csv
+     echo "$execution => $NOME"
+     git mv $execution $NOME
+     CONTADOR=$(($CONTADOR + 1))
+  done
+done
+#+end_src
+
+Let's commit this.
+
+#+begin_src sh :results output :session :exports both
+cd results/batch_time
+#for each scenario/execution
+head -n1 trace-1G.paje_611585_luiza_19.csv | \
+   sed -e "s/(microseconds)//g" \
+       -e "s/(Operations)//" \
+       -e "s/(Bytes)//" \
+       -e "s/Size/Operations/" \
+       -e "s/$/, input, parsize, platform, execution/" \
+       -e "s/Time//g" \
+       -e "s/Number//" \
+       -e "s/ //g" | \
+       tr '[:upper:]' '[:lower:]' > batch_traces.csv
+for i in `ls -1 trace-*.csv`; do
+  #input
+  INPUT=`echo $i | cut -d"." -f1 | sed -e "s/trace-//"`
+  if [ $INPUT = "1G" ]; then
+    INPUT="big"
+  elif [ $INPUT = "128M" ]; then
+    INPUT="medium"
+  elif [ $INPUT = "128K" ]; then
+    INPUT="small"
+  else
+    echo "Error #1"
+    exit
+  fi
+
+  #size
+  SIZE=`echo $i | cut -d"_" -f2`
+  
+  #platform
+  PLATFORM=`echo $i | cut -d"_" -f3`
+
+  #platform
+  EXECUTION=`echo $i | cut -d"_" -f4 | sed "s/\.csv//"`
+
+  #echo $i $INPUT $SIZE $PLATFORM $EXECUTION
+
+  tail -n+2 $i | sed -e "s/$/,$INPUT,$SIZE,$PLATFORM,$EXECUTION/" \
+                     -e "s/small,85,/small,F,/" \
+                     -e "s/small,170,/small,E,/" \
+                     -e "s/small,340,/small,D,/" \
+                     -e "s/small,681,/small,C,/" \
+                     -e "s/small,1363,/small,B,/" \
+                     -e "s/small,2727,/small,A,/" \
+                     -e "s/medium,78957,/medium,F,/" \
+                     -e "s/medium,157914,/medium,E,/" \
+                     -e "s/medium,315828,/medium,D,/" \
+                     -e "s/medium,631657,/medium,C,/" \
+                     -e "s/medium,1263314,/medium,B,/" \
+                     -e "s/medium,2526628,/medium,A,/" \
+                     -e "s/big,611585,/big,F,/" \
+                     -e "s/big,1223170,/big,E,/" \
+                     -e "s/big,2446340,/big,D,/" \
+                     -e "s/big,4892680,/big,C,/" \
+                     -e "s/big,9785361,/big,B,/"
+done >> batch_traces.csv
+#+end_src
+
+#+RESULTS:
+
+Great, finally.
+
+Let's read the =batch_traces.csv= with R.
+
+#+begin_src R :results output :session :exports both
+df <- read.csv ("results/batch_time/batch_traces.csv");
+df$start = df$start / 1000000;
+df$end = df$end / 1000000;
+head(df);
+#+end_src
+
+#+RESULTS:
+#+begin_example
+  batch    start      end duration operations  size input parsize      platform
+1     1 0.260947 0.325175    64228       1363 47115 small       B guarani-orion
+2     2 0.438277 0.494230    55953       1363 49281 small       B guarani-orion
+3     3 0.514935 0.520468     5533          2   579 small       B guarani-orion
+4     1 0.264858 0.331881    67023       1363 47115 small       B guarani-orion
+5     2 0.455022 0.511381    56359       1363 49281 small       B guarani-orion
+6     3 0.534869 0.536691     1822          2   579 small       B guarani-orion
+  execution
+1         0
+2         0
+3         0
+4        10
+5        10
+6        10
+#+end_example
+
+#+begin_src R :results output graphics :file img/batch_time/batch_time_small_v1.pdf :exports both :width 9 :height 5 :session
+library(ggplot2);
+ggplot(df[df$input == "small" & df$execution <= 9,], aes(x=start, xend=end, y=execution, yend=execution, color=input)) +
+  geom_segment(size=1.1) +
+  theme_bw() + facet_grid (parsize~platform) +
+  scale_colour_manual(values = c("green"), name="Input Size") +
+  scale_y_continuous(breaks=c(0,3,6,9)) +
+  ylab("Run (order)") +
+  xlab("Time (s)") +
+  ggtitle ("TBD") +
+  theme_bw() +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_time/batch_time_small_v1.pdf]]
+
+
+#+begin_src R :results output graphics :file img/batch_time/batch_time_medium_v1.pdf :exports both :width 9 :height 5 :session
+library(ggplot2);
+ggplot(df[df$input == "medium" & df$execution <= 9,], aes(x=start, xend=end, y=execution, yend=execution, color=input)) +
+  geom_segment(size=1.1) +
+  theme_bw() + facet_grid (parsize~platform) +
+  scale_colour_manual(values = c("blue"), name="Input Size") +
+  scale_y_continuous(breaks=c(0,3,6,9)) +
+  ylab("Run (order)") +
+  xlab("Time (s)") +
+  ggtitle ("TBD") +
+  theme_bw() +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_time/batch_time_medium_v1.pdf]]
+
+
+#+begin_src R :results output graphics :file img/batch_time/batch_time_big_v1.pdf :exports both :width 9 :height 5 :session
+library(ggplot2);
+ggplot(df[df$input == "big" & df$execution <= 9,], aes(x=start, xend=end, y=execution, yend=execution, color=input)) +
+  geom_segment(size=1.1) +
+  theme_bw() + facet_grid (parsize~platform) +
+  scale_colour_manual(values = c("red"), name="Input Size") +
+  scale_y_continuous(breaks=c(0,3,6,9)) +
+  ylab("Run (order)") +
+  xlab("Time (s)") +
+  ggtitle ("TBD") +
+  theme_bw() +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_time/batch_time_big_v1.pdf]]
+
