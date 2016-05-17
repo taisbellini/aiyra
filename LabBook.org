@@ -3962,3 +3962,602 @@ ggplot(k2[k2$input == "small",], aes(x=version, y=time_avg, color=input)) +
 #+RESULTS:
 [[file:img/cpp/aiyra-pj-pjflex_small.pdf]]
 
+* 2016-05-17 Batch size (figures)                                :Lucas:Tais:
+
+For local analysis:
+
+#+begin_src sh :results output :session :exports both
+  head -n1 results/batch_size/bateria03_orion1_batch.csv > results/batch_size/local.csv
+  for file in "results/batch_size/bateria03_orion1_batch.csv results/batch_size/last_guarani_batch.csv results/batch_size/ultimabat_luiza_batch.csv"; do
+      tail -n+2 $file
+  done >> results/batch_size/local.csv
+#+end_src
+
+#+RESULTS:
+
+For remote against local analysis:
+
+#+begin_src sh :results output :session :exports both
+  head -n1 results/batch_size/bateria03_orion1_batch.csv > results/batch_size/remote.csv
+  for file in "results/batch_size/bateria03_orion1_batch.csv results/batch_size/last_guarani_batch.csv results/batch_size/ultimabat_luiza_batch.csv results/batch_size/bateria01_batch_guarani_orion.csv"; do
+      tail -n+2 $file
+  done >> results/batch_size/remote.csv
+#+end_src
+
+#+RESULTS:
+
+_Local_
+
+Now, let's read the file =local.csv=.
+
+#+begin_src R :results output :session :exports both
+df <- read.csv ("results/batch_size/local.csv");
+df <- df[complete.cases(df),];
+df$sim_time <- as.numeric(as.character(df$sim_time));
+df$insert_time <- as.numeric(as.character(df$insert_time));
+df$sim_time = df$sim_time/1000000;
+df$insert_time = df$insert_time/1000000;
+df$max_mem = df$max_mem/1024/1024;
+head(df);
+#+end_src
+
+#+RESULTS:
+#+begin_example
+  name run.no.in.std.order run.no run.no.std.rp  input batch   sim_time
+2    1                   7      1           7.1  small     D   0.983336
+3    2                  15      2          15.1    big     F 950.015134
+4    3                   4      3           4.1  small     C   0.872588
+5    4                  10      4          10.1  small     E   1.231774
+6    5                  13      5          13.1  small     F   1.633785
+7    6                  11      6          11.1 medium     E  93.070116
+  insert_time    max_mem platform
+2    0.202030   3.073425   orion1
+3  401.292651 257.339241   orion1
+4    0.227659   3.226997   orion1
+5    0.256816   3.005371   orion1
+6    0.285011   2.969864   orion1
+7   52.138141  67.714127   orion1
+#+end_example
+
+Let's average measurements:
+
+#+begin_src R :results output :session :exports both
+library(dplyr);
+k <- df %>%
+     group_by(input, batch, platform) %>%
+     summarize(N = n(),
+               time_avg = mean(sim_time),
+               time_se = 3*sd(sim_time)/sqrt(N)) %>%
+     as.data.frame();
+k
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+    input batch platform  N     time_avg      time_se
+1     big     B   orion1 10 1107.3227606 6.658932e+00
+2     big     C  guarani 30  824.7546429 2.852808e+00
+3     big     C    luiza 30  772.6744859 2.081221e+00
+4     big     C   orion1 10 1061.8112710 5.241099e+00
+5     big     D  guarani 30  798.8587828 2.957737e+00
+6     big     D    luiza 30  796.5267459 1.858931e+02
+7     big     D   orion1 10 1026.6392053 5.417082e+00
+8     big     E  guarani 30  780.5554274 2.658481e+00
+9     big     E    luiza 30  718.6369158 1.532428e+00
+10    big     E   orion1 10  997.8075534 5.549207e+00
+11    big     F  guarani 30  771.4025417 2.914140e+00
+12    big     F    luiza 30  711.4194856 1.529460e+00
+13    big     F   orion1 10  946.2533760 3.886924e+00
+14 medium     A  guarani 30  100.3892080 4.840424e-01
+15 medium     A    luiza 30   93.9088443 1.835017e-01
+16 medium     B  guarani 30   99.2527799 4.786725e-01
+17 medium     B    luiza 30   93.1713426 1.855400e-01
+18 medium     B   orion1 10  106.2926635 3.040111e+00
+19 medium     C  guarani 30   95.0724998 5.849231e-01
+20 medium     C    luiza 30   88.3279745 2.877727e-01
+21 medium     C   orion1 10  111.3229354 9.112576e-01
+22 medium     D  guarani 30   96.9286011 5.696124e-01
+23 medium     D    luiza 30   87.5662485 2.059891e-01
+24 medium     D   orion1 10  117.2014197 8.836928e-01
+25 medium     E  guarani 30   92.5820661 5.123305e-01
+26 medium     E    luiza 30   86.1899532 1.962095e-01
+27 medium     E   orion1 10   97.4553447 7.025395e+00
+28 medium     F  guarani 30   92.4204530 4.873207e-01
+29 medium     F    luiza 30   82.4328944 2.428668e-01
+30 medium     F   orion1 10  109.6810972 9.403754e-01
+31  small     A  guarani 30    0.4956575 6.162893e-03
+32  small     A    luiza 30    0.4502067 3.531458e-03
+33  small     B  guarani 30    0.5281257 9.840373e-03
+34  small     B    luiza 30    0.4528172 2.666560e-03
+35  small     B   orion1 10    0.7557264 2.225693e-02
+36  small     C  guarani 30    0.5544556 1.253729e-02
+37  small     C    luiza 30    0.4709659 2.894954e-03
+38  small     C   orion1 10    0.8611910 2.868396e-02
+39  small     D  guarani 30    0.5818487 1.325817e-02
+40  small     D    luiza 30    0.5158810 3.757003e-03
+41  small     D   orion1 10    0.9929203 2.956740e-02
+42  small     E  guarani 30    0.6681839 1.538822e-02
+43  small     E    luiza 30    0.6011176 3.310887e-03
+44  small     E   orion1 10    1.2279947 2.983281e-02
+45  small     F  guarani 30    0.8698209 9.727556e-03
+46  small     F    luiza 30    0.7695288 8.467496e-03
+47  small     F   orion1 10    1.6951738 3.660555e-02
+#+end_example
+
+
+#+begin_src R :results output graphics :file img/batch_size/local_big_v1.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k[k$input == "big",], aes(x=batch, y=time_avg)) +
+  geom_point(size=.3) +
+#  scale_colour_manual(values = c("green"), name="Input") +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  ylab("Average Execution Time (s)") +
+  xlab("Batch Size") +
+  ggtitle ("TBD") +
+  theme_bw() + ylim(0,NA) + 
+  facet_grid(input~platform) +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_size/local_v1.pdf]]
+
+Very strange behavior on =luiza=, batch =D= because of the high
+variability. Let's see the data:
+
+#+begin_src R :results output :session :exports both
+df[df$input == "big" & df$platform == "luiza" & df$batch == "D",];
+#+end_src
+
+#+RESULTS:
+#+begin_example
+     name run.no.in.std.order run.no run.no.std.rp input batch  sim_time
+697     4                  12      4         12.10   big     D  734.4769
+720    27                  12     27         12.20   big     D  731.5318
+736    43                  12     43         12.30   big     D  732.5503
+751    58                  12     58         12.40   big     D  739.5146
+780    87                  12     87         12.50   big     D  727.4080
+784    91                  12     91         12.60   big     D  733.0804
+813   120                  12    120         12.70   big     D  737.1977
+829   136                  12    136         12.80   big     D  732.3844
+843   150                  12    150         12.90   big     D  734.6302
+864   171                  12    171         12.10   big     D  730.9828
+884   191                  12    191         12.11   big     D  736.7343
+901   208                  12    208         12.12   big     D  732.6899
+922   229                  12    229         12.13   big     D  732.8134
+931   238                  12    238         12.14   big     D  734.9025
+956   263                  12    263         12.15   big     D  739.9419
+974   281                  12    281         12.16   big     D  738.1100
+982   289                  12    289         12.17   big     D  732.5317
+1017  324                  12    324         12.18   big     D  737.1109
+1026  333                  12    333         12.19   big     D 2593.4167
+1044  351                  12    351         12.20   big     D  736.5624
+1054  361                  12    361         12.21   big     D  734.8892
+1076  383                  12    383         12.22   big     D  727.3046
+1095  402                  12    402         12.23   big     D  734.8349
+1123  430                  12    430         12.24   big     D  733.0345
+1141  448                  12    448         12.25   big     D  740.3488
+1157  464                  12    464         12.26   big     D  735.1516
+1175  482                  12    482         12.27   big     D  736.5852
+1187  494                  12    494         12.28   big     D  734.3452
+1200  507                  12    507         12.29   big     D  737.0423
+1224  531                  12    531         12.30   big     D  733.6951
+     insert_time  max_mem platform
+697     423.1795 1020.664    luiza
+720     419.9057 1020.664    luiza
+736     419.1899 1020.664    luiza
+751     422.4795 1020.666    luiza
+780     415.7618 1020.663    luiza
+784     420.4074 1020.666    luiza
+813     422.9430 1020.663    luiza
+829     419.7894 1020.663    luiza
+843     420.1070 1020.665    luiza
+864     419.8785 1020.667    luiza
+884     422.2966 1020.664    luiza
+901     421.6495 1020.664    luiza
+922     421.8006 1020.664    luiza
+931     420.3353 1020.663    luiza
+956     426.4439 1020.665    luiza
+974     419.1994 1020.664    luiza
+982     421.6567 1020.663    luiza
+1017    420.3747 1020.664    luiza
+1026   2279.5546 1020.664    luiza
+1044    423.0635 1020.663    luiza
+1054    421.1642 1020.667    luiza
+1076    417.9471 1020.664    luiza
+1095    424.2948 1020.663    luiza
+1123    416.0131 1020.664    luiza
+1141    421.1605 1020.663    luiza
+1157    422.0469 1020.663    luiza
+1175    419.2871 1020.663    luiza
+1187    421.2706 1020.664    luiza
+1200    420.1514 1020.663    luiza
+1224    421.4753 1020.664    luiza
+#+end_example
+
+Looks like there was a problem when inserting in the database. We'll
+manually remove this outlier. You should mention this on the text.
+
+#+begin_src R :results output :session :exports both
+dff <- df[df$name != 333,];
+k2 <- dff %>%
+     group_by(input, batch, platform) %>%
+     summarize(N = n(),
+               time_avg = mean(sim_time),
+               time_se = 3*sd(sim_time)/sqrt(N)) %>%
+     as.data.frame();
+k2
+#+end_src
+
+#+RESULTS:
+#+begin_example
+    input batch platform  N     time_avg     time_se
+1     big     B   orion1 10 1107.3227606 6.658931757
+2     big     C  guarani 30  824.7546429 2.852807810
+3     big     C    luiza 30  772.6744859 2.081221420
+4     big     C   orion1 10 1061.8112710 5.241098578
+5     big     D  guarani 29  798.5691785 2.926487070
+6     big     D    luiza 29  734.5650227 1.771873261
+7     big     D   orion1 10 1026.6392053 5.417082452
+8     big     E  guarani 30  780.5554274 2.658481151
+9     big     E    luiza 30  718.6369158 1.532427809
+10    big     E   orion1 10  997.8075534 5.549207079
+11    big     F  guarani 30  771.4025417 2.914139674
+12    big     F    luiza 30  711.4194856 1.529459777
+13    big     F   orion1 10  946.2533760 3.886923906
+14 medium     A  guarani 30  100.3892080 0.484042387
+15 medium     A    luiza 30   93.9088443 0.183501686
+16 medium     B  guarani 30   99.2527799 0.478672535
+17 medium     B    luiza 30   93.1713426 0.185540020
+18 medium     B   orion1 10  106.2926635 3.040111400
+19 medium     C  guarani 30   95.0724998 0.584923080
+20 medium     C    luiza 30   88.3279745 0.287772713
+21 medium     C   orion1 10  111.3229354 0.911257568
+22 medium     D  guarani 30   96.9286011 0.569612415
+23 medium     D    luiza 30   87.5662485 0.205989135
+24 medium     D   orion1 10  117.2014197 0.883692783
+25 medium     E  guarani 30   92.5820661 0.512330528
+26 medium     E    luiza 30   86.1899532 0.196209532
+27 medium     E   orion1 10   97.4553447 7.025394616
+28 medium     F  guarani 30   92.4204530 0.487320713
+29 medium     F    luiza 30   82.4328944 0.242866845
+30 medium     F   orion1 10  109.6810972 0.940375391
+31  small     A  guarani 30    0.4956575 0.006162893
+32  small     A    luiza 30    0.4502067 0.003531458
+33  small     B  guarani 30    0.5281257 0.009840373
+34  small     B    luiza 30    0.4528172 0.002666560
+35  small     B   orion1 10    0.7557264 0.022256931
+36  small     C  guarani 30    0.5544556 0.012537292
+37  small     C    luiza 30    0.4709659 0.002894954
+38  small     C   orion1 10    0.8611910 0.028683959
+39  small     D  guarani 30    0.5818487 0.013258166
+40  small     D    luiza 30    0.5158810 0.003757003
+41  small     D   orion1 10    0.9929203 0.029567395
+42  small     E  guarani 30    0.6681839 0.015388218
+43  small     E    luiza 30    0.6011176 0.003310887
+44  small     E   orion1 10    1.2279947 0.029832810
+45  small     F  guarani 30    0.8698209 0.009727556
+46  small     F    luiza 30    0.7695288 0.008467496
+47  small     F   orion1 10    1.6951738 0.036605546
+#+end_example
+
+#+begin_src R :results output graphics :file img/batch_size/local_big_v2.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k2[k2$input == "big",], aes(x=batch, y=time_avg, color=input)) +
+  geom_point(size=.3) +
+  scale_colour_manual(values = c("red","blue", "green"), name="Input Size") +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  ylab("Average Execution Time (s)") +
+  xlab("Batch Size") +
+  ggtitle ("TBD") +
+  theme_bw() + ylim(0,NA) + 
+  facet_wrap(~platform) +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_size/local_big_v2.pdf]]
+
+Much better now.
+
+Let's look to the =medium= size.
+
+#+begin_src R :results output graphics :file img/batch_size/local_medium_v1.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k2[k2$input == "medium",], aes(x=batch, y=time_avg, color=input)) +
+  geom_point(size=.3) +
+  scale_colour_manual(values = c("blue"), name="Input") +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  ylab("Average Execution Time (s)") +
+  xlab("Batch Size") +
+  ggtitle ("TBD") +
+  theme_bw() + ylim(0,NA) + 
+  facet_grid(~platform) +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_size/local_medium_v1.pdf]]
+
+#+begin_src R :results output graphics :file img/batch_size/local_small_v1.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k2[k2$input == "small",], aes(x=batch, y=time_avg, color=input)) +
+  geom_point(size=.3) +
+  scale_colour_manual(values = c("green"), name="Input") +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  ylab("Average Execution Time (s)") +
+  xlab("Batch Size") +
+  ggtitle ("TBD") +
+  theme_bw() + ylim(0,NA) + 
+  facet_grid(~platform) +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_size/local_small_v1.pdf]]
+
+It's different for small. Maybe it should be interesting to plot in
+the graph the three inputs, so we can see the different trend for
+small.
+
+#+begin_src R :results output graphics :file img/batch_size/local_all_inputs_v1.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k2, aes(x=batch, y=time_avg, color=input)) +
+  geom_point(size=.3) +
+  scale_colour_manual(values = c("red", "blue", "green"), name="Input Size") +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  ylab("Average Execution Time (s)") +
+  xlab("Batch Size") +
+  ggtitle ("TBD") +
+  theme_bw() + ylim(0,NA) + 
+  facet_grid(input~platform, scales="free_y") +
+  theme(legend.position="right"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_size/local_all_inputs_v1.pdf]]
+
+Great, Tais will write in the text that she explains all three first
+plots, then to show the different trend, she uses =local_all_inputs_v1=
+plot.
+
+Remember =pdfcrop=.
+
+_Remote_
+
+Now, let's read the file =remote.csv=.
+
+#+begin_src R :results output :session :exports both
+df <- read.csv ("results/batch_size/remote.csv");
+df <- df[complete.cases(df),];
+df$sim_time <- as.numeric(as.character(df$sim_time));
+df$insert_time <- as.numeric(as.character(df$insert_time));
+df$sim_time = df$sim_time/1000000;
+df$insert_time = df$insert_time/1000000;
+df$max_mem = df$max_mem/1024/1024;
+head(df);
+
+dft1 <- df[df$platform != "guarani_orion",];
+dft2 <- df[df$platform == "guarani_orion",];
+dft2$platform <- "remote";
+df <- rbind(dft2, dft1);
+head(df);
+#+end_src
+
+#+RESULTS:
+#+begin_example
+  name run.no.in.std.order run.no run.no.std.rp  input batch   sim_time
+2    1                   7      1           7.1  small     D   0.983336
+3    2                  15      2          15.1    big     F 950.015134
+4    3                   4      3           4.1  small     C   0.872588
+5    4                  10      4          10.1  small     E   1.231774
+6    5                  13      5          13.1  small     F   1.633785
+7    6                  11      6          11.1 medium     E  93.070116
+  insert_time    max_mem platform
+2    0.202030   3.073425   orion1
+3  401.292651 257.339241   orion1
+4    0.227659   3.226997   orion1
+5    0.256816   3.005371   orion1
+6    0.285011   2.969864   orion1
+7   52.138141  67.714127   orion1
+     name run.no.in.std.order run.no run.no.std.rp  input batch  sim_time
+1235    1                   8      1           8.1 medium     C  95.72919
+1236    2                  18      2          18.1    big     F 765.60935
+1237    3                   5      3           5.1 medium     B  98.47585
+1238    4                  12      4          12.1    big     D 792.44906
+1239    5                  16      5          16.1  small     F   0.90444
+1241    7                  15      7          15.1    big     E 775.00969
+     insert_time     max_mem platform
+1235    63.87650  264.647064   remote
+1236   480.09590  257.338707   remote
+1237    62.73813  527.779396   remote
+1238   482.47624 1020.575333   remote
+1239     0.20935    2.970314   remote
+1241   482.44408  513.167862   remote
+#+end_example
+
+Let's average measurements:
+
+#+begin_src R :results output :session :exports both
+library(dplyr);
+k <- df %>%
+     group_by(input, batch, platform) %>%
+     summarize(N = n(),
+               time_avg = mean(sim_time),
+               time_se = 3*sd(sim_time)/sqrt(N)) %>%
+     as.data.frame();
+k[k$platform =="remote",]
+#+end_src
+
+#+RESULTS:
+#+begin_example
+    input batch platform  N    time_avg     time_se
+5     big     C   remote 30 822.9541185 3.072009855
+9     big     D   remote 30 793.6288847 2.793609013
+13    big     E   remote 30 776.9857812 3.234269351
+17    big     F   remote 30 765.5748142 2.850922209
+20 medium     A   remote 30 100.0850588 0.438621535
+24 medium     B   remote 30  98.6565419 0.657277641
+28 medium     C   remote 30  94.7818702 0.528655405
+32 medium     D   remote 30  96.5232222 0.502179305
+36 medium     E   remote 30  92.0910381 0.393890608
+40 medium     F   remote 30  92.0036549 0.480806287
+43  small     A   remote 30   0.4990605 0.007578415
+47  small     B   remote 30   0.5296416 0.009928985
+51  small     C   remote 30   0.5577120 0.010474202
+55  small     D   remote 30   0.5934754 0.016890922
+59  small     E   remote 30   0.6592223 0.014014033
+63  small     F   remote 30   0.8761198 0.015386276
+#+end_example
+
+For =remote=, guarani had aiyra; orion1 had the database. Tais will
+check the scripts to confirm and check since this is very important.
+
+So, since =guarani= was involved, let's compare =remote= agains it because
+it means we took out the database from guarani and put in another
+machine (in this case =orion=). The objective of our analysis here is to
+see the network impact in the execution comparing with a situation
+where everything resides in the same machine.
+
+Future work idea:
+- create a producer/consumer version where insert requests are put in
+  a queue; another thread will be responsible for insertion. We could
+  implement another plugin that is threaded.
+
+So, let's take only =guarani= and =remote= measurements.
+
+#+begin_src R :results output :session :exports both
+k2 <- k[k$platform == "guarani" | k$platform == "remote",];
+k2
+#+end_src
+
+#+RESULTS:
+#+begin_example
+    input batch platform  N    time_avg     time_se
+2     big     C  guarani 30 824.7546429 2.852807810
+5     big     C   remote 30 822.9541185 3.072009855
+6     big     D  guarani 30 798.8587828 2.957736903
+9     big     D   remote 30 793.6288847 2.793609013
+10    big     E  guarani 30 780.5554274 2.658481151
+13    big     E   remote 30 776.9857812 3.234269351
+14    big     F  guarani 30 771.4025417 2.914139674
+17    big     F   remote 30 765.5748142 2.850922209
+18 medium     A  guarani 30 100.3892080 0.484042387
+20 medium     A   remote 30 100.0850588 0.438621535
+21 medium     B  guarani 30  99.2527799 0.478672535
+24 medium     B   remote 30  98.6565419 0.657277641
+25 medium     C  guarani 30  95.0724998 0.584923080
+28 medium     C   remote 30  94.7818702 0.528655405
+29 medium     D  guarani 30  96.9286011 0.569612415
+32 medium     D   remote 30  96.5232222 0.502179305
+33 medium     E  guarani 30  92.5820661 0.512330528
+36 medium     E   remote 30  92.0910381 0.393890608
+37 medium     F  guarani 30  92.4204530 0.487320713
+40 medium     F   remote 30  92.0036549 0.480806287
+41  small     A  guarani 30   0.4956575 0.006162893
+43  small     A   remote 30   0.4990605 0.007578415
+44  small     B  guarani 30   0.5281257 0.009840373
+47  small     B   remote 30   0.5296416 0.009928985
+48  small     C  guarani 30   0.5544556 0.012537292
+51  small     C   remote 30   0.5577120 0.010474202
+52  small     D  guarani 30   0.5818487 0.013258166
+55  small     D   remote 30   0.5934754 0.016890922
+56  small     E  guarani 30   0.6681839 0.015388218
+59  small     E   remote 30   0.6592223 0.014014033
+60  small     F  guarani 30   0.8698209 0.009727556
+63  small     F   remote 30   0.8761198 0.015386276
+#+end_example
+
+
+#+begin_src R :results output graphics :file img/batch_size/remote_big_v1.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k2[k2$input == "big",], aes(x=batch, y=time_avg, color=platform)) +
+  geom_point(position=position_dodge(width=0.3)) +
+  scale_colour_manual(values = c("red", "blue", "green"), name="Platform") +
+  geom_errorbar(position=position_dodge(width=0.3), aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  ylab("Average Execution Time (s)") +
+  xlab("Batch Size") +
+  ggtitle ("TBD") +
+  theme_bw() +
+  theme(legend.position="right"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_size/remote_big_v1.pdf]]
+
+
+#+begin_src R :results output graphics :file img/batch_size/remote_medium_v1.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k2[k2$input == "medium",], aes(x=batch, y=time_avg, color=platform)) +
+  geom_point(position=position_dodge(width=0.3)) +
+  scale_colour_manual(values = c("red", "blue", "green"), name="Platform") +
+  geom_errorbar(position=position_dodge(width=0.3), aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  ylab("Average Execution Time (s)") +
+  xlab("Batch Size") +
+  ggtitle ("TBD") +
+  theme_bw() +
+  theme(legend.position="right"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_size/remote_medium_v1.pdf]]
+
+
+#+begin_src R :results output graphics :file img/batch_size/remote_small_v1.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k2[k2$input == "small",], aes(x=batch, y=time_avg, color=platform)) +
+  geom_point(position=position_dodge(width=0.3)) +
+  scale_colour_manual(values = c("red", "blue", "green"), name="Platform") +
+  geom_errorbar(position=position_dodge(width=0.3), aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  ylab("Average Execution Time (s)") +
+  xlab("Batch Size") +
+  ggtitle ("TBD") +
+  theme_bw() +
+  theme(legend.position="right"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_size/remote_small_v1.pdf]]
+
+Tais just found out that =guarani= is fact =remote=. She will do the
+experiment again so we can correctly compare a local against a remove
+experiment. All plots regarding batch size will have to be re-plotted.
+
+#+begin_src R :results output :session :exports both
+k2[k2$platform == "guarani",];
+sum(10 * k2$time_avg)/60/60/24;
+#+end_src
+
+#+RESULTS:
+#+begin_example
+    input batch platform  N    time_avg     time_se
+2     big     C  guarani 30 824.7546429 2.852807810
+6     big     D  guarani 30 798.8587828 2.957736903
+10    big     E  guarani 30 780.5554274 2.658481151
+14    big     F  guarani 30 771.4025417 2.914139674
+18 medium     A  guarani 30 100.3892080 0.484042387
+21 medium     B  guarani 30  99.2527799 0.478672535
+25 medium     C  guarani 30  95.0724998 0.584923080
+29 medium     D  guarani 30  96.9286011 0.569612415
+33 medium     E  guarani 30  92.5820661 0.512330528
+37 medium     F  guarani 30  92.4204530 0.487320713
+41  small     A  guarani 30   0.4956575 0.006162893
+44  small     B  guarani 30   0.5281257 0.009840373
+48  small     C  guarani 30   0.5544556 0.012537292
+52  small     D  guarani 30   0.5818487 0.013258166
+56  small     E  guarani 30   0.6681839 0.015388218
+60  small     F  guarani 30   0.8698209 0.009727556
+[1] 2.601707
+#+end_example
+
+* 2016-05-17 Batch traces (figures)                              :Lucas:Tais:
