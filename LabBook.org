@@ -4557,7 +4557,7 @@ sum(10 * k2$time_avg)/60/60/24;
 52  small     D  guarani 30   0.5818487 0.013258166
 56  small     E  guarani 30   0.6681839 0.015388218
 60  small     F  guarani 30   0.8698209 0.009727556
-[1] 2.601707
+[1] 0.8672356
 #+end_example
 
 * 2016-05-17 Batch traces (figures)                              :Lucas:Tais:
