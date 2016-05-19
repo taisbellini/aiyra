@@ -5688,3 +5688,182 @@ ggplot(k[k$input == "small" & (k$platform == "remote" | k$platform == "guarani")
 #+RESULTS:
 [[file:img/batch_size/remote_insert_small_v1_3.pdf]]
 
+* 2016-05-19 Batch traces again
+
+#+begin_src sh :results output :session :exports both
+cd results/batch_time
+#for each scenario
+for scenario in `ls -1 *_guarani_*.csv | cut -d"_" -f1-3 | sort | uniq`; do
+  #for each execution in temporal order
+  CONTADOR=0
+  for execution in `ls -1 ${scenario}* | grep -v orion | sort --version-sort`; do
+     NOME=`echo $execution | cut -d"_" -f1-3`_$CONTADOR.csv
+     echo "$execution => $NOME"
+     git mv $execution $NOME
+     CONTADOR=$(($CONTADOR + 1))
+  done
+done
+unset CONTADOR
+#+end_src
+
+
+#+begin_src sh :results output :session :exports both
+cd results/batch_time
+#for each scenario/execution
+head -n1 trace-1G.paje_611585_luiza_19.csv | \
+   sed -e "s/(microseconds)//g" \
+       -e "s/(Operations)//" \
+       -e "s/(Bytes)//" \
+       -e "s/Size/Operations/" \
+       -e "s/$/, input, parsize, platform, execution/" \
+       -e "s/Time//g" \
+       -e "s/Number//" \
+       -e "s/ //g" | \
+       tr '[:upper:]' '[:lower:]' > batch_traces.csv
+for i in `ls -1 trace-*.csv`; do
+  #input
+  INPUT=`echo $i | cut -d"." -f1 | sed -e "s/trace-//"`
+  if [ $INPUT = "1G" ]; then
+    INPUT="big"
+  elif [ $INPUT = "128M" ]; then
+    INPUT="medium"
+  elif [ $INPUT = "128K" ]; then
+    INPUT="small"
+  else
+    echo "Error #1"
+    exit
+  fi
+
+  #size
+  SIZE=`echo $i | cut -d"_" -f2`
+  
+  #platform
+  PLATFORM=`echo $i | cut -d"_" -f3`
+
+  #platform
+  EXECUTION=`echo $i | cut -d"_" -f4 | sed "s/\.csv//"`
+
+  #echo $i $INPUT $SIZE $PLATFORM $EXECUTION
+
+  tail -n+2 $i | sed -e "s/$/,$INPUT,$SIZE,$PLATFORM,$EXECUTION/" \
+                     -e "s/small,85,/small,F,/" \
+                     -e "s/small,170,/small,E,/" \
+                     -e "s/small,340,/small,D,/" \
+                     -e "s/small,681,/small,C,/" \
+                     -e "s/small,1363,/small,B,/" \
+                     -e "s/small,2727,/small,A,/" \
+                     -e "s/medium,78957,/medium,F,/" \
+                     -e "s/medium,157914,/medium,E,/" \
+                     -e "s/medium,315828,/medium,D,/" \
+                     -e "s/medium,631657,/medium,C,/" \
+                     -e "s/medium,1263314,/medium,B,/" \
+                     -e "s/medium,2526628,/medium,A,/" \
+                     -e "s/big,611585,/big,F,/" \
+                     -e "s/big,1223170,/big,E,/" \
+                     -e "s/big,2446340,/big,D,/" \
+                     -e "s/big,4892680,/big,C,/" \
+                     -e "s/big,9785361,/big,B,/"
+done >> batch_traces.csv
+#+end_src
+
+#+RESULTS:
+
+Let's read the =batch_traces.csv= with R.
+
+#+begin_src R :results output :session :exports both
+df <- read.csv ("results/batch_time/batch_traces.csv");
+df$start = df$start / 1000000;
+df$end = df$end / 1000000;
+head(df);
+summary(df);
+#+end_src
+
+#+RESULTS:
+#+begin_example
+  batch    start      end duration operations  size input parsize platform
+1     1 0.804555 1.309217   504662       1363 47115 small       B  guarani
+2     2 1.443537 1.727040   283503       1363 49281 small       B  guarani
+3     3 1.818504 1.960465   141961          2   579 small       B  guarani
+4     1 0.627891 1.735577  1107686       1363 47115 small       B  guarani
+5     2 1.875481 2.228531   353050       1363 49281 small       B  guarani
+6     3 2.320698 2.353420    32722          2   579 small       B  guarani
+  execution
+1         0
+2         0
+3         0
+4         1
+5         1
+6         1
+     batch           start                end              duration        
+ Min.   : 1.00   Min.   :   0.0666   Min.   :   0.073   Min.   :1.505e+03  
+ 1st Qu.: 4.00   1st Qu.:   0.7507   1st Qu.:   0.768   1st Qu.:1.155e+04  
+ Median : 9.00   Median :  41.4935   Median :  48.848   Median :1.828e+06  
+ Mean   :11.66   Mean   : 155.1063   Mean   : 166.524   Mean   :1.142e+07  
+ 3rd Qu.:17.00   3rd Qu.: 181.5546   3rd Qu.: 216.433   3rd Qu.:1.324e+07  
+ Max.   :33.00   Max.   :2593.4133   Max.   :2593.415   Max.   :1.911e+09  
+   operations           size              input      parsize     platform   
+ Min.   :      1   Min.   :      543   big   :3870   A: 120   guarani:1980  
+ 1st Qu.:    170   1st Qu.:     6262   medium:4080   B: 390   luiza  :6060  
+ Median :  78957   Median :  3299183   small :4089   C: 900   orion1 :2019  
+ Mean   : 475735   Mean   : 20892125                 D:1629   remote :1980  
+ 3rd Qu.: 611585   3rd Qu.: 25551883                 E:3060                 
+ Max.   :9785361   Max.   :463208087                 F:5940                 
+   execution     
+ Min.   : 0.000  
+ 1st Qu.: 3.000  
+ Median : 7.000  
+ Mean   : 9.538  
+ 3rd Qu.:15.000  
+ Max.   :29.000
+#+end_example
+
+#+begin_src R :results output graphics :file img/batch_time/batch_time_small_v2.pdf :exports both :width 9 :height 5 :session
+library(ggplot2);
+ggplot(df[df$input == "small" & df$execution <= 9 & df$parsize != "A" & df$platform != "remote",], aes(x=start, xend=end, y=execution, yend=execution, color=input)) +
+  geom_segment(size=1.1) +
+  theme_bw() + facet_grid (parsize~platform) +
+  scale_colour_manual(values = c("green"), name="Input Size") +
+  scale_y_continuous(breaks=c(0,3,6,9)) +
+  ylab("Run (order)") +
+  xlab("Time (s)") +
+  theme_bw() +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_time/batch_time_small_v2.pdf]]
+
+
+#+begin_src R :results output graphics :file img/batch_time/batch_time_medium_v2.pdf :exports both :width 9 :height 5 :session
+library(ggplot2);
+ggplot(df[df$input == "medium" & df$execution <= 9 & df$parsize != "A" & df$platform != "remote",], aes(x=start, xend=end, y=execution, yend=execution, color=input)) +
+  geom_segment(size=1.1) +
+  theme_bw() + facet_grid (parsize~platform) +
+  scale_colour_manual(values = c("blue"), name="Input Size") +
+  scale_y_continuous(breaks=c(0,3,6,9)) +
+  ylab("Run (order)") +
+  xlab("Time (s)") +
+  theme_bw() +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_time/batch_time_medium_v2.pdf]]
+
+
+#+begin_src R :results output graphics :file img/batch_time/batch_time_big_v2.pdf :exports both :width 9 :height 5 :session
+library(ggplot2);
+ggplot(df[df$input == "big" & df$execution <= 9 & df$parsize != "A" & df$platform != "remote",], aes(x=start, xend=end, y=execution, yend=execution, color=input)) +
+  geom_segment(size=1.1) +
+  theme_bw() + facet_grid (parsize~platform) +
+  scale_colour_manual(values = c("red"), name="Input Size") +
+  scale_y_continuous(breaks=c(0,3,6,9)) +
+  ylab("Run (order)") +
+  xlab("Time (s)") +
+  theme_bw() +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_time/batch_time_big_v2.pdf]]
+
