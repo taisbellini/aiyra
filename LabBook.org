@@ -5867,3 +5867,133 @@ ggplot(df[df$input == "big" & df$execution <= 9 & df$parsize != "A" & df$platfor
 #+RESULTS:
 [[file:img/batch_time/batch_time_big_v2.pdf]]
 
+* 2016-05-19 MEM plots again
+
+#+begin_src R :results output :session :exports both
+df <- read.csv ("results/batch_size.csv");
+df <- df[complete.cases(df),];
+df$sim_time <- as.numeric(as.character(df$sim_time));
+df$insert_time <- as.numeric(as.character(df$insert_time));
+df$sim_time = df$sim_time/1000000;
+df$insert_time = df$insert_time/1000000;
+df$max_mem = df$max_mem/1024/1024;
+library(dplyr);
+k <- df %>%
+     group_by(input, batch, platform) %>%
+     summarize(N = n(),
+               mem_max = max(max_mem)) %>%
+     as.data.frame();
+k
+#+end_src
+
+#+RESULTS:
+#+begin_example
+    input batch platform  N     mem_max
+1     big     B   orion1 10 4085.928391
+2     big     C  guarani 10 2041.474648
+3     big     C    luiza 30 2041.564964
+4     big     C   orion1 10 2041.475166
+5     big     C   remote 10 2041.474663
+6     big     D  guarani 10 1020.576500
+7     big     D    luiza 30 1020.667267
+8     big     D   orion1 10 1020.575981
+9     big     D   remote 10 1020.575462
+10    big     E  guarani 10  513.168854
+11    big     E    luiza 30  513.259621
+12    big     E   orion1 10  513.168320
+13    big     E   remote 10  513.167816
+14    big     F  guarani 10  257.339867
+15    big     F    luiza 30  257.430183
+16    big     F   orion1 10  257.339264
+17    big     F   remote 10  257.338837
+18 medium     A    luiza 30 1036.147446
+19 medium     B  guarani 10  527.779510
+20 medium     B    luiza 30  528.854622
+21 medium     B   orion1 10  527.780113
+22 medium     B   remote 10  527.779533
+23 medium     C  guarani 10  264.647179
+24 medium     C    luiza 30  264.737885
+25 medium     C   orion1 10  264.647789
+26 medium     C   remote 10  264.647202
+27 medium     D  guarani 10  133.296036
+28 medium     D    luiza 30  133.386436
+29 medium     D   orion1 10  133.295593
+30 medium     D   remote 10  133.295006
+31 medium     E  guarani 10   67.715477
+32 medium     E    luiza 30   67.806183
+33 medium     E   orion1 10   67.714890
+34 medium     E   remote 10   67.714447
+35 medium     F  guarani 10   35.101768
+36 medium     F    luiza 30   35.979355
+37 medium     F   orion1 10   35.101166
+38 medium     F   remote 10   35.100731
+39  small     A    luiza 30    4.160812
+40  small     B  guarani 10    3.509026
+41  small     B    luiza 30    3.606918
+42  small     B   orion1 10    3.508286
+43  small     B   remote 10    3.508720
+44  small     C  guarani 10    3.227829
+45  small     C    luiza 30    3.325630
+46  small     C   orion1 10    3.227089
+47  small     C   remote 10    3.227524
+48  small     D  guarani 10    3.074348
+49  small     D    luiza 30    3.172089
+50  small     D   orion1 10    3.073601
+51  small     D   remote 10    3.074043
+52  small     E  guarani 10    4.566216
+53  small     E    luiza 30    3.104179
+54  small     E   orion1 10    3.005554
+55  small     E   remote 10    3.005989
+56  small     F  guarani 10    2.970764
+57  small     F    luiza 30    3.068680
+58  small     F   orion1 10    2.970024
+59  small     F   remote 10    2.970367
+#+end_example
+
+#+begin_src R :results output graphics :file img/batch_size/local_mem_big_v2.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k[k$input == "big" & k$platform != "remote",], aes(x=batch, y=mem_max, fill=input)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values = c("red","blue", "green"), name="Input Size") +
+  ylab("Maximum Memory Utilization (Megabytes)") +
+  xlab("Batch Size") +
+  theme_bw() + ylim(0,NA) + 
+  facet_grid(~platform) +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_size/local_mem_big_v2.pdf]]
+
+
+#+begin_src R :results output graphics :file img/batch_size/local_mem_medium_v2.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k[k$input == "medium" & k$platform != "remote",], aes(x=batch, y=mem_max, fill=input)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values = c("blue"), name="Input Size") +
+  ylab("Maximum Memory Utilization (Megabytes)") +
+  xlab("Batch Size") +
+  theme_bw() + ylim(0,NA) + 
+  facet_grid(~platform) +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_size/local_mem_medium_v2.pdf]]
+
+
+#+begin_src R :results output graphics :file img/batch_size/local_mem_small_v2.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k[k$input == "small" & k$platform != "remote",], aes(x=batch, y=mem_max, fill=input)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values = c("green"), name="Input Size") +
+  ylab("Maximum Memory Utilization (Megabytes)") +
+  xlab("Batch Size") +
+  theme_bw() + ylim(0,NA) + 
+  facet_grid(~platform) +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/batch_size/local_mem_small_v2.pdf]]
+
