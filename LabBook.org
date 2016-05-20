@@ -2731,7 +2731,9 @@ Save all traces from all experiments, no matter what.
 
 Change experimental design for batch size investigation.
 
+
 #+begin_src R :results output silent :session :exports none
+  require(R);
   require(DoE.base);
   Batch_Size_Investigation_v2_orion1 <- fac.design (
            nfactors=2,
@@ -2743,7 +2745,7 @@ Change experimental design for batch size investigation.
            nlevels=c(3,5),
            factor.names=list(
                 input=c("small", "medium", "big"),
-                batch=c("B", "C", "D", "E", "F")));
+                batch=c("A", "B", "C", "D", "E", "F")));
 
   export.design(Batch_Size_Investigation_v2_orion1,
                 path="designs",
