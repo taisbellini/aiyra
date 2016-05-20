@@ -5519,7 +5519,7 @@ ggplot(k[k$input == "big" & k$platform != "remote",], aes(x=batch, y=time_avg, c
   geom_point(size=.3) +
   scale_colour_manual(values = c("red","blue", "green"), name="Input Size") +
   geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
-  ylab("Average Execution Time (s)") +
+  ylab("Average Insertion Time (s)") +
   xlab("Batch Size") +
   theme_bw() + ylim(0,NA) + 
   facet_wrap(~platform) +
@@ -5539,7 +5539,7 @@ ggplot(k[k$input == "medium" & k$platform != "remote",], aes(x=batch, y=time_avg
   geom_point(size=.3) +
   scale_colour_manual(values = c("blue"), name="Input") +
   geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
-  ylab("Average Execution Time (s)") +
+  ylab("Average Insertion Time (s)") +
   xlab("Batch Size") +
   theme_bw() + ylim(0,NA) + 
   facet_grid(~platform) +
@@ -5555,7 +5555,7 @@ ggplot(k[k$input == "small" & k$platform != "remote",], aes(x=batch, y=time_avg,
   geom_point(size=.3) +
   scale_colour_manual(values = c("green"), name="Input") +
   geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
-  ylab("Average Execution Time (s)") +
+  ylab("Average Insertion Time (s)") +
   xlab("Batch Size") +
   theme_bw() + ylim(0,NA) + 
   facet_grid(~platform) +
@@ -5659,7 +5659,7 @@ ggplot(k[k$input == "medium" & (k$platform == "remote" | k$platform == "guarani"
   geom_point(position=position_dodge(width=0.3)) +
   scale_colour_manual(values = c("red", "blue", "green"), name="Platform") +
   geom_errorbar(position=position_dodge(width=0.3), aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
-  ylab("Average Execution Time (s)") +
+  ylab("Average Insertion Time (s)") +
   xlab("Batch Size") +
   ylim(0,NA) +
   theme_bw() +
@@ -5676,7 +5676,7 @@ ggplot(k[k$input == "small" & (k$platform == "remote" | k$platform == "guarani")
   geom_point(position=position_dodge(width=0.3)) +
   scale_colour_manual(values = c("red", "blue", "green"), name="Platform") +
   geom_errorbar(position=position_dodge(width=0.3), aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
-  ylab("Average Execution Time (s)") +
+  ylab("Average Insertion Time (s)") +
   xlab("Batch Size") +
   ylim(0,NA) +
   theme_bw() +
@@ -5823,7 +5823,7 @@ ggplot(df[df$input == "small" & df$execution <= 9 & df$parsize != "A" & df$platf
   theme_bw() + facet_grid (parsize~platform) +
   scale_colour_manual(values = c("green"), name="Input Size") +
   scale_y_continuous(breaks=c(0,3,6,9)) +
-  ylab("Run (order)") +
+  ylab("Replications") +
   xlab("Time (s)") +
   theme_bw() +
   theme(legend.position="none"); # no legend since we have only small
@@ -5840,7 +5840,7 @@ ggplot(df[df$input == "medium" & df$execution <= 9 & df$parsize != "A" & df$plat
   theme_bw() + facet_grid (parsize~platform) +
   scale_colour_manual(values = c("blue"), name="Input Size") +
   scale_y_continuous(breaks=c(0,3,6,9)) +
-  ylab("Run (order)") +
+  ylab("Replications") +
   xlab("Time (s)") +
   theme_bw() +
   theme(legend.position="none"); # no legend since we have only small
@@ -5857,7 +5857,7 @@ ggplot(df[df$input == "big" & df$execution <= 9 & df$parsize != "A" & df$platfor
   theme_bw() + facet_grid (parsize~platform) +
   scale_colour_manual(values = c("red"), name="Input Size") +
   scale_y_continuous(breaks=c(0,3,6,9)) +
-  ylab("Run (order)") +
+  ylab("Replications") +
   xlab("Time (s)") +
   theme_bw() +
   theme(legend.position="none"); # no legend since we have only small
