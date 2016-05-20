@@ -3832,7 +3832,6 @@ ggplot(k2, aes(x=version, y=time_avg, color=input)) +
   theme_bw() + facet_wrap(~platform) +
   ylab("Average Execution Time (s)") +
   xlab("Version") +
-  ggtitle ("Comparing Aiyra against two versions of PajeNG") +
   theme_bw() + ylim(0,NA) + 
   theme(legend.position="right"); # no legend since we have only small
 #+end_src
@@ -3954,7 +3953,6 @@ ggplot(k2[k2$input == "small",], aes(x=version, y=time_avg, color=input)) +
   geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
   ylab("Average Execution Time (s)") +
   xlab("Version") +
-  ggtitle ("Comparing Aiyra against two versions\n of PajeNG for a small input") +
   theme_bw() + ylim(0,NA) + 
   facet_wrap(~platform) +
 #  title ("teste") +
@@ -4105,7 +4103,6 @@ ggplot(k[k$input == "big",], aes(x=batch, y=time_avg)) +
   geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
   ylab("Average Execution Time (s)") +
   xlab("Batch Size") +
-  ggtitle ("TBD") +
   theme_bw() + ylim(0,NA) + 
   facet_grid(input~platform) +
   theme(legend.position="none"); # no legend since we have only small
