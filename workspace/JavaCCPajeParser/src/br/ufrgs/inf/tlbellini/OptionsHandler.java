@@ -28,10 +28,10 @@ public class OptionsHandler {
 		opt.getSet().addOption("plat", Options.Separator.BLANK, Options.Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("test", Options.Multiplicity.ZERO_OR_ONE);
 		// check options
-		printOptionsHelper();
+		checkOptionsHelper();
 	}
 
-	public void printOptionsHelper() {
+	public void checkOptionsHelper() {
 		// true=ignoreUnmatched false=requireLast
 		if (!this.opt.check(true, false)) {
 			System.out.println("Your input is incorrect");
@@ -66,7 +66,7 @@ public class OptionsHandler {
 		if (opt.getSet().isSet("p")) {
 			pluginHandler();
 		} else {
-			PajeGrammar.plugin = new PajeNullPlugin();
+			PajeGrammar.simulator.plugin = new PajeNullPlugin();
 		}
 	}
 	
@@ -75,7 +75,7 @@ public class OptionsHandler {
 			case "pjdump":
 				int lines = opt.getSet().isSet("l") ? Integer.parseInt(opt.getSet().getOption("l").getResultValue(0))
 						: 1000000;
-				PajeGrammar.plugin = new PajeDumpPlugin(lines);
+				PajeGrammar.simulator.plugin = new PajeDumpPlugin(lines);
 				break;
 			case "mysql":
 				String serverName = opt.getSet().isSet("s") ? opt.getSet().getOption("s").getResultValue(0)
@@ -86,14 +86,14 @@ public class OptionsHandler {
 				boolean batch = opt.getSet().isSet("batch") ? true : false;
 				int batch_size = batch ? Integer.parseInt(opt.getSet().getOption("batch").getResultValue(0)) : 0; 
 				try {
-					PajeGrammar.plugin = new PajeInsertDBPlugin(serverName, database, username, password, batch, batch_size);
+					PajeGrammar.simulator.plugin = new PajeInsertDBPlugin(serverName, database, username, password, batch, batch_size);
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 				break;
 			default:
 				System.out.println("Invalid plugin. Null chosen.");
-				PajeGrammar.plugin = new PajeNullPlugin();
+				PajeGrammar.simulator.plugin = new PajeNullPlugin();
 		}
 	}
 	

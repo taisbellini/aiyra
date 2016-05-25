@@ -6,19 +6,20 @@ public abstract class PajePlugin {
 	
 	public static int MAXLINES;
 	
-
-	public abstract void addType(PajeType newType);
-	public abstract void addValue(PajeValue value);
-	public abstract void addNewContainer(PajeContainer newContainer);
-	public abstract void addDestroyedContainer(PajeContainer pajeContainer);
-	public abstract void addState(PajeUserState newState);
+	
+	public abstract void newType(PajeType newType);
+	public abstract void newValue(PajeValue value);
+	public abstract void newCreatedContainer(PajeContainer newContainer);
+	public abstract void destroyedContainer(PajeContainer pajeContainer);
+	public abstract void setState(PajeUserState newState);
 	public abstract void pushState(PajeUserState newState);
 	public abstract void popState(PajeUserState state);
-	public abstract void addLink(PajeUserLink link);
-	public abstract void addVar(PajeEntity first, PajeEntity last, PajeUserVariable newValue);
-	public abstract void setVar(PajeUserVariable var);
-	public abstract void addEvent(PajeUserEvent event);
+	public abstract void startLink(PajeUserLink link);
+	public abstract void endLink(PajeUserLink link);
+	public abstract void newCompletedLink(PajeUserLink link);
+	public abstract void updateVar(PajeEntity first, PajeEntity last, PajeUserVariable newValue);
+	public abstract void setVar(PajeEntity first, PajeEntity last, PajeUserVariable var);
+	public abstract void newEvent(PajeUserEvent event);
 	public abstract void finish();
-	public abstract void endSimulation();
 
 }
