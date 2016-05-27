@@ -3962,6 +3962,173 @@ ggplot(k2[k2$input == "small",], aes(x=version, y=time_avg, color=input)) +
 #+RESULTS:
 [[file:img/cpp/aiyra-pj-pjflex_small.pdf]]
 
+* 2016-05-16 CPP Comparison Version 2 (O3) (figures)             :Lucas:Tais:
+
+Merge everything in a single CSV file:
+
+#+begin_src sh :results output :session :exports both
+cd results/cpp_comparison
+head -n1 cpp_guarani_bateria01.csv > all_but_first_v2.csv
+for i in `cpp_guarani_o3_v1.csv cpp_orion_o3_v1.csv cpp_luiza_o3_v1.csv`; do
+  tail -n+2 $i
+done >> all_but_first_v2.csv
+#+end_src
+
+#+RESULTS:
+
+Now, let's read the file =all_but_first_v2.csv=.
+
+#+begin_src R :results output :session :exports both
+df <- read.csv ("results/cpp_comparison/all_but_first_v2.csv");
+df[df$version == "aiyra",]$time = df[df$version == "aiyra",]$time/1000000;
+summary(df);
+head(df);
+#+end_src
+
+#+RESULTS:
+#+begin_example
+      name       run.no.in.std.order     run.no      run.no.std.rp  
+ Min.   :  1.0   Min.   :1           Min.   :  1.0   Min.   :1.100  
+ 1st Qu.: 68.0   1st Qu.:3           1st Qu.: 68.0   1st Qu.:3.160  
+ Median :135.5   Median :5           Median :135.5   Median :5.225  
+ Mean   :135.5   Mean   :5           Mean   :135.5   Mean   :5.290  
+ 3rd Qu.:203.0   3rd Qu.:7           3rd Qu.:203.0   3rd Qu.:7.300  
+ Max.   :270.0   Max.   :9           Max.   :270.0   Max.   :9.900  
+   version       input          time              platform  
+ aiyra :270   big   :270   Min.   :   0.0245   guarani:270  
+ pj    :270   medium:270   1st Qu.:   0.1738   luiza  :270  
+ pjflex:270   small :270   Median :  25.7898   orion1 :270  
+                           Mean   :  76.8609                
+                           3rd Qu.: 123.2365                
+                           Max.   :2888.0565
+  name run.no.in.std.order run.no run.no.std.rp version  input       time
+1    1                   4      1           4.1   aiyra medium  13.199061
+2    2                   9      2           9.1  pjflex    big 280.152443
+3    3                   2      3           2.1      pj  small   0.049384
+4    4                   5      4           5.1      pj medium  33.616784
+5    5                   7      5           7.1   aiyra    big 111.191072
+6    6                   6      6           6.1  pjflex medium  35.570650
+  platform
+1   orion1
+2   orion1
+3   orion1
+4   orion1
+5   orion1
+6   orion1
+#+end_example
+
+Let's average measurements:
+
+#+begin_src R :results output :session :exports both
+library(dplyr);
+k <- df %>%
+     select(version, input, time, platform) %>%
+     group_by(version, input, platform) %>%
+     summarize(N = n(),
+               time_avg = mean(time),
+               time_se = 3*sd(time)/sqrt(N)) %>%
+     as.data.frame();
+k
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+   version  input platform  N     time_avg      time_se
+1    aiyra    big  guarani 30 124.24501307 1.152943e+00
+2    aiyra    big    luiza 30 176.45010810 2.805133e+02
+3    aiyra    big   orion1 30 111.78373253 1.012192e+00
+4    aiyra medium  guarani 30  13.62979877 2.309004e-01
+5    aiyra medium    luiza 30   9.38572857 1.159134e-01
+6    aiyra medium   orion1 30  13.08560363 1.239769e-01
+7    aiyra  small  guarani 30   0.17240930 1.343752e-03
+8    aiyra  small    luiza 30   0.18415197 1.450459e-03
+9    aiyra  small   orion1 30   0.22622977 9.292423e-03
+10      pj    big  guarani 30 232.04630737 5.956094e-01
+11      pj    big    luiza 30 207.43421557 9.992199e+00
+12      pj    big   orion1 30 259.72360747 1.115893e+00
+13      pj medium  guarani 30  29.97373843 1.207393e-01
+14      pj medium    luiza 30  24.92862427 2.842269e-01
+15      pj medium   orion1 30  33.47163073 1.253937e-01
+16      pj  small  guarani 30   0.04223553 6.087253e-03
+17      pj  small    luiza 30   0.02562413 7.886749e-04
+18      pj  small   orion1 30   0.04607153 2.206699e-03
+19  pjflex    big  guarani 30 248.65192840 1.108033e+00
+20  pjflex    big    luiza 30 215.79006593 2.822790e+00
+21  pjflex    big   orion1 30 279.74462510 9.249580e-01
+22  pjflex medium  guarani 30  32.14986230 1.422113e-01
+23  pjflex medium    luiza 30  25.85007707 2.419624e-01
+24  pjflex medium   orion1 30  36.08434247 1.588962e-01
+25  pjflex  small  guarani 30   0.04453450 5.719485e-03
+26  pjflex  small    luiza 30   0.02540013 4.037376e-04
+27  pjflex  small   orion1 30   0.04819160 2.599552e-03
+#+end_example
+
+
+#+begin_src R :results output graphics :file img/cpp/aiyra-pj-pjflex_overview_v2_o3.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k, aes(x=version, y=time_avg, color=input)) +
+  geom_point() +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  scale_colour_manual(values = c("red","blue", "green"), name="Input Size") +
+  theme_bw() + facet_wrap(~platform) +
+  ylab("Average Execution Time (s)") +
+  xlab("Version") +
+  theme_bw() + ylim(0,NA) + 
+  theme(legend.position="right"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/cpp/aiyra-pj-pjflex_overview.pdf]]
+
+
+What about small? We can't see, let's
+do a plot only about it.
+
+
+#+begin_src R :results output graphics :file img/cpp/first_plot_3.png :exports both :width 600 :height 400 :session
+library(ggplot2);
+ggplot(k[k$input == "small",], aes(x=version, y=time_avg, color=input)) +
+  geom_point() +
+  scale_colour_manual(values = c("green")) +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  theme_bw() + facet_wrap(~platform);
+#+end_src
+
+#+RESULTS:
+[[file:img/cpp/first_plot_3.png]]
+
+
+Let's do this same plot in PDF so you can include in your
+dissertation.
+
+#+begin_src R :results output graphics :file img/cpp/aiyra-pj-pjflex_small_v2_o3.pdf :exports both :width 6 :height 4 :session
+library(ggplot2);
+ggplot(k[k$input == "small",], aes(x=version, y=time_avg, color=input)) +
+  geom_point() +
+  scale_colour_manual(values = c("green"), name="Input") +
+  geom_errorbar(aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
+  ylab("Average Execution Time (s)") +
+  xlab("Version") +
+  theme_bw() + ylim(0,NA) + 
+  facet_wrap(~platform) +
+#  title ("teste") +
+  theme(legend.position="none"); # no legend since we have only small
+#+end_src
+
+#+RESULTS:
+[[file:img/cpp/aiyra-pj-pjflex_small.pdf]]
+
+
 * 2016-05-17 Batch size (figures)                                :Lucas:Tais:
 
 For local analysis:
