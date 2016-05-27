@@ -3962,7 +3962,7 @@ ggplot(k2[k2$input == "small",], aes(x=version, y=time_avg, color=input)) +
 #+RESULTS:
 [[file:img/cpp/aiyra-pj-pjflex_small.pdf]]
 
-* 2016-05-16 CPP Comparison Version 2 (O3) (figures)             :Lucas:Tais:
+* 2016-05-27 CPP Comparison Version 2 (O3) (figures)             :Lucas:Tais:
 
 Merge everything in a single CSV file:
 
@@ -4127,7 +4127,6 @@ ggplot(k[k$input == "small",], aes(x=version, y=time_avg, color=input)) +
 
 #+RESULTS:
 [[file:img/cpp/aiyra-pj-pjflex_small.pdf]]
-
 
 * 2016-05-17 Batch size (figures)                                :Lucas:Tais:
 
