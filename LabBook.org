@@ -3995,26 +3995,26 @@ head(df);
  3rd Qu.:203.0   3rd Qu.:7           3rd Qu.:203.0   3rd Qu.:7.300  
  Max.   :270.0   Max.   :9           Max.   :270.0   Max.   :9.900  
    version       input          time              platform  
- aiyra :270   big   :270   Min.   :   0.0245   guarani:270  
- pj    :270   medium:270   1st Qu.:   0.1738   luiza  :270  
- pjflex:270   small :270   Median :  25.7898   orion1 :270  
-                           Mean   :  76.8609                
-                           3rd Qu.: 123.2365                
-                           Max.   :2888.0565
+ aiyra :270   big   :270   Min.   :  0.00667   guarani:270  
+ pj    :270   medium:270   1st Qu.:  0.17389   luiza  :270  
+ pjflex:270   small :270   Median :  9.56102   orion1 :270  
+                           Mean   : 30.59050                
+                           3rd Qu.: 65.37543                
+                           Max.   :117.99605
   name run.no.in.std.order run.no run.no.std.rp version  input       time
-1    1                   4      1           4.1   aiyra medium  13.199061
-2    2                   9      2           9.1  pjflex    big 280.152443
-3    3                   2      3           2.1      pj  small   0.049384
-4    4                   5      4           5.1      pj medium  33.616784
-5    5                   7      5           7.1   aiyra    big 111.191072
-6    6                   6      6           6.1  pjflex medium  35.570650
+1    1                   4      1           4.1   aiyra medium  12.370982
+2    2                   9      2           9.1  pjflex    big  74.821614
+3    3                   2      3           2.1      pj  small   0.007406
+4    4                   5      4           5.1      pj medium   7.876383
+5    5                   7      5           7.1   aiyra    big 114.246921
+6    6                   6      6           6.1  pjflex medium   9.719990
   platform
-1   orion1
-2   orion1
-3   orion1
-4   orion1
-5   orion1
-6   orion1
+1  guarani
+2  guarani
+3  guarani
+4  guarani
+5  guarani
+6  guarani
 #+end_example
 
 Let's average measurements:
@@ -4044,33 +4044,33 @@ The following objects are masked from ‘package:base’:
 
     intersect, setdiff, setequal, union
    version  input platform  N     time_avg      time_se
-1    aiyra    big  guarani 30 124.24501307 1.152943e+00
-2    aiyra    big    luiza 30 176.45010810 2.805133e+02
-3    aiyra    big   orion1 30 111.78373253 1.012192e+00
-4    aiyra medium  guarani 30  13.62979877 2.309004e-01
-5    aiyra medium    luiza 30   9.38572857 1.159134e-01
-6    aiyra medium   orion1 30  13.08560363 1.239769e-01
-7    aiyra  small  guarani 30   0.17240930 1.343752e-03
-8    aiyra  small    luiza 30   0.18415197 1.450459e-03
-9    aiyra  small   orion1 30   0.22622977 9.292423e-03
-10      pj    big  guarani 30 232.04630737 5.956094e-01
-11      pj    big    luiza 30 207.43421557 9.992199e+00
-12      pj    big   orion1 30 259.72360747 1.115893e+00
-13      pj medium  guarani 30  29.97373843 1.207393e-01
-14      pj medium    luiza 30  24.92862427 2.842269e-01
-15      pj medium   orion1 30  33.47163073 1.253937e-01
-16      pj  small  guarani 30   0.04223553 6.087253e-03
-17      pj  small    luiza 30   0.02562413 7.886749e-04
-18      pj  small   orion1 30   0.04607153 2.206699e-03
-19  pjflex    big  guarani 30 248.65192840 1.108033e+00
-20  pjflex    big    luiza 30 215.79006593 2.822790e+00
-21  pjflex    big   orion1 30 279.74462510 9.249580e-01
-22  pjflex medium  guarani 30  32.14986230 1.422113e-01
-23  pjflex medium    luiza 30  25.85007707 2.419624e-01
-24  pjflex medium   orion1 30  36.08434247 1.588962e-01
-25  pjflex  small  guarani 30   0.04453450 5.719485e-03
-26  pjflex  small    luiza 30   0.02540013 4.037376e-04
-27  pjflex  small   orion1 30   0.04819160 2.599552e-03
+1    aiyra    big  guarani 30 1.133892e+02 1.064124e+00
+2    aiyra    big    luiza 30 8.342057e+01 1.016463e+00
+3    aiyra    big   orion1 30 1.101503e+02 1.287671e+00
+4    aiyra medium  guarani 30 1.252370e+01 2.178345e-01
+5    aiyra medium    luiza 30 9.514203e+00 1.006092e-01
+6    aiyra medium   orion1 30 1.281804e+01 1.351626e-01
+7    aiyra  small  guarani 30 1.732774e-01 1.222508e-03
+8    aiyra  small    luiza 30 1.785216e-01 8.042493e-04
+9    aiyra  small   orion1 30 2.043394e-01 1.132887e-03
+10      pj    big  guarani 30 6.039525e+01 1.897985e-01
+11      pj    big    luiza 30 6.632887e+01 1.189113e+00
+12      pj    big   orion1 30 6.207255e+01 5.356949e-02
+13      pj medium  guarani 30 7.758835e+00 2.400090e-02
+14      pj medium    luiza 30 7.625045e+00 9.210520e-02
+15      pj medium   orion1 30 7.968472e+00 8.787838e-03
+16      pj  small  guarani 30 9.583233e-03 1.537028e-03
+17      pj  small    luiza 30 7.103467e-03 2.672619e-04
+18      pj  small   orion1 30 9.067700e-03 2.600868e-05
+19  pjflex    big  guarani 30 7.519103e+01 1.411454e-01
+20  pjflex    big    luiza 30 8.511038e+01 2.203729e+00
+21  pjflex    big   orion1 30 8.152386e+01 6.579497e-01
+22  pjflex medium  guarani 30 9.678624e+00 2.369348e-02
+23  pjflex medium    luiza 30 9.401344e+00 1.129723e-01
+24  pjflex medium   orion1 30 1.045980e+01 8.515382e-02
+25  pjflex  small  guarani 30 1.137983e-02 1.341304e-03
+26  pjflex  small    luiza 30 8.607067e-03 4.886444e-04
+27  pjflex  small   orion1 30 1.154073e-02 9.178358e-05
 #+end_example
 
 
@@ -4088,7 +4088,7 @@ ggplot(k, aes(x=version, y=time_avg, color=input)) +
 #+end_src
 
 #+RESULTS:
-[[file:img/cpp/aiyra-pj-pjflex_overview.pdf]]
+[[file:img/cpp/aiyra-pj-pjflex_overview_v2_o3.pdf]]
 
 
 What about small? We can't see, let's
@@ -4126,7 +4126,7 @@ ggplot(k[k$input == "small",], aes(x=version, y=time_avg, color=input)) +
 #+end_src
 
 #+RESULTS:
-[[file:img/cpp/aiyra-pj-pjflex_small.pdf]]
+[[file:img/cpp/aiyra-pj-pjflex_small_v2_o3.pdf]]
 
 * 2016-05-17 Batch size (figures)                                :Lucas:Tais:
 
