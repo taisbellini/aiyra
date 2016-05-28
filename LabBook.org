@@ -3969,7 +3969,7 @@ Merge everything in a single CSV file:
 #+begin_src sh :results output :session :exports both
 cd results/cpp_comparison
 head -n1 cpp_guarani_bateria01.csv > all_but_first_v2.csv
-for i in `cpp_guarani_o3_v1.csv cpp_orion_o3_v1.csv cpp_luiza_o3_v1.csv`; do
+for i in cpp_guarani_o3_v1.csv cpp_orion_o3_v1.csv cpp_luiza_o3_v1.csv; do
   tail -n+2 $i
 done >> all_but_first_v2.csv
 #+end_src
