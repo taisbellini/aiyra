@@ -5807,7 +5807,7 @@ ggplot(k[k$input == "big" & (k$platform == "remote" | k$platform == "guarani"),]
   geom_point(position=position_dodge(width=0.3)) +
   scale_colour_manual(values = c("red", "blue", "green"), name="Platform") +
   geom_errorbar(position=position_dodge(width=0.3), aes(ymin=time_avg-time_se, ymax=time_avg+time_se), width=.1) +
-  ylab("Average Execution Time (s)") +
+  ylab("Average Insertion Time (s)") +
   xlab("Batch Size") +  
   ylim(0,NA) +
   theme_bw() +
