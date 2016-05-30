@@ -6162,3 +6162,45 @@ ggplot(k[k$input == "small" & k$platform != "remote",], aes(x=batch, y=mem_max, 
 #+RESULTS:
 [[file:img/batch_size/local_mem_small_v2.pdf]]
 
+* 2016-05-30 Comments about the bachelor defense
+
+First member of the jury
+
+- Well elaborated structured
+- Should send your work to a conference (maybe WSCAD-WIC)
+- Lack of overhead analysis (explain with details)
+- In the conclusion
+  - Better delineate your conclusions
+  - Reinforcement of what are the main conclusion
+  - Perhaps you should make an itemized list in the conclusion
+- Lack of extra fields, should be
+
+Second member of the jury
+
+- Very good bachelor thesis
+- Should improve the English style at some points
+  - Long and too-much elaborated phrases
+- Avoid things such as
+  - Orphan and Widows lines 
+  - Figures should have the source below
+  - Should use shapes in plots for black/white prints
+- Only relevant information should be added
+  - Chapter 2 adds nothing considering your work
+- Good presentation, liked
+  - Direct to the point
+
+- "Sell the fish"
+  - Better delineate the objective
+    - It is the simulator, and plugins are proof of concept
+- Say that your simulator is sequential
+- Comment about slide 23
+  - I/O bandwidth should limit the disk
+  - Could also be memory. Or both.
+- Table with exact values are missing (slide 11, 19, others)
+  - Network is I/O
+  - In the I/O experiment, the thing is synchronous
+    - Should mention all OS configurations
+- Text should be correct
+  - Mb/s -> Mbps
+  - Remove this phrase: "We believe this is due the existence of a
+    100Mb/s switch between both endpoints limiting the network speed."
