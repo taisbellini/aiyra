@@ -11,110 +11,57 @@ PARSER_BEGIN(PajeGrammar)
 package br.ufrgs.inf.tlbellini;
 
 import br.ufrgs.inf.tlbellini.lib.*;
-
 import java.io.FileInputStream;
-
 import java.io.FileNotFoundException;
-
 import java.util.Scanner;
-
 import java.util.ArrayList;
-
 import ml.options.*;
-
 import br.ufrgs.inf.tlbellini.plugins.*;
-
 import java.lang.management.ManagementFactory;
-
 import java.lang.management.MemoryMXBean;
-
 import java.lang.management.MemoryUsage;
 
-
 public class PajeGrammar {
-
-
-
     public static ArrayList<PajeEventDefinition> eventDefinitions = new ArrayList<PajeEventDefinition>();
-
     public static PajeSimulator simulator = new PajeSimulator();
-
     public static OptionsHandler options;
-
     private static final long MEGABYTE = 1024L * 1024L;
-
     public static long startTime;
 
-
-
-
-
     public static long evaluateMemoryRuntime()
-
     {
-
         // Get the Java runtime
-
         Runtime runtime = Runtime.getRuntime();
-
         // Run the garbage collector
-
         runtime.gc();
-
         // Calculate the used memory
-
         long memory = runtime.totalMemory() - runtime.freeMemory();
-
         return memory;
-
-
-
     }
 
-
-
-
-
     public static void main(String args []) throws ParseException, FileNotFoundException {
-
         FileInputStream input;
-
         Scanner sc = new Scanner(System.in);
-
         options = new OptionsHandler(args);
-
         input = null;
-
         if(args.length > 0) {
-
             input = new FileInputStream(options.opt.getSet().getOption("f").getResultValue(0));
-
             options.checkEntry();
         } else
-
         {
-
             options.checkOptionsHelper();
         }
-
         startTime = System.nanoTime()/1000;
-
         simulator.init();
         PajeGrammar parser = new PajeGrammar(input);
-
-
         try
         {
             switch (parser.paje()) {
             case 4 :
-
                 simulator.finish();
                 long endTime = System.nanoTime()/1000;
-
                 System.out.println("Time: "+ (endTime - startTime));
-
                 ((PajeInsertDBPlugin) simulator.plugin).endSimulation();
-
                 break;
             case 1 :
                 System.out.println("Goodbye.");
@@ -125,514 +72,273 @@ public class PajeGrammar {
         } catch (Exception e) {
             System.out.println("NOK.");
             System.out.println(e.getMessage());
-
         } catch (Error e) {
             System.out.println("Oops.");
             System.out.println(e.getMessage());
         }
     }
 }
-
 PARSER_END(PajeGrammar)
-
 SKIP : {
     " "
     | "\r"
     | "\t"
-
     |  <  "#" (~["\r", "\n"])* ("\n" | "\r\n") >
 }
-
-
-
 TOKEN:
-
 {
 < BREAK: "\n"
     | "\r\n" >
-
 }
-
 TOKEN : { /* EVENT DEFINITION */
 < EVENT_DEF_BEGIN : "%EventDef" >
 | < EVENT_DEF : "%" >
 | < EVENT_DEF_END : "%EndEventDef" >
 | < EVENT_DEF_ALIAS : "Alias" >
-
 | < EVENT_DEF_TYPE : "Type"
     | "ContainerType" | "EntityType" >
-
 | < EVENT_DEF_NAME : "Name" >
-
 | < EVENT_DEF_COLOR: "Color" >
-
 | < EVENT_DEF_START_CONTAINER_TYPE : "StartContainerType"
     | "SourceContainerType">
-
 | < EVENT_DEF_END_CONTAINER_TYPE : "EndContainerType"
     | "DestContainerType">
-
 | < EVENT_DEF_CONTAINER : "Container">
-
 | < EVENT_DEF_TIME : "Time">
-
 | < EVENT_DEF_START_CONTAINER : "StartContainer"
     | "SourceContainer">
-
 | < EVENT_DEF_END_CONTAINER : "EndContainer"
     | "DestContainer">
-
 | < EVENT_DEF_VALUE : "Value">
-
 | < EVENT_DEF_KEY : "Key">
-
 | < EVENT_DEF_LINE : "Line">
-
 | < EVENT_DEF_FILE : "File">
 }
-
-
-
 TOKEN :
-
 {
 < EVENT_DEF_FIELD_TYPE_STRING : "string" >
-
 | < EVENT_DEF_FIELD_TYPE_FLOAT : "float" >
-
 | < EVENT_DEF_FIELD_TYPE_DOUBLE : "double" >
-
 | < EVENT_DEF_FIELD_TYPE_INT : "int" >
-
 | < EVENT_DEF_FIELD_TYPE_HEX : "hex" >
-
 | < EVENT_DEF_FIELD_TYPE_DATE : "date" >
-
 | < EVENT_DEF_FIELD_TYPE_COLOR : "color" >
-
 }
-
-
-
 TOKEN :
-
 {
-
 < PAJE_DEFINE_CONTAINER_TYPE : "PajeDefineContainerType" >
-
 | < PAJE_DEFINE_VARIABLE_TYPE : "PajeDefineVariableType" >
-
 | < PAJE_DEFINE_STATE_TYPE : "PajeDefineStateType" >
-
 | < PAJE_DEFINE_EVENT_TYPE : "PajeDefineEventType" >
-
 | < PAJE_DEFINE_LINK_TYPE : "PajeDefineLinkType" >
-
 | < PAJE_DEFINE_ENTITY_VALUE : "PajeDefineEntityValue" >
-
 }
-
-
-
 TOKEN :
-
 {
-
 < PAJE_CREATE_CONTAINER : "PajeCreateContainer" >
-
 | < PAJE_DESTROY_CONTAINER : "PajeDestroyContainer" >
-
 }
-
-
-
 TOKEN :
-
 {
-
 < PAJE_SET_VARIABLE : "PajeSetVariable" >
-
 | < PAJE_ADD_VARIABLE : "PajeAddVariable" >
-
 | < PAJE_SUB_VARIABLE : "PajeSubVariable" >
-
 }
-
-
-
 TOKEN :
-
 {
-
 < PAJE_SET_STATE : "PajeSetState" >
-
 | < PAJE_PUSH_STATE : "PajePushState" >
-
 | < PAJE_POP_STATE : "PajePopState" >
-
 | < PAJE_RESET_STATE : "PajeResetState" >
-
 }
-
-
-
 TOKEN :
-
 {
-
 < PAJE_START_LINK : "PajeStartLink" >
-
 | < PAJE_END_LINK : "PajeEndLink" >
-
 | < PAJE_NEW_EVENT : "PajeNewEvent" >
-
 }
-
-
-
 TOKEN : {
 < INT :
     (< DIGIT >)+ >
-
 | < FLOAT :
     (< DIGIT >)+"."(< DIGIT >)+ >
 | < #DIGIT : [ "0"-"9" ] >
-
 | <STRING: "\""
     (<LETTER> | < DIGIT > |  " ")* "\"" | (<LETTER> | <DIGIT>)+>
-
 | <CHAR :
     (~["\""] | "\\" (["n","r","\\","\'","\""])) >
-
 | < #LETTER : ["a"-"z", "A"-"Z", "-", "_", "."]  >
 }
-
 int paje() throws Exception: {
 }
 {
     declarations() events() < EOF >
-
     {
         return 4;
     }
-
 }
-
 void declarations() : {
     PajeEventDefinition newDef;
 }
 {
-
     (
-
     newDef = declaration() {
         eventDefinitions.add(newDef);
     }
-
     )*
-
 }
-
-
-
 void empty():
-
 {}
-
 {
     < EOF >
-
 }
-
-
-
 PajeEventDefinition declaration():
-
 {
-
     PajeEventId nameId;
-
     int id;
-
     ArrayList<PajeField> fieldsList;
-
 }
-
 {
-
     < EVENT_DEF_BEGIN > nameId = event_name() id = event_id() < BREAK >
     { PajeEventDefinition def = new PajeEventDefinition(nameId, id); }
-
     fieldsList = fields() < EVENT_DEF_END > < BREAK >
-
     {
-
         def.addFields(fieldsList);
-
         return def;
-
     }
 }
-
-
-
 PajeEventId event_name(): {
 }
-
 {
     < PAJE_DEFINE_CONTAINER_TYPE > { return PajeEventId.PajeDefineContainerType;} |
-
     < PAJE_DEFINE_VARIABLE_TYPE > {return  PajeEventId.PajeDefineVariableType;} |
-
     < PAJE_DEFINE_STATE_TYPE > { return PajeEventId.PajeDefineStateType;} |
-
     < PAJE_DEFINE_EVENT_TYPE > { return PajeEventId.PajeDefineEventType;} |
-
     < PAJE_DEFINE_LINK_TYPE > { return PajeEventId.PajeDefineLinkType;} |
-
     < PAJE_DEFINE_ENTITY_VALUE > { return PajeEventId.PajeDefineEntityValue;} |
-
     < PAJE_CREATE_CONTAINER > { return PajeEventId.PajeCreateContainer;} |
-
     < PAJE_DESTROY_CONTAINER > { return PajeEventId.PajeDestroyContainer;} |
-
     < PAJE_SET_VARIABLE > { return PajeEventId.PajeSetVariable;} |
-
     < PAJE_ADD_VARIABLE > { return PajeEventId.PajeAddVariable;} |
-
     < PAJE_SUB_VARIABLE > { return PajeEventId.PajeSubVariable;} |
-
     < PAJE_SET_STATE > { return PajeEventId.PajeSetState;} |
-
     < PAJE_PUSH_STATE > { return PajeEventId.PajePushState;} |
-
     < PAJE_POP_STATE > { return PajeEventId.PajePopState;} |
-
     < PAJE_RESET_STATE > { return PajeEventId.PajeResetState;} |
-
     < PAJE_START_LINK > { return PajeEventId.PajeStartLink;} |
-
     < PAJE_END_LINK > { return PajeEventId.PajeEndLink;} |
-
     < PAJE_NEW_EVENT > { return PajeEventId.PajeNewEvent;}
-
 }
 int event_id():
-
 {
     Token value;
 }
 {
     value = < INT > { return Integer.parseInt(value.image); }
 }
-
-
 ArrayList<PajeField> fields():
-
 {
     ArrayList<PajeField> fieldsList = new ArrayList<PajeField>();
-
     PajeField newField;
 }
-
 {
     (
-
         newField = field()
-
     {
         fieldsList.add(newField);
-
     }
-
     )*
-
     {return fieldsList;}
-
 }
-
-
-
 PajeField field():
-
 {
-
     PajeField newField = new PajeField();
-
     PajeFieldName newFieldName;
-
     PajeFieldType newFieldType;
-
 }
-
-
 {
-
     < EVENT_DEF > newFieldName = field_name() newFieldType = field_type() {
-
         newField.setField(newFieldName);
-
         newField.setType(newFieldType);
-
     }
-
     < BREAK >
-
     {return newField;}
-
 }
-
-
 PajeFieldName field_name() :
-
 {}
-
 {
-
-
     < EVENT_DEF_ALIAS > { return PajeFieldName.Alias; } |
-
     < EVENT_DEF_TYPE > { return PajeFieldName.Type; } |
-
     < EVENT_DEF_NAME > { return PajeFieldName.Name; } |
-
     < EVENT_DEF_COLOR > { return PajeFieldName.Color; } |
-
     < EVENT_DEF_START_CONTAINER_TYPE > { return PajeFieldName.StartContainerType; } |
-
     < EVENT_DEF_END_CONTAINER_TYPE > { return PajeFieldName.EndContainerType; } |
-
     < EVENT_DEF_CONTAINER > { return PajeFieldName.Container; } |
-
     < EVENT_DEF_TIME > { return PajeFieldName.Time; } |
-
     < EVENT_DEF_START_CONTAINER > { return PajeFieldName.StartContainer; } |
-
     < EVENT_DEF_END_CONTAINER > { return PajeFieldName.EndContainer; } |
-
     < EVENT_DEF_VALUE > { return PajeFieldName.Value; } |
-
     < EVENT_DEF_KEY > { return PajeFieldName.Key; } |
-
     < EVENT_DEF_LINE > { return PajeFieldName.Line; } |
-
     < EVENT_DEF_FILE > { return PajeFieldName.File; } |
-
     < STRING > { return PajeFieldName.Extra;/*dar um jeito de pegar esse nome; */}
 }
-
-
-
 PajeFieldType field_type(): {
 }
-
 {
     < EVENT_DEF_FIELD_TYPE_STRING > { return PajeFieldType.PAJE_string; } |
-
     < EVENT_DEF_FIELD_TYPE_FLOAT > { return PajeFieldType.PAJE_float; } |
-
     < EVENT_DEF_FIELD_TYPE_DOUBLE > { return PajeFieldType.PAJE_double; } |
-
     < EVENT_DEF_FIELD_TYPE_INT > { return PajeFieldType.PAJE_int; } |
-
     < EVENT_DEF_FIELD_TYPE_HEX > { return PajeFieldType.PAJE_hex; } |
-
     < EVENT_DEF_FIELD_TYPE_DATE > { return PajeFieldType.PAJE_date; } |
-
     < EVENT_DEF_FIELD_TYPE_COLOR > { return PajeFieldType.PAJE_color; }
 }
-
 void events() throws Exception: {
 }
 {
-
     (event())*
 }
-
-
 void event() throws Exception:
-
 {}
-
 {
     non_empty_event() | < BREAK >
-
 }
-
-
-
 void non_empty_event() throws Exception:
-
 {
-
     PajeTraceEvent event = new PajeTraceEvent();
-
     Token id;
-
 }
-
 {
     id = < INT > {
-
         ArrayList<String> fields;
-
         event.setPajeEventDef(Integer.parseInt(id.image), eventDefinitions);
-
         event.setLine(id.beginLine);
-
     }
-
     fields = arguments() <  BREAK > {
-
         event.setFields(fields);
-
         simulator.simulate(event);
-
     }
-
 }
-
-
-
 ArrayList<String> arguments(): {
-
     ArrayList<String> fields = new ArrayList<String>();
-
     String field;
-
 }
-
 {
     (
-
         field = argument()
-
     {
-
         fields.add(field);
-
     }
-
     )*
-
     {return fields;}
 }
-
-
-
 String argument():
-
 {
     Token arg;
-
 }
-
 {
     arg = < STRING > {return arg.image.toString();}
-
           |arg = < FLOAT > {return arg.image.toString();}
-
                  |arg = < INT > {return arg.image.toString();}
-
-
 }
