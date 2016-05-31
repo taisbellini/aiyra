@@ -1,19 +1,19 @@
 package br.ufrgs.inf.tlbellini.lib;
 
 public class PajeCategorizedEvent extends PajeEvent {
-	
-	private PajeValue value;
 
-	public PajeCategorizedEvent(PajeTraceEvent event, PajeContainer container, PajeType type, double time) {
-		super(event, container, type, time);
-	}
+    private PajeValue value;
 
-	public PajeValue getValue() {
-		return value;
-	}
+    public PajeCategorizedEvent(PajeTraceEvent event, PajeContainer container, PajeType type, double time) {
+        super(event, container, type, time);
+    }
 
-	public void setValue(PajeValue value) {
-		this.value = value;
-	}
+    public PajeValue getValue() {
+        return value;
+    }
+
+    public void setValue(PajeValue value) {
+        this.value = value;
+    }
 
 }

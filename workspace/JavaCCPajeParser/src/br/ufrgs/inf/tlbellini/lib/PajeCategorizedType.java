@@ -6,52 +6,52 @@ import java.util.Map;
 import br.ufrgs.inf.tlbellini.PajeGrammar;
 
 public class PajeCategorizedType extends PajeType {
-	
-	private Map<String, PajeValue> values = new HashMap<String, PajeValue>();
-	private Map<String, PajeColor> colors = new HashMap<String, PajeColor>();
 
-	public PajeCategorizedType(String name, String alias, PajeType parent) {
-		super(name, alias, parent);
-	}
-	
-	public boolean isCategorizedType(){
-		return true;
-	}
+    private Map<String, PajeValue> values = new HashMap<String, PajeValue>();
+    private Map<String, PajeColor> colors = new HashMap<String, PajeColor>();
 
-	Map<String, PajeValue> getValues() {
-		return values;
-	}
+    public PajeCategorizedType(String name, String alias, PajeType parent) {
+        super(name, alias, parent);
+    }
 
-	public Map<String, PajeColor> getColors() {
-		return colors;
-	}
+    public boolean isCategorizedType() {
+        return true;
+    }
 
-	public PajeValue addValue(String name, String alias, PajeColor color){
-		PajeValue newValue = new PajeValue(name, alias, this, color); 
-		this.getValues().put(newValue.getId(), newValue);
-		this.getColors().put(newValue.getId(), color);
-		return newValue;
+    Map<String, PajeValue> getValues() {
+        return values;
+    }
 
-	}
-	
-	public void addColor(String newKey, PajeColor newColor){
-		this.getColors().put(newKey, newColor);
-	}
-	
-	public boolean hasValueForIdentifier(String key){
-		if(values.containsKey(key))
-			return true;
-		else
-			return false;
-	}
+    public Map<String, PajeColor> getColors() {
+        return colors;
+    }
 
-	public PajeValue valueForIdentifier(String key){
-		if(hasValueForIdentifier(key))
-			return values.get(key);
-		else
-			return null;
-	}
-		
-	
+    public PajeValue addValue(String name, String alias, PajeColor color) {
+        PajeValue newValue = new PajeValue(name, alias, this, color);
+        this.getValues().put(newValue.getId(), newValue);
+        this.getColors().put(newValue.getId(), color);
+        return newValue;
+
+    }
+
+    public void addColor(String newKey, PajeColor newColor) {
+        this.getColors().put(newKey, newColor);
+    }
+
+    public boolean hasValueForIdentifier(String key) {
+        if(values.containsKey(key))
+            return true;
+        else
+            return false;
+    }
+
+    public PajeValue valueForIdentifier(String key) {
+        if(hasValueForIdentifier(key))
+            return values.get(key);
+        else
+            return null;
+    }
+
+
 
 }
