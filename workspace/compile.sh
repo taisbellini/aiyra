@@ -1,6 +1,9 @@
 #!/bin/bash
 
 pushd JavaCCPajeParser/src/br/ufrgs/inf/tlbellini/
+#remove generated files
+rm `find | grep -e TokenMgrError.java -e ParseException.java -e Token.java -e SimpleCharStream.java`
+#generate the parser from the jj file
 javacc PajeGrammar.jj
 popd
 pushd JavaCCPajeParser/src/
