@@ -61,7 +61,6 @@ public class PajeGrammar {
                 simulator.finish();
                 long endTime = System.nanoTime()/1000;
                 System.out.println("Time: "+ (endTime - startTime));
-                ((PajeInsertDBPlugin) simulator.plugin).endSimulation();
                 break;
             case 1 :
                 System.out.println("Goodbye.");
