@@ -1,7 +1,7 @@
 # aiyra
 
 *Aiyra* is an extendable java simulator of Paje traces. The
-extensability is possible through a well-defined API allowing the user
+extensibility is possible through a well-defined API allowing the user
 to developed a plugin for the core simulator. Every time an object is
 defined by the simulator, the plugin is called with the information
 about that object. These kind of Paje objects are currently supported
